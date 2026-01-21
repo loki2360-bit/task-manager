@@ -22,12 +22,21 @@ const addOrderBtn = document.getElementById('add-order');
 const searchInput = document.getElementById('search-input');
 const adminBtn = document.getElementById('admin-btn');
 
-// === Рендер участков ===
+// === Рендер участков с счётчиками (только активные заказы) ===
 function renderStations() {
+  const activeOrders = orders.filter(o => o.status !== 'Закрыт');
+  const counts = {};
+  stations.forEach(s => counts[s] = 0);
+  activeOrders.forEach(o => {
+    if (counts.hasOwnProperty(o.currentStation)) {
+      counts[o.currentStation]++;
+    }
+  });
+
   stationsList.innerHTML = '';
   stations.forEach(station => {
     const li = document.createElement('li');
-    li.textContent = station;
+    li.textContent = `${station} (${counts[station]})`;
     li.classList.toggle('active', station === currentStation);
     li.addEventListener('click', () => {
       currentStation = station;
@@ -39,19 +48,7 @@ function renderStations() {
   });
 }
 
-// === Подсчёт задач на участке ===
-function getStationCounts() {
-  const counts = {};
-  stations.forEach(s => counts[s] = 0);
-  orders.filter(o => o.status !== 'Закрыт').forEach(o => {
-    if (counts.hasOwnProperty(o.currentStation)) {
-      counts[o.currentStation]++;
-    }
-  });
-  return counts;
-}
-
-// === Загрузка заказов ===
+// === Загрузка ВСЕХ заказов (включая закрытые) для текущего участка ===
 function loadOrders(searchTerm = null) {
   ordersContainer.innerHTML = '';
 
@@ -59,7 +56,7 @@ function loadOrders(searchTerm = null) {
     if (searchTerm) {
       return order.orderId.toLowerCase().includes(searchTerm.toLowerCase());
     } else {
-      return order.currentStation === currentStation && order.status !== 'Закрыт';
+      return order.currentStation === currentStation; // ← включая закрытые!
     }
   });
 
@@ -74,17 +71,23 @@ function loadOrders(searchTerm = null) {
     const card = document.createElement('div');
     card.className = 'order-card';
 
-    // Кнопки управления
+    // Статус с пометкой
+    let statusText = order.status;
+    if (order.status === 'Закрыт') {
+      statusText = '❌ Закрыт';
+    }
+
+    // Кнопки только для НЕ закрытых заказов
     let buttons = '';
-    if (!searchTerm) {
-      if (order.status !== 'Закрыт') {
-        buttons += `<button onclick="moveOrder(${index})">Переместить</button> `;
-        buttons += `<button onclick="closeOrder(${index})">Закрыть</button>`;
-      }
+    if (!searchTerm && order.status !== 'Закрыт') {
+      buttons = `
+        <button onclick="showMoveDialog(${index})">Переместить</button>
+        <button onclick="closeOrder(${index})">Закрыть</button>
+      `;
     }
 
     card.innerHTML = `
-      <div class="order-id">#${order.orderId} (${order.status})</div>
+      <div class="order-id">#${order.orderId} (${statusText})</div>
       <div class="status-buttons">${buttons}</div>
     `;
     ordersContainer.appendChild(card);
@@ -107,7 +110,7 @@ addOrderBtn.addEventListener('click', () => {
   saveData();
   orderInput.value = '';
   if (currentStation === stations[0]) loadOrders();
-  renderStations(); // обновить счётчики
+  renderStations();
 });
 
 // === Поиск ===
@@ -115,17 +118,50 @@ searchInput.addEventListener('input', (e) => {
   loadOrders(e.target.value.trim());
 });
 
-// === Переместить заказ (выбор участка) ===
-window.moveOrder = (index) => {
-  const options = stations.map(s => `"${s}"`).join(', ');
-  const newStation = prompt(`Выберите участок:\n${options}`, orders[index].currentStation);
-  if (!newStation || !stations.includes(newStation)) return;
+// === Показать диалог перемещения с выпадающим списком ===
+window.showMoveDialog = (index) => {
+  const modal = document.createElement('div');
+  modal.id = 'move-modal';
+  modal.style = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+  `;
 
+  let options = stations.map(s => 
+    `<option value="${s}" ${s === orders[index].currentStation ? 'selected' : ''}>${s}</option>`
+  ).join('');
+
+  modal.innerHTML = `
+    <div style="background: white; padding: 20px; color: black; max-width: 300px; width: 90%;">
+      <h4>Переместить заказ #${orders[index].orderId}</h4>
+      <select id="move-select" style="width: 100%; margin: 10px 0;">${options}</select>
+      <div>
+        <button onclick="confirmMove(${index})" style="margin-right: 10px;">OK</button>
+        <button onclick="closeMoveDialog()">Отмена</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+};
+
+// === Подтвердить перемещение ===
+window.confirmMove = (index) => {
+  const select = document.getElementById('move-select');
+  const newStation = select.value;
   orders[index].currentStation = newStation;
-  orders[index].status = 'Не начат'; // сброс статуса при перемещении
+  orders[index].status = 'Не начат';
   saveData();
+  closeMoveDialog();
   renderStations();
   loadOrders();
+};
+
+// === Закрыть модальное окно ===
+window.closeMoveDialog = () => {
+  const modal = document.getElementById('move-modal');
+  if (modal) modal.remove();
 };
 
 // === Закрыть заказ ===
@@ -133,20 +169,19 @@ window.closeOrder = (index) => {
   if (confirm(`Закрыть заказ #${orders[index].orderId}?`)) {
     orders[index].status = 'Закрыт';
     saveData();
-    renderStations();
-    loadOrders();
+    renderStations(); // обновить счётчики (закрытые не считаются)
+    loadOrders();     // но всё равно отображаются
   }
 };
 
-// === Админка ===
+// === Админка (без изменений, но оставим для полноты) ===
 adminBtn.addEventListener('click', () => {
   const pass = prompt('Админ-пароль:');
-  if (pass !== 'admin123') { // ← замените на свой!
+  if (pass !== 'admin123') {
     alert('Неверный пароль');
     return;
   }
 
-  // Создаём модальное окно админки
   const adminPanel = document.createElement('div');
   adminPanel.id = 'admin-panel';
   adminPanel.style = `
@@ -176,7 +211,6 @@ adminBtn.addEventListener('click', () => {
     </div>
   `;
 
-  // Загрузка списка заказов для удаления
   const ordersHtml = orders.map((o, i) => 
     `<div>#${o.orderId} (${o.currentStation}) — ${o.status} 
        <button onclick="deleteOrder(${i})">Удалить</button>
@@ -187,7 +221,7 @@ adminBtn.addEventListener('click', () => {
   document.body.appendChild(adminPanel);
 });
 
-// === Функции админки (глобальные для onclick) ===
+// === Функции админки ===
 window.addStation = () => {
   const input = document.getElementById('new-station');
   const name = input.value.trim();
@@ -195,12 +229,12 @@ window.addStation = () => {
   if (stations.includes(name)) return alert('Участок уже существует');
   stations.push(name);
   saveData();
-  location.reload(); // проще перезагрузить
+  location.reload();
 };
 
 window.deleteStation = (name) => {
   if (stations.length <= 1) return alert('Нужен хотя бы один участок');
-  if (!confirm(`Удалить участок "${name}"? Все заказы на нём останутся.`)) return;
+  if (!confirm(`Удалить участок "${name}"?`)) return;
   stations = stations.filter(s => s !== name);
   if (!stations.includes(currentStation)) currentStation = stations[0];
   saveData();
