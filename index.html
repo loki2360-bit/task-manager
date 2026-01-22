@@ -22,20 +22,20 @@
   <div id="app" style="display: none;">
     <div class="container">
       <aside class="sidebar">
-        <div style="padding: 8px 0; font-weight: bold;" id="current-user"></div>
+        <div class="user-greeting" id="current-user">Привет, оператор</div>
         <h2>Участки</h2>
         <ul id="stations-list"></ul>
-        <button id="logout-btn" style="margin-top: 20px; width: 100%;">Выйти</button>
-        <button id="admin-btn" style="margin-top: 10px; width: 100%;">Админка</button>
+        <button id="logout-btn">Выйти</button>
+        <button id="admin-btn">Админка</button>
       </aside>
 
       <main class="main-content">
-        <header>
-          <input type="text" id="order-input" placeholder="Номер заказа" />
-          <button id="add-order">Добавить</button>
-          <input type="text" id="search-input" placeholder="Поиск по №" />
-        </header>
-        <div id="orders-container"></div>
+        <div class="header">
+          <input type="text" id="order-input" placeholder="номер заказа" />
+          <button id="add-order">добавить</button>
+          <input type="text" id="search-input" placeholder="поиск по №" />
+        </div>
+        <div id="orders-container" class="orders-container"></div>
       </main>
     </div>
   </div>
