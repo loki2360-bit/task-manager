@@ -7,7 +7,6 @@ let stations = JSON.parse(localStorage.getItem('stations')) || [
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let users = JSON.parse(localStorage.getItem('users')) || [];
 
-// Создаём первого пользователя по умолчанию
 if (users.length === 0) {
   users.push({ username: 'оператор', password: '12345' });
   localStorage.setItem('users', JSON.stringify(users));
@@ -16,19 +15,16 @@ if (users.length === 0) {
 let currentUser = null;
 let currentStation = stations[0];
 
-// === Сохранение ===
 function saveData() {
   localStorage.setItem('stations', JSON.stringify(stations));
   localStorage.setItem('orders', JSON.stringify(orders));
   localStorage.setItem('users', JSON.stringify(users));
 }
 
-// === Генерация уникального ID ===
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
-// === DOM ===
 const loginScreen = document.getElementById('login-screen');
 const app = document.getElementById('app');
 const loginUsername = document.getElementById('login-username');
@@ -39,7 +35,6 @@ const logoutBtn = document.getElementById('logout-btn');
 const adminBtn = document.getElementById('admin-btn');
 const currentUserEl = document.getElementById('current-user');
 
-// === Проверка автоматического входа ===
 function checkAutoLogin() {
   try {
     const saved = localStorage.getItem('currentUser');
@@ -58,7 +53,6 @@ function checkAutoLogin() {
       currentUser = found;
       showApp();
     } else {
-      // Неверные данные — очищаем
       localStorage.removeItem('currentUser');
       loginScreen.style.display = 'flex';
     }
@@ -68,7 +62,6 @@ function checkAutoLogin() {
   }
 }
 
-// === Вход ===
 loginBtn.addEventListener('click', () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value;
@@ -85,7 +78,6 @@ loginBtn.addEventListener('click', () => {
   }
 });
 
-// === Выход ===
 logoutBtn.addEventListener('click', () => {
   currentUser = null;
   localStorage.removeItem('currentUser');
@@ -95,7 +87,6 @@ logoutBtn.addEventListener('click', () => {
   loginPassword.value = '';
 });
 
-// === Показать основное приложение ===
 function showApp() {
   loginScreen.style.display = 'none';
   app.style.display = 'block';
@@ -104,7 +95,6 @@ function showApp() {
   loadOrders();
 }
 
-// === Рендер участков ===
 function renderStations() {
   const counts = {};
   stations.forEach(s => counts[s] = 0);
@@ -127,7 +117,6 @@ function renderStations() {
   });
 }
 
-// === Загрузка заказов ===
 function loadOrders(searchTerm = null) {
   const container = document.getElementById('orders-container');
   container.innerHTML = '';
@@ -162,7 +151,6 @@ function loadOrders(searchTerm = null) {
   });
 }
 
-// === Добавление заказа ===
 document.getElementById('add-order').addEventListener('click', () => {
   const orderId = document.getElementById('order-input').value.trim();
   if (!orderId) return alert('Введите номер заказа');
@@ -181,37 +169,29 @@ document.getElementById('add-order').addEventListener('click', () => {
   renderStations();
 });
 
-// === Поиск ===
 document.getElementById('search-input').addEventListener('input', (e) => {
   loadOrders(e.target.value.trim());
 });
 
-// === Переместить заказ ===
 window.showMoveDialog = (orderId) => {
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
   if (!order) return alert('Заказ не найден');
 
   const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
   modal.id = 'move-modal';
-  modal.style = `
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); z-index: 2000;
-    display: flex; justify-content: center; align-items: center;
-  `;
 
   let options = stations.map(s => 
     `<option value="${s}" ${s === order.station ? 'selected' : ''}>${s}</option>`
   ).join('');
 
   modal.innerHTML = `
-    <div style="background: white; padding: 20px; color: black; max-width: 300px; width: 90%;">
+    <div class="modal-content">
       <h4>Переместить #${order.orderId}</h4>
-      <select id="move-select" style="width: 100%; margin: 10px 0;">${options}</select>
-      <div>
-        <button onclick="confirmMove('${id}')" style="margin-right: 10px;">OK</button>
-        <button onclick="closeMoveDialog()">Отмена</button>
-      </div>
+      <select id="move-select">${options}</select>
+      <button onclick="confirmMove('${id}')">OK</button>
+      <button onclick="closeMoveDialog()">Отмена</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -235,7 +215,6 @@ window.closeMoveDialog = () => {
   if (el) el.remove();
 };
 
-// === Закрыть заказ ===
 window.closeOrder = (orderId) => {
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
@@ -249,7 +228,6 @@ window.closeOrder = (orderId) => {
   }
 };
 
-// === Админка ===
 adminBtn.addEventListener('click', () => {
   const pass = prompt('Админ-пароль:');
   if (pass !== 'admin123') {
@@ -257,20 +235,16 @@ adminBtn.addEventListener('click', () => {
     return;
   }
 
-  const adminPanel = document.createElement('div');
-  adminPanel.id = 'admin-panel';
-  adminPanel.style = `
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px;
-    display: flex; justify-content: center; align-items: center;
-  `;
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'admin-panel';
 
   let stationsHtml = stations.map(s => 
     `<div>${s} <button onclick="deleteStation('${s}')">✕</button></div>`
   ).join('');
 
-  adminPanel.innerHTML = `
-    <div style="background: white; padding: 20px; color: black; max-width: 500px; width: 90%;">
+  modal.innerHTML = `
+    <div class="modal-content">
       <h3>Админ-панель</h3>
       
       <h4>Участки</h4>
@@ -278,37 +252,34 @@ adminBtn.addEventListener('click', () => {
       <input type="text" id="new-station" placeholder="Новый участок" />
       <button onclick="addStation()">Добавить</button>
 
-      <h4 style="margin-top: 20px;">Заказы</h4>
+      <h4>Заказы</h4>
       <div id="admin-orders"></div>
 
-      <h4 style="margin-top: 20px;">Пользователи</h4>
+      <h4>Пользователи</h4>
       <div id="admin-users"></div>
 
-      <button onclick="document.body.removeChild(document.getElementById('admin-panel'))" 
-              style="margin-top: 20px;">Закрыть</button>
+      <button onclick="closeAdminPanel()" style="margin-top: 12px;">Закрыть</button>
     </div>
   `;
 
-  // Заказы
   const ordersHtml = orders.map(o => 
-    `<div>#${o.orderId} (${o.station}) 
-       <button onclick="deleteOrder('${o.id}')">Удалить</button>
-     </div>`
+    `<div>#${o.orderId} (${o.station}) <button onclick="deleteOrder('${o.id}')">Удалить</button></div>`
   ).join('');
-  adminPanel.querySelector('#admin-orders').innerHTML = ordersHtml || '<p>Нет заказов</p>';
+  modal.querySelector('#admin-orders').innerHTML = ordersHtml || '<p>Нет заказов</p>';
 
-  // Пользователи
   const usersHtml = users.map(u => 
-    `<div>${u.username} 
-       <button onclick="deleteUser('${u.username}')">✕</button>
-     </div>`
+    `<div>${u.username} <button onclick="deleteUser('${u.username}')">✕</button></div>`
   ).join('');
-  adminPanel.querySelector('#admin-users').innerHTML = usersHtml || '<p>Нет пользователей</p>';
+  modal.querySelector('#admin-users').innerHTML = usersHtml || '<p>Нет пользователей</p>';
 
-  document.body.appendChild(adminPanel);
-});
+  document.body.appendChild(modal);
+};
 
-// === Функции админки ===
+window.closeAdminPanel = () => {
+  const el = document.getElementById('admin-panel');
+  if (el) el.remove();
+};
+
 window.addStation = () => {
   const input = document.getElementById('new-station');
   const name = input.value.trim();
@@ -347,5 +318,4 @@ window.deleteUser = (username) => {
   location.reload();
 };
 
-// === Запуск ===
 checkAutoLogin();
