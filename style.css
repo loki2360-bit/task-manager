@@ -1,4 +1,4 @@
-﻿* {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -8,6 +8,30 @@
 body {
   background: white;
   color: black;
+}
+
+.auth-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: white;
+  color: black;
+}
+
+.auth-form {
+  padding: 24px;
+  border: 1px solid #000;
+  max-width: 300px;
+  width: 90%;
+}
+
+.auth-form input,
+.auth-form button {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  border: 1px solid #000;
 }
 
 .container {
@@ -79,27 +103,4 @@ button {
 
 .status-buttons button {
   margin-left: 8px;
-}
-.auth-screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: white;
-  color: black;
-}
-
-.auth-form {
-  padding: 24px;
-  border: 1px solid #000;
-  max-width: 300px;
-  width: 90%;
-}
-
-.auth-form input,
-.auth-form button {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0;
-  border: 1px solid #000;
 }
