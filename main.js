@@ -25,6 +25,7 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
+// === DOM элементы ===
 const loginScreen = document.getElementById('login-screen');
 const app = document.getElementById('app');
 const loginUsername = document.getElementById('login-username');
@@ -35,6 +36,7 @@ const logoutBtn = document.getElementById('logout-btn');
 const adminBtn = document.getElementById('admin-btn');
 const currentUserEl = document.getElementById('current-user');
 
+// === Проверка автоматического входа ===
 function checkAutoLogin() {
   try {
     const saved = localStorage.getItem('currentUser');
@@ -62,6 +64,7 @@ function checkAutoLogin() {
   }
 }
 
+// === Вход ===
 loginBtn.addEventListener('click', () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value;
@@ -78,6 +81,7 @@ loginBtn.addEventListener('click', () => {
   }
 });
 
+// === Выход ===
 logoutBtn.addEventListener('click', () => {
   currentUser = null;
   localStorage.removeItem('currentUser');
@@ -87,6 +91,7 @@ logoutBtn.addEventListener('click', () => {
   loginPassword.value = '';
 });
 
+// === Показать основное приложение ===
 function showApp() {
   loginScreen.style.display = 'none';
   app.style.display = 'block';
@@ -95,6 +100,7 @@ function showApp() {
   loadOrders();
 }
 
+// === Рендер участков ===
 function renderStations() {
   const counts = {};
   stations.forEach(s => counts[s] = 0);
@@ -117,6 +123,7 @@ function renderStations() {
   });
 }
 
+// === Загрузка заказов ===
 function loadOrders(searchTerm = null) {
   const container = document.getElementById('orders-container');
   container.innerHTML = '';
@@ -140,17 +147,30 @@ function loadOrders(searchTerm = null) {
     const card = document.createElement('div');
     card.className = 'order-card';
 
-    card.innerHTML = `
-      <div class="order-id">#${order.orderId}</div>
-      <div class="status-buttons">
-        <button onclick="showMoveDialog('${order.id}')">Переместить</button>
-        <button onclick="closeOrder('${order.id}')">Закрыть</button>
-      </div>
-    `;
+    const moveBtn = document.createElement('button');
+    moveBtn.textContent = 'Переместить';
+    moveBtn.addEventListener('click', () => showMoveDialog(order.id));
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Закрыть';
+    closeBtn.addEventListener('click', () => closeOrder(order.id));
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.className = 'status-buttons';
+    buttonsDiv.appendChild(moveBtn);
+    buttonsDiv.appendChild(closeBtn);
+
+    const idDiv = document.createElement('div');
+    idDiv.className = 'order-id';
+    idDiv.textContent = `#${order.orderId}`;
+
+    card.appendChild(idDiv);
+    card.appendChild(buttonsDiv);
     container.appendChild(card);
   });
 }
 
+// === Добавление заказа ===
 document.getElementById('add-order').addEventListener('click', () => {
   const orderId = document.getElementById('order-input').value.trim();
   if (!orderId) return alert('Введите номер заказа');
@@ -169,11 +189,13 @@ document.getElementById('add-order').addEventListener('click', () => {
   renderStations();
 });
 
+// === Поиск ===
 document.getElementById('search-input').addEventListener('input', (e) => {
   loadOrders(e.target.value.trim());
 });
 
-window.showMoveDialog = (orderId) => {
+// === Переместить заказ ===
+function showMoveDialog(orderId) {
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
   if (!order) return alert('Заказ не найден');
@@ -182,22 +204,36 @@ window.showMoveDialog = (orderId) => {
   modal.className = 'modal-overlay';
   modal.id = 'move-modal';
 
-  let options = stations.map(s => 
-    `<option value="${s}" ${s === order.station ? 'selected' : ''}>${s}</option>`
-  ).join('');
+  const select = document.createElement('select');
+  select.id = 'move-select';
+  stations.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    if (s === order.station) opt.selected = true;
+    select.appendChild(opt);
+  });
 
-  modal.innerHTML = `
-    <div class="modal-content">
-      <h4>Переместить #${order.orderId}</h4>
-      <select id="move-select">${options}</select>
-      <button onclick="confirmMove('${id}')">OK</button>
-      <button onclick="closeMoveDialog()">Отмена</button>
-    </div>
-  `;
+  const okBtn = document.createElement('button');
+  okBtn.textContent = 'OK';
+  okBtn.addEventListener('click', () => confirmMove(id));
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Отмена';
+  cancelBtn.addEventListener('click', closeMoveDialog);
+
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+  content.innerHTML = `<h4>Переместить #${order.orderId}</h4>`;
+  content.appendChild(select);
+  content.appendChild(okBtn);
+  content.appendChild(cancelBtn);
+
+  modal.appendChild(content);
   document.body.appendChild(modal);
-};
+}
 
-window.confirmMove = (orderId) => {
+function confirmMove(orderId) {
   const select = document.getElementById('move-select');
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
@@ -208,14 +244,15 @@ window.confirmMove = (orderId) => {
   closeMoveDialog();
   renderStations();
   loadOrders();
-};
+}
 
-window.closeMoveDialog = () => {
+function closeMoveDialog() {
   const el = document.getElementById('move-modal');
   if (el) el.remove();
-};
+}
 
-window.closeOrder = (orderId) => {
+// === Закрыть заказ ===
+function closeOrder(orderId) {
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
   if (!order) return;
@@ -226,8 +263,9 @@ window.closeOrder = (orderId) => {
     renderStations();
     loadOrders();
   }
-};
+}
 
+// === Админка ===
 adminBtn.addEventListener('click', () => {
   const pass = prompt('Админ-пароль:');
   if (pass !== 'admin123') {
@@ -239,48 +277,96 @@ adminBtn.addEventListener('click', () => {
   modal.className = 'modal-overlay';
   modal.id = 'admin-panel';
 
-  let stationsHtml = stations.map(s => 
-    `<div>${s} <button onclick="deleteStation('${s}')">✕</button></div>`
-  ).join('');
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+  content.innerHTML = '<h3>Админ-панель</h3>';
 
-  modal.innerHTML = `
-    <div class="modal-content">
-      <h3>Админ-панель</h3>
-      
-      <h4>Участки</h4>
-      <div id="admin-stations">${stationsHtml}</div>
-      <input type="text" id="new-station" placeholder="Новый участок" />
-      <button onclick="addStation()">Добавить</button>
+  // Участки
+  const stationsSection = document.createElement('div');
+  stationsSection.innerHTML = '<h4>Участки</h4>';
+  const stationsList = document.createElement('div');
+  stationsList.id = 'admin-stations';
+  stations.forEach(s => {
+    const div = document.createElement('div');
+    div.textContent = s;
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.addEventListener('click', () => deleteStation(s));
+    div.appendChild(btn);
+    stationsList.appendChild(div);
+  });
+  stationsSection.appendChild(stationsList);
 
-      <h4>Заказы</h4>
-      <div id="admin-orders"></div>
+  const newStationInput = document.createElement('input');
+  newStationInput.type = 'text';
+  newStationInput.id = 'new-station';
+  newStationInput.placeholder = 'Новый участок';
 
-      <h4>Пользователи</h4>
-      <div id="admin-users"></div>
+  const addStationBtn = document.createElement('button');
+  addStationBtn.textContent = 'Добавить';
+  addStationBtn.addEventListener('click', addStation);
 
-      <button onclick="closeAdminPanel()" style="margin-top: 12px;">Закрыть</button>
-    </div>
-  `;
+  stationsSection.appendChild(newStationInput);
+  stationsSection.appendChild(addStationBtn);
+  content.appendChild(stationsSection);
 
-  const ordersHtml = orders.map(o => 
-    `<div>#${o.orderId} (${o.station}) <button onclick="deleteOrder('${o.id}')">Удалить</button></div>`
-  ).join('');
-  modal.querySelector('#admin-orders').innerHTML = ordersHtml || '<p>Нет заказов</p>';
+  // Заказы
+  const ordersSection = document.createElement('div');
+  ordersSection.innerHTML = '<h4>Заказы</h4>';
+  const ordersList = document.createElement('div');
+  if (orders.length === 0) {
+    ordersList.innerHTML = '<p>Нет заказов</p>';
+  } else {
+    orders.forEach(o => {
+      const div = document.createElement('div');
+      div.textContent = `#${o.orderId} (${o.station})`;
+      const btn = document.createElement('button');
+      btn.textContent = 'Удалить';
+      btn.addEventListener('click', () => deleteOrder(o.id));
+      div.appendChild(btn);
+      ordersList.appendChild(div);
+    });
+  }
+  ordersSection.appendChild(ordersList);
+  content.appendChild(ordersSection);
 
-  const usersHtml = users.map(u => 
-    `<div>${u.username} <button onclick="deleteUser('${u.username}')">✕</button></div>`
-  ).join('');
-  modal.querySelector('#admin-users').innerHTML = usersHtml || '<p>Нет пользователей</p>';
+  // Пользователи
+  const usersSection = document.createElement('div');
+  usersSection.innerHTML = '<h4>Пользователи</h4>';
+  const usersList = document.createElement('div');
+  if (users.length === 0) {
+    usersList.innerHTML = '<p>Нет пользователей</p>';
+  } else {
+    users.forEach(u => {
+      const div = document.createElement('div');
+      div.textContent = u.username;
+      const btn = document.createElement('button');
+      btn.textContent = '✕';
+      btn.addEventListener('click', () => deleteUser(u.username));
+      div.appendChild(btn);
+      usersList.appendChild(div);
+    });
+  }
+  usersSection.appendChild(usersList);
+  content.appendChild(usersSection);
 
+  // Кнопка закрытия
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Закрыть';
+  closeBtn.style.marginTop = '12px';
+  closeBtn.addEventListener('click', closeAdminPanel);
+  content.appendChild(closeBtn);
+
+  modal.appendChild(content);
   document.body.appendChild(modal);
-};
+});
 
-window.closeAdminPanel = () => {
+function closeAdminPanel() {
   const el = document.getElementById('admin-panel');
   if (el) el.remove();
-};
+}
 
-window.addStation = () => {
+function addStation() {
   const input = document.getElementById('new-station');
   const name = input.value.trim();
   if (!name) return;
@@ -288,18 +374,18 @@ window.addStation = () => {
   stations.push(name);
   saveData();
   location.reload();
-};
+}
 
-window.deleteStation = (name) => {
+function deleteStation(name) {
   if (stations.length <= 1) return alert('Нужен хотя бы один участок');
   if (!confirm(`Удалить участок "${name}"?`)) return;
   stations = stations.filter(s => s !== name);
   if (!stations.includes(currentStation)) currentStation = stations[0];
   saveData();
   location.reload();
-};
+}
 
-window.deleteOrder = (orderId) => {
+function deleteOrder(orderId) {
   const id = String(orderId);
   const order = orders.find(o => o.id === id);
   if (!order) return alert('Заказ не найден');
@@ -308,14 +394,15 @@ window.deleteOrder = (orderId) => {
     saveData();
     location.reload();
   }
-};
+}
 
-window.deleteUser = (username) => {
+function deleteUser(username) {
   if (users.length <= 1) return alert('Нужен хотя бы один пользователь');
   if (!confirm(`Удалить пользователя "${username}"?`)) return;
   users = users.filter(u => u.username !== username);
   saveData();
   location.reload();
-};
+}
 
+// === Запуск ===
 checkAutoLogin();
