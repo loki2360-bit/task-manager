@@ -69,12 +69,17 @@ async function loadOrders(searchTerm = null) {
 }
 
 function renderOrders(ordersList) {
-  ordersContainer.innerHTML = '';
+  const container = document.getElementById('orders-container');
+  container.innerHTML = '';
 
   if (ordersList.length === 0) {
-    ordersContainer.innerHTML = '<p>Нет задач</p>';
+    container.innerHTML = '<p style="text-align:center; color:#666;">Нет задач</p>';
     return;
   }
+
+  // Создаём прокручиваемый контейнер
+  const scrollable = document.createElement('div');
+  scrollable.className = 'orders-list';
 
   ordersList.forEach(order => {
     const card = document.createElement('div');
@@ -95,11 +100,15 @@ function renderOrders(ordersList) {
 
     const idDiv = document.createElement('div');
     idDiv.className = 'order-id';
-    idDiv.textContent = `#${order.order_id}`;
+    idDiv.textContent = `#${order.order_id || order.orderId}`;
 
     card.appendChild(idDiv);
     card.appendChild(buttonsDiv);
-    ordersContainer.appendChild(card);
+    scrollable.appendChild(card);
+  });
+
+  container.appendChild(scrollable);
+}
   });
 }
 
