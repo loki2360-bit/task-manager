@@ -2,87 +2,28 @@
 // 🔑 ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ИЗ SUPABASE!
 const supabaseUrl = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const supabaseAnonKey = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
-// Создаём клиент Supabase — только один раз!
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// === Участки ===
 const stations = [
   "Распил", "ЧПУ", "Покраска", "Фрезеровка",
   "Шпонировка", "Сборка", "Упаковка"
 ];
 
-let currentUser = null;
 let currentStation = stations[0];
 
-// === DOM элементы ===
-const loginScreen = document.getElementById('login-screen');
-const app = document.getElementById('app');
-const loginUsername = document.getElementById('login-username');
-const loginPassword = document.getElementById('login-password');
-const loginBtn = document.getElementById('login-btn');
-const loginError = document.getElementById('login-error');
-const logoutBtn = document.getElementById('logout-btn');
-const adminBtn = document.getElementById('admin-btn');
-const currentUserEl = document.getElementById('current-user');
-
-// === Автоматический вход ===
-async function checkAutoLogin() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    showApp();
-  } else {
-    loginScreen.style.display = 'flex';
-  }
-}
-
-// === Вход ===
-loginBtn.addEventListener('click', async () => {
-  const email = loginUsername.value.trim();
-  const password = loginPassword.value;
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    console.error('Ошибка входа:', error);
-    loginError.textContent = 'Ошибка: ' + (error.message || 'неизвестная');
-    loginError.style.display = 'block';
-  } else {
-    currentUser = data.user;
-    loginError.style.display = 'none';
-    showApp();
-  }
-});
-
-// === Выход ===
-logoutBtn.addEventListener('click', async () => {
-  await supabaseClient.auth.signOut();
-  currentUser = null;
-  app.style.display = 'none';
-  loginScreen.style.display = 'flex';
-  loginUsername.value = '';
-  loginPassword.value = '';
-});
-
-// === Показать приложение ===
-function showApp() {
-  loginScreen.style.display = 'none';
-  app.style.display = 'block';
-  currentUserEl.textContent = `Привет, ${currentUser.email}`;
+// === Загрузка при старте ===
+document.addEventListener('DOMContentLoaded', () => {
   renderStations();
   loadOrders();
-}
+});
 
-// === Рендер участков с счётчиками ===
+// === Рендер участков ===
 async function renderStations() {
   const counts = {};
   stations.forEach(s => counts[s] = 0);
 
-  const { data, error } = await supabaseClient.from('orders').select('station');
-  if (!error && data) {
+  const { data } = await supabase.from('orders').select('station');
+  if (data) {
     data.forEach(row => {
       if (counts.hasOwnProperty(row.station)) {
         counts[row.station]++;
@@ -107,7 +48,7 @@ async function renderStations() {
 
 // === Загрузка заказов ===
 async function loadOrders(searchTerm = null) {
-  let query = supabaseClient.from('orders').select('*');
+  let query = supabase.from('orders').select('*');
 
   if (searchTerm) {
     query = query.ilike('order_id', `%${searchTerm}%`);
@@ -115,14 +56,7 @@ async function loadOrders(searchTerm = null) {
     query = query.eq('station', currentStation);
   }
 
-  const { data, error } = await query.order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Ошибка загрузки:', error);
-    document.getElementById('orders-container').innerHTML = '<p>Ошибка загрузки</p>';
-    return;
-  }
-
+  const { data } = await query.order('created_at', { ascending: false });
   renderOrders(data || []);
 }
 
@@ -167,7 +101,7 @@ document.getElementById('add-order').addEventListener('click', async () => {
   const orderId = document.getElementById('order-input').value.trim();
   if (!orderId) return alert('Введите номер заказа');
 
-  const { error } = await supabaseClient.from('orders').insert({
+  const { error } = await supabase.from('orders').insert({
     order_id: orderId,
     station: stations[0]
   });
@@ -222,7 +156,7 @@ function showMoveDialog(orderId) {
 }
 
 async function confirmMove(orderId, newStation) {
-  const { error } = await supabaseClient
+  const { error } = await supabase
     .from('orders')
     .update({ station: newStation })
     .eq('id', orderId);
@@ -240,7 +174,7 @@ async function confirmMove(orderId, newStation) {
 async function closeOrder(orderId) {
   if (!confirm('Закрыть заказ?')) return;
 
-  const { error } = await supabaseClient
+  const { error } = await supabase
     .from('orders')
     .delete()
     .eq('id', orderId);
@@ -254,9 +188,11 @@ async function closeOrder(orderId) {
 }
 
 // === Админка ===
-adminBtn.addEventListener('click', () => {
+document.getElementById('admin-btn').addEventListener('click', () => {
+  const pass = prompt('Админ-пароль:');
+  if (pass !== 'admin123') {
+    alert('Неверный пароль');
+    return;
+  }
   alert('Админка пока не реализована. Управление участниками — в коде или через Supabase SQL.');
 });
-
-// === Запуск ===
-checkAutoLogin();
