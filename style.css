@@ -167,10 +167,36 @@ body {
   padding: 16px;
   background: white;
   flex-grow: 1;
-  overflow-y: auto;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   backdrop-filter: blur(10px);
+  overflow: hidden; /* Скрываем внешние переполнения */
+}
+
+.orders-list {
+  max-height: 60vh; /* Максимальная высота — 60% экрана */
+  overflow-y: auto; /* Вертикальная прокрутка */
+  padding-right: 8px; /* Отступ для скроллбара */
+}
+
+/* Стиль скроллбара (для WebKit) */
+.orders-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.orders-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.orders-list::-webkit-scrollbar-thumb {
+  background: #003322;
+  border-radius: 4px;
+}
+
+.orders-list::-webkit-scrollbar-thumb:hover {
+  background: #004d33;
+}
 }
 
 .order-card {
