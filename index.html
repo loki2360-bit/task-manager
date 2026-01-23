@@ -5,41 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Производство — Трекер задач</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Экран входа -->
-  <div id="login-screen" class="auth-screen">
-    <div class="auth-form">
-      <h2>Вход в систему</h2>
-      <input type="email" id="login-username" placeholder="Email" />
-      <input type="password" id="login-password" placeholder="Пароль" />
-      <button id="login-btn">Войти</button>
-      <p id="login-error" style="color: red; margin-top: 8px; display: none;"></p>
-    </div>
-  </div>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Участки</h2>
+      <ul id="stations-list"></ul>
+      <button id="admin-btn">Админка</button>
+    </aside>
 
-  <!-- Основное приложение -->
-  <div id="app" style="display: none;">
-    <div class="container">
-      <aside class="sidebar">
-        <div class="user-greeting" id="current-user">Привет, пользователь</div>
-        <h2>Участки</h2>
-        <ul id="stations-list"></ul>
-        <button id="logout-btn">Выйти</button>
-        <button id="admin-btn">Админка</button>
-      </aside>
-
-      <main class="main-content">
-        <div class="header">
-          <input type="text" id="order-input" placeholder="номер заказа" />
-          <button id="add-order">добавить</button>
-          <input type="text" id="search-input" placeholder="поиск по №" />
-        </div>
-        <div id="orders-container" class="orders-container"></div>
-      </main>
-    </div>
+    <main class="main-content">
+      <div class="header">
+        <input type="text" id="order-input" placeholder="номер заказа" />
+        <button id="add-order">добавить</button>
+        <input type="text" id="search-input" placeholder="поиск по №" />
+      </div>
+      <div id="orders-container" class="orders-container"></div>
+    </main>
   </div>
 
   <script src="main.js"></script>
