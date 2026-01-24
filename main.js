@@ -1,3 +1,4 @@
+// === Supabase config ===
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
@@ -20,6 +21,7 @@ const loginPassword = document.getElementById('login-password');
 const loginBtn = document.getElementById('login-btn');
 const loginError = document.getElementById('login-error');
 const userRoleEl = document.getElementById('user-role');
+const logoutBtn = document.getElementById('logout-btn');
 const stationsList = document.getElementById('stations-list');
 const ordersContainer = document.getElementById('orders-container');
 const orderInput = document.getElementById('order-input');
@@ -30,23 +32,29 @@ const adminControls = document.getElementById('admin-controls');
 const newStationInput = document.getElementById('new-station');
 const addStationBtn = document.getElementById('add-station');
 
+// === Выход из системы ===
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('userRole');
+  currentUserRole = null;
+  app.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  loginPassword.value = '';
+});
+
 // === Проверка автоматического входа ===
 function checkAutoLogin() {
   const savedRole = localStorage.getItem('userRole');
-  const savedPassword = localStorage.getItem('userPassword');
   
-  if (savedRole && savedPassword) {
-    if (savedPassword === PASSWORDS[savedRole]) {
-      currentUserRole = savedRole;
-      userRoleEl.textContent = savedRole === 'admin' ? 'Администратор' : 'Оператор';
-      adminControls.style.display = savedRole === 'admin' ? 'block' : 'none';
-      
-      loginScreen.style.display = 'none';
-      app.style.display = 'block';
-      
-      initApp();
-      return true;
-    }
+  if (savedRole && (savedRole === 'operator' || savedRole === 'admin')) {
+    currentUserRole = savedRole;
+    userRoleEl.textContent = savedRole === 'admin' ? 'Администратор' : 'Оператор';
+    adminControls.style.display = savedRole === 'admin' ? 'block' : 'none';
+    
+    loginScreen.style.display = 'none';
+    app.style.display = 'block';
+    
+    initApp();
+    return true;
   }
   return false;
 }
@@ -57,27 +65,18 @@ function handleLogin() {
   
   if (password === PASSWORDS.admin) {
     currentUserRole = 'admin';
-    userRoleEl.textContent = 'Администратор';
-    adminControls.style.display = 'block';
-    
-    // Сохраняем в localStorage
     localStorage.setItem('userRole', 'admin');
-    localStorage.setItem('userPassword', password);
-    
   } else if (password === PASSWORDS.operator) {
     currentUserRole = 'operator';
-    userRoleEl.textContent = 'Оператор';
-    adminControls.style.display = 'none';
-    
-    // Сохраняем в localStorage
     localStorage.setItem('userRole', 'operator');
-    localStorage.setItem('userPassword', password);
-    
   } else {
     loginError.textContent = 'Неверный пароль';
     loginError.style.display = 'block';
     return;
   }
+  
+  userRoleEl.textContent = currentUserRole === 'admin' ? 'Администратор' : 'Оператор';
+  adminControls.style.display = currentUserRole === 'admin' ? 'block' : 'none';
   
   loginError.style.display = 'none';
   loginScreen.style.display = 'none';
@@ -104,7 +103,7 @@ async function initApp() {
     loadOrders();
   } catch (error) {
     console.error('Ошибка инициализации:', error);
-    alert('Ошибка при загрузке данных. Проверьте подключение к интернету.');
+    alert('Ошибка при загрузке данных.');
   }
 }
 
@@ -123,9 +122,7 @@ async function renderStations() {
     stations.forEach(s => counts[s] = 0);
 
     const { data, error } = await supabaseClient.from('orders').select('station');
-    if (error) throw error;
-    
-    if (data) {
+    if (!error && data) {
       data.forEach(row => {
         if (counts.hasOwnProperty(row.station)) {
           counts[row.station]++;
@@ -136,7 +133,7 @@ async function renderStations() {
     stationsList.innerHTML = '';
     stations.forEach(station => {
       const li = document.createElement('li');
-      li.textContent = `${station} (${counts[station]})`;
+      li.textContent = `${station} (${counts[station] || 0})`;
       li.classList.toggle('active', station === currentStation);
       li.addEventListener('click', () => {
         currentStation = station;
@@ -146,7 +143,7 @@ async function renderStations() {
       stationsList.appendChild(li);
     });
   } catch (error) {
-    console.error('Ошибка загрузки участков:', error);
+    console.error('Ошибка рендера участков:', error);
     stationsList.innerHTML = '<li style="color: #dc3545;">Ошибка загрузки</li>';
   }
 }
@@ -228,21 +225,32 @@ addOrderBtn.addEventListener('click', async () => {
     const stations = await loadStations();
     if (stations.length === 0) return alert('Нет участков');
 
-    const { error } = await supabaseClient.from('orders').insert({
+    // Временно убираем tag для проверки
+    const orderData = {
       order_id: orderId,
-      station: stations[0],
-      tag: tag || null
-    });
+      station: stations[0]
+    };
+    
+    // Добавляем tag только если он есть
+    if (tag) {
+      orderData.tag = tag;
+    }
 
-    if (error) throw error;
+    const { error } = await supabaseClient.from('orders').insert(orderData);
+
+    if (error) {
+      console.error('Ошибка добавления:', error);
+      alert(`Ошибка: ${error.message}`);
+      return;
+    }
 
     orderInput.value = '';
     tagSelect.value = '';
     if (currentStation === stations[0]) loadOrders();
     renderStations();
   } catch (error) {
-    console.error('Ошибка добавления заказа:', error);
-    alert('Ошибка при добавлении заказа.');
+    console.error('Неизвестная ошибка:', error);
+    alert('Неизвестная ошибка. Проверьте консоль.');
   }
 });
 
