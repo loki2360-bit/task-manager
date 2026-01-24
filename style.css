@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 body {
@@ -175,16 +175,41 @@ body {
   padding: 16px;
 }
 
+/* === Название в шапке === */
 .header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 10px;
   padding: 14px;
   background: linear-gradient(135deg, #495057 0%, #343a40 100%);
   border-radius: 12px;
-  align-items: center;
   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
   margin-bottom: 16px;
   flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  gap: 10px;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* === Название приложения === */
+.app-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: white;
+  letter-spacing: -0.5px;
+  margin-left: 8px;
 }
 
 .header input,
@@ -396,10 +421,24 @@ body {
   }
 
   .header {
-    padding: 12px;
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+  }
+
+  .header-left {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .app-title {
+    font-size: 20px;
+    margin-left: 6px;
   }
 
   .header input,
@@ -435,67 +474,5 @@ body {
     min-width: auto;
     padding: 10px;
     font-size: 14px;
-  }
-}
-/* === Логотип в шапке === */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 14px;
-  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.header-left {
-  display: flex;
-  gap: 10px;
-  flex-grow: 1;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.app-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.app-logo:hover {
-  transform: scale(1.1);
-}
-
-/* Для мобильных устройств */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .header-left {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .header-right {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .app-logo {
-    width: 40px;
-    height: 40px;
   }
 }
