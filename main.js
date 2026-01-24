@@ -25,7 +25,6 @@ const logoutBtn = document.getElementById('logout-btn');
 const stationsList = document.getElementById('stations-list');
 const ordersContainer = document.getElementById('orders-container');
 const orderInput = document.getElementById('order-input');
-const tagSelect = document.getElementById('tag-select');
 const addOrderBtn = document.getElementById('add-order');
 const searchInput = document.getElementById('search-input');
 const adminControls = document.getElementById('admin-controls');
@@ -181,19 +180,9 @@ function renderOrders(ordersList) {
     const card = document.createElement('div');
     card.className = 'order-card';
 
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'order-info';
-
     const idDiv = document.createElement('div');
     idDiv.className = 'order-id';
     idDiv.textContent = `#${order.order_id}`;
-
-    const tagDiv = document.createElement('div');
-    tagDiv.className = 'order-tag';
-    tagDiv.textContent = order.tag || 'Без тега';
-
-    infoDiv.appendChild(idDiv);
-    infoDiv.appendChild(tagDiv);
 
     const moveBtn = document.createElement('button');
     moveBtn.textContent = 'Переместить';
@@ -208,7 +197,7 @@ function renderOrders(ordersList) {
     buttonsDiv.appendChild(moveBtn);
     buttonsDiv.appendChild(closeBtn);
 
-    card.appendChild(infoDiv);
+    card.appendChild(idDiv);
     card.appendChild(buttonsDiv);
     ordersContainer.appendChild(card);
   });
@@ -217,7 +206,6 @@ function renderOrders(ordersList) {
 // === Добавление заказа ===
 addOrderBtn.addEventListener('click', async () => {
   const orderId = orderInput.value.trim();
-  const tag = tagSelect.value;
   
   if (!orderId) return alert('Введите номер заказа');
   
@@ -225,18 +213,10 @@ addOrderBtn.addEventListener('click', async () => {
     const stations = await loadStations();
     if (stations.length === 0) return alert('Нет участков');
 
-    // Временно убираем tag для проверки
-    const orderData = {
+    const { error } = await supabaseClient.from('orders').insert({
       order_id: orderId,
       station: stations[0]
-    };
-    
-    // Добавляем tag только если он есть
-    if (tag) {
-      orderData.tag = tag;
-    }
-
-    const { error } = await supabaseClient.from('orders').insert(orderData);
+    });
 
     if (error) {
       console.error('Ошибка добавления:', error);
@@ -245,7 +225,6 @@ addOrderBtn.addEventListener('click', async () => {
     }
 
     orderInput.value = '';
-    tagSelect.value = '';
     if (currentStation === stations[0]) loadOrders();
     renderStations();
   } catch (error) {
