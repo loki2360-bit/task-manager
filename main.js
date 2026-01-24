@@ -2,10 +2,68 @@
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
-// Создаём клиент Supabase
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// === Пароли ===
+const PASSWORDS = {
+  operator: '12345',
+  admin: 'admin123'
+};
+
+let currentUserRole = null;
 let currentStation = '';
+
+// === DOM элементы ===
+const loginScreen = document.getElementById('login-screen');
+const app = document.getElementById('app');
+const loginPassword = document.getElementById('login-password');
+const loginBtn = document.getElementById('login-btn');
+const loginError = document.getElementById('login-error');
+const userRoleEl = document.getElementById('user-role');
+const stationsList = document.getElementById('stations-list');
+const ordersContainer = document.getElementById('orders-container');
+const orderInput = document.getElementById('order-input');
+const tagSelect = document.getElementById('tag-select');
+const addOrderBtn = document.getElementById('add-order');
+const searchInput = document.getElementById('search-input');
+const adminControls = document.getElementById('admin-controls');
+const newStationInput = document.getElementById('new-station');
+const addStationBtn = document.getElementById('add-station');
+
+// === Вход ===
+loginBtn.addEventListener('click', () => {
+  const password = loginPassword.value.trim();
+  
+  if (password === PASSWORDS.admin) {
+    currentUserRole = 'admin';
+    userRoleEl.textContent = 'Администратор';
+    adminControls.style.display = 'block';
+  } else if (password === PASSWORDS.operator) {
+    currentUserRole = 'operator';
+    userRoleEl.textContent = 'Оператор';
+    adminControls.style.display = 'none';
+  } else {
+    loginError.textContent = 'Неверный пароль';
+    loginError.style.display = 'block';
+    return;
+  }
+  
+  loginError.style.display = 'none';
+  loginScreen.style.display = 'none';
+  app.style.display = 'block';
+  
+  initApp();
+});
+
+// === Инициализация приложения ===
+async function initApp() {
+  const stations = await loadStations();
+  if (stations.length > 0) {
+    currentStation = stations[0];
+  }
+  renderStations();
+  loadOrders();
+}
 
 // === Загрузка участков из базы ===
 async function loadStations() {
@@ -13,25 +71,7 @@ async function loadStations() {
   return data ? data.map(s => s.name) : [];
 }
 
-// === DOM элементы ===
-const stationsList = document.getElementById('stations-list');
-const ordersContainer = document.getElementById('orders-container');
-const orderInput = document.getElementById('order-input');
-const addOrderBtn = document.getElementById('add-order');
-const searchInput = document.getElementById('search-input');
-const adminBtn = document.getElementById('admin-btn');
-
-// === Загрузка при старте ===
-document.addEventListener('DOMContentLoaded', async () => {
-  const stations = await loadStations();
-  if (stations.length > 0) {
-    currentStation = stations[0];
-  }
-  renderStations();
-  loadOrders();
-});
-
-// === Рендер участков с счётчиками ===
+// === Рендер участков ===
 async function renderStations() {
   const stations = await loadStations();
   const counts = {};
@@ -75,21 +115,30 @@ async function loadOrders(searchTerm = null) {
 }
 
 function renderOrders(ordersList) {
-  const container = document.getElementById('orders-container');
-  container.innerHTML = '';
+  ordersContainer.innerHTML = '';
 
   if (ordersList.length === 0) {
-    container.innerHTML = '<p style="text-align:center; color:#666;">Нет задач</p>';
+    ordersContainer.innerHTML = '<p style="text-align:center; color:#666;">Нет задач</p>';
     return;
   }
-
-  // Создаём прокручиваемый контейнер
-  const scrollable = document.createElement('div');
-  scrollable.className = 'orders-list';
 
   ordersList.forEach(order => {
     const card = document.createElement('div');
     card.className = 'order-card';
+
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'order-info';
+
+    const idDiv = document.createElement('div');
+    idDiv.className = 'order-id';
+    idDiv.textContent = `#${order.order_id}`;
+
+    const tagDiv = document.createElement('div');
+    tagDiv.className = 'order-tag';
+    tagDiv.textContent = order.tag || 'Без тега';
+
+    infoDiv.appendChild(idDiv);
+    infoDiv.appendChild(tagDiv);
 
     const moveBtn = document.createElement('button');
     moveBtn.textContent = 'Переместить';
@@ -104,36 +153,33 @@ function renderOrders(ordersList) {
     buttonsDiv.appendChild(moveBtn);
     buttonsDiv.appendChild(closeBtn);
 
-    const idDiv = document.createElement('div');
-    idDiv.className = 'order-id';
-    idDiv.textContent = `#${order.order_id}`;
-
-    card.appendChild(idDiv);
+    card.appendChild(infoDiv);
     card.appendChild(buttonsDiv);
-    scrollable.appendChild(card);
+    ordersContainer.appendChild(card);
   });
-
-  container.appendChild(scrollable);
 }
 
 // === Добавление заказа ===
 addOrderBtn.addEventListener('click', async () => {
   const orderId = orderInput.value.trim();
+  const tag = tagSelect.value;
+  
   if (!orderId) return alert('Введите номер заказа');
-
-  // Получаем первый участок из базы
+  
   const stations = await loadStations();
   if (stations.length === 0) return alert('Нет участков');
 
   const { error } = await supabase.from('orders').insert({
     order_id: orderId,
-    station: stations[0]
+    station: stations[0],
+    tag: tag || null
   });
 
   if (error) {
     alert('Ошибка: ' + error.message);
   } else {
     orderInput.value = '';
+    tagSelect.value = '';
     if (currentStation === stations[0]) loadOrders();
     renderStations();
   }
@@ -145,7 +191,7 @@ searchInput.addEventListener('input', (e) => {
 });
 
 // === Переместить заказ ===
-function showMoveDialog(orderId) {
+async function showMoveDialog(orderId) {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   modal.id = 'move-modal';
@@ -212,12 +258,45 @@ async function closeOrder(orderId) {
   }
 }
 
-// === Админка ===
-adminBtn.addEventListener('click', () => {
-  const pass = prompt('Админ-пароль:');
-  if (pass !== 'admin123') {
-    alert('Неверный пароль');
-    return;
+// === Управление участками (только для админа) ===
+addStationBtn.addEventListener('click', async () => {
+  if (currentUserRole !== 'admin') return;
+  
+  const name = newStationInput.value.trim();
+  if (!name) return;
+  
+  const stations = await loadStations();
+  if (stations.includes(name)) return alert('Участок уже существует');
+  
+  const { error } = await supabase.from('stations').insert({ name });
+  if (error) {
+    alert('Ошибка: ' + error.message);
+  } else {
+    newStationInput.value = '';
+    renderStations();
   }
-  alert('Админка пока не реализована. Управление участниками — в коде или через Supabase SQL.');
+});
+
+// === Удаление участка (через долгое нажатие) ===
+stationsList.addEventListener('contextmenu', async (e) => {
+  if (currentUserRole !== 'admin') return;
+  
+  const li = e.target.closest('li');
+  if (!li) return;
+  
+  e.preventDefault();
+  const stationName = li.textContent.split(' ')[0];
+  
+  if (confirm(`Удалить участок "${stationName}"?`)) {
+    const { error } = await supabase
+      .from('stations')
+      .delete()
+      .eq('name', stationName);
+    
+    if (error) {
+      alert('Ошибка: ' + error.message);
+    } else {
+      renderStations();
+    }
+  }
 });
