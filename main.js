@@ -2,7 +2,9 @@
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Создаём клиент Supabase
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // === Пароли ===
 const PASSWORDS = {
@@ -30,8 +32,8 @@ const adminControls = document.getElementById('admin-controls');
 const newStationInput = document.getElementById('new-station');
 const addStationBtn = document.getElementById('add-station');
 
-// === Вход ===
-loginBtn.addEventListener('click', () => {
+// === Вход по паролю ===
+function handleLogin() {
   const password = loginPassword.value.trim();
   
   if (password === PASSWORDS.admin) {
@@ -53,6 +55,13 @@ loginBtn.addEventListener('click', () => {
   app.style.display = 'block';
   
   initApp();
+}
+
+loginBtn.addEventListener('click', handleLogin);
+loginPassword.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    handleLogin();
+  }
 });
 
 // === Инициализация приложения ===
@@ -67,7 +76,7 @@ async function initApp() {
 
 // === Загрузка участков из базы ===
 async function loadStations() {
-  const { data } = await supabase.from('stations').select('name').order('name', { ascending: true });
+  const { data } = await supabaseClient.from('stations').select('name').order('name', { ascending: true });
   return data ? data.map(s => s.name) : [];
 }
 
@@ -77,7 +86,7 @@ async function renderStations() {
   const counts = {};
   stations.forEach(s => counts[s] = 0);
 
-  const { data } = await supabase.from('orders').select('station');
+  const { data } = await supabaseClient.from('orders').select('station');
   if (data) {
     data.forEach(row => {
       if (counts.hasOwnProperty(row.station)) {
@@ -102,7 +111,7 @@ async function renderStations() {
 
 // === Загрузка заказов ===
 async function loadOrders(searchTerm = null) {
-  let query = supabase.from('orders').select('*');
+  let query = supabaseClient.from('orders').select('*');
 
   if (searchTerm) {
     query = query.ilike('order_id', `%${searchTerm}%`);
@@ -169,7 +178,7 @@ addOrderBtn.addEventListener('click', async () => {
   const stations = await loadStations();
   if (stations.length === 0) return alert('Нет участков');
 
-  const { error } = await supabase.from('orders').insert({
+  const { error } = await supabaseClient.from('orders').insert({
     order_id: orderId,
     station: stations[0],
     tag: tag || null
@@ -227,7 +236,7 @@ async function showMoveDialog(orderId) {
 }
 
 async function confirmMove(orderId, newStation) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('orders')
     .update({ station: newStation })
     .eq('id', orderId);
@@ -245,7 +254,7 @@ async function confirmMove(orderId, newStation) {
 async function closeOrder(orderId) {
   if (!confirm('Закрыть заказ?')) return;
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('orders')
     .delete()
     .eq('id', orderId);
@@ -268,7 +277,7 @@ addStationBtn.addEventListener('click', async () => {
   const stations = await loadStations();
   if (stations.includes(name)) return alert('Участок уже существует');
   
-  const { error } = await supabase.from('stations').insert({ name });
+  const { error } = await supabaseClient.from('stations').insert({ name });
   if (error) {
     alert('Ошибка: ' + error.message);
   } else {
@@ -288,7 +297,7 @@ stationsList.addEventListener('contextmenu', async (e) => {
   const stationName = li.textContent.split(' ')[0];
   
   if (confirm(`Удалить участок "${stationName}"?`)) {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('stations')
       .delete()
       .eq('name', stationName);
