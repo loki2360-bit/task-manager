@@ -1,5 +1,4 @@
 // === Supabase config ===
-// 🔑 ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ИЗ SUPABASE!
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
@@ -71,12 +70,17 @@ async function loadOrders(searchTerm = null) {
 }
 
 function renderOrders(ordersList) {
-  ordersContainer.innerHTML = '';
+  const container = document.getElementById('orders-container');
+  container.innerHTML = '';
 
   if (ordersList.length === 0) {
-    ordersContainer.innerHTML = '<p>Нет задач</p>';
+    container.innerHTML = '<p style="text-align:center; color:#666;">Нет задач</p>';
     return;
   }
+
+  // Создаём прокручиваемый контейнер
+  const scrollable = document.createElement('div');
+  scrollable.className = 'orders-list';
 
   ordersList.forEach(order => {
     const card = document.createElement('div');
@@ -101,8 +105,10 @@ function renderOrders(ordersList) {
 
     card.appendChild(idDiv);
     card.appendChild(buttonsDiv);
-    ordersContainer.appendChild(card);
+    scrollable.appendChild(card);
   });
+
+  container.appendChild(scrollable);
 }
 
 // === Добавление заказа ===
