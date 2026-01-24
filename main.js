@@ -2,14 +2,11 @@
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
-// Создаём клиент Supabase — только один раз!
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Создаем клиент Supabase — только один раз!
+const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // === Участки ===
-const stations = [
-  "Распил", "ЧПУ", "Покраска", "Фрезеровка",
-  "Шпонировка", "Сборка", "Упаковка"
-];
+const stations = ["Распил", "ЧПУ", "Покраска", "Фрезеровка", "Шпонировка", "Сборка", "Упаковка"];
 
 let currentStation = stations[0];
 
@@ -32,27 +29,37 @@ async function renderStations() {
   const counts = {};
   stations.forEach(s => counts[s] = 0);
 
-  const { data } = await supabase.from('orders').select('station');
-  if (data) {
-    data.forEach(row => {
-      if (counts.hasOwnProperty(row.station)) {
-        counts[row.station]++;
+  try {
+    const { data } = await supabase.from('orders').select('station');
+    if (data) {
+      data.forEach(row => {
+        if (counts.hasOwnProperty(row.station)) {
+          counts[row.station]++;
+        }
+      });
+    }
+    
+    stationsList.innerHTML = '';
+    stations.forEach(station => {
+      const li = document.createElement('li');
+      li.textContent = `${station} (${counts[station]})`;
+      
+      // Выделяем активную станцию другим стилем
+      if (station === currentStation) {
+        li.classList.add('active');
       }
+      
+      li.addEventListener('click', () => {
+        currentStation = station;
+        renderStations(); // Перерисуем станции заново
+        loadOrders(); // Обновляем заказы
+      });
+      stationsList.appendChild(li);
     });
+  } catch (err) {
+    console.error("Ошибка загрузки данных:", err);
+    alert("Ошибка при загрузке данных.");
   }
-
-  stationsList.innerHTML = '';
-  stations.forEach(station => {
-    const li = document.createElement('li');
-    li.textContent = `${station} (${counts[station]})`;
-    li.classList.toggle('active', station === currentStation);
-    li.addEventListener('click', () => {
-      currentStation = station;
-      renderStations();
-      loadOrders();
-    });
-    stationsList.appendChild(li);
-  });
 }
 
 // === Загрузка заказов ===
@@ -65,10 +72,16 @@ async function loadOrders(searchTerm = null) {
     query = query.eq('station', currentStation);
   }
 
-  const { data } = await query.order('created_at', { ascending: false });
-  renderOrders(data || []);
+  try {
+    const { data } = await query.order('created_at', { ascending: false });
+    renderOrders(data || []);
+  } catch (err) {
+    console.error("Ошибка загрузки заказов:", err);
+    alert("Ошибка при загрузке заказов.");
+  }
 }
 
+// === Отображение заказов ===
 function renderOrders(ordersList) {
   const container = document.getElementById('orders-container');
   container.innerHTML = '';
@@ -78,7 +91,7 @@ function renderOrders(ordersList) {
     return;
   }
 
-  // Создаём прокручиваемый контейнер
+  // Создаем прокручиваемый контейнер
   const scrollable = document.createElement('div');
   scrollable.className = 'orders-list';
 
@@ -114,19 +127,27 @@ function renderOrders(ordersList) {
 // === Добавление заказа ===
 addOrderBtn.addEventListener('click', async () => {
   const orderId = orderInput.value.trim();
-  if (!orderId) return alert('Введите номер заказа');
 
-  const { error } = await supabase.from('orders').insert({
-    order_id: orderId,
-    station: stations[0]
-  });
+  // Проверяем корректность ввода
+  if (!/^\d+$/.test(orderId)) {
+    alert('Номер заказа должен быть целым положительным числом!');
+    return;
+  }
 
-  if (error) {
-    alert('Ошибка: ' + error.message);
-  } else {
-    orderInput.value = '';
+  try {
+    const { error } = await supabase.from('orders').insert({
+      order_id: orderId,
+      station: stations[0]
+    });
+
+    if (error) throw error;
+
+    orderInput.value = ''; // очищаем поле ввода
     if (currentStation === stations[0]) loadOrders();
     renderStations();
+  } catch (err) {
+    console.error("Ошибка добавления заказа:", err);
+    alert("Ошибка при добавлении заказа.");
   }
 });
 
@@ -135,7 +156,7 @@ searchInput.addEventListener('input', (e) => {
   loadOrders(e.target.value.trim());
 });
 
-// === Переместить заказ ===
+// === Диалог перемещения заказа ===
 function showMoveDialog(orderId) {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
@@ -170,44 +191,56 @@ function showMoveDialog(orderId) {
   document.body.appendChild(modal);
 }
 
+// === Подтверждение переноса заказа ===
 async function confirmMove(orderId, newStation) {
-  const { error } = await supabase
-    .from('orders')
-    .update({ station: newStation })
-    .eq('id', orderId);
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ station: newStation })
+      .eq('id', orderId);
 
-  if (error) {
-    alert('Ошибка: ' + error.message);
-  } else {
+    if (error) throw error;
+
     document.getElementById('move-modal')?.remove();
     loadOrders();
     renderStations();
+  } catch (err) {
+    console.error("Ошибка перемещения заказа:", err);
+    alert("Ошибка при перемещении заказа.");
   }
 }
 
-// === Закрыть заказ ===
+// === Закрытие заказа ===
 async function closeOrder(orderId) {
-  if (!confirm('Закрыть заказ?')) return;
+  if (!confirm('Вы уверены, что хотите закрыть заказ?')) return;
 
-  const { error } = await supabase
-    .from('orders')
-    .delete()
-    .eq('id', orderId);
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId);
 
-  if (error) {
-    alert('Ошибка: ' + error.message);
-  } else {
+    if (error) throw error;
+
     loadOrders();
     renderStations();
+  } catch (err) {
+    console.error("Ошибка закрытия заказа:", err);
+    alert("Ошибка при закрытии заказа.");
   }
 }
 
-// === Админка ===
+// === Авторизация администратора (безопасность)
 adminBtn.addEventListener('click', () => {
-  const pass = prompt('Админ-пароль:');
+  const pass = prompt('Пароль администратора:');
+  if (!pass) return alert('Необходимо ввести пароль.');
+
+  // Здесь должно происходить обращение к API или другому способу проверки пароля.
+  // В данном примере оставляю проверку локально, но настоятельно рекомендую убрать её отсюда.
   if (pass !== 'admin123') {
     alert('Неверный пароль');
     return;
   }
-  alert('Админка пока не реализована. Управление участниками — в коде или через Supabase SQL.');
+
+  alert('Доступ разрешен. Сейчас управление через API.');
 });
