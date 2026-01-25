@@ -1,3 +1,16 @@
+/* === CSS переменные для тем === */
+:root {
+  --primary-color: #dc3545;
+  --primary-gradient: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  --primary-glow: rgba(220, 53, 69, 0.3);
+}
+
+.green-theme {
+  --primary-color: #28a745;
+  --primary-gradient: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  --primary-glow: rgba(40, 167, 69, 0.3);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -49,11 +62,11 @@ body {
 .auth-form input:focus,
 .auth-form button:focus {
   outline: none;
-  border-color: #dc3545;
+  border-color: var(--primary-color);
 }
 
 .auth-form button {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
   cursor: pointer;
   font-weight: 600;
@@ -100,12 +113,12 @@ body {
   font-weight: 600;
   position: relative;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4),
-              0 0 16px rgba(220, 53, 69, 0.3);
+              0 0 16px var(--primary-glow);
 }
 
-/* Администратор - красный */
+/* Администратор - красный/зелёный */
 .user-role.admin {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
 }
 
@@ -142,14 +155,14 @@ body {
   box-shadow: none !important;
 }
 
-/* Активный участок — красный текст */
+/* Активный участок — красный/зелёный текст */
 .sidebar li.active {
-  color: #dc3545;
+  color: var(--primary-color);
   font-weight: 600;
   background: transparent !important;
 }
 
-/* Красный маркер слева (только у активного) */
+/* Красный/зелёный маркер слева (только у активного) */
 .sidebar li::before {
   content: '';
   position: absolute;
@@ -157,7 +170,7 @@ body {
   top: 0;
   width: 3px;
   height: 100%;
-  background: #dc3545;
+  background: var(--primary-color);
   opacity: 0;
   transition: none;
 }
@@ -181,7 +194,7 @@ body {
 }
 
 #admin-controls button {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
   border: none;
   cursor: pointer;
@@ -281,12 +294,12 @@ body {
 
 .header input:focus {
   outline: none;
-  border-color: #dc3545;
+  border-color: var(--primary-color);
 }
 
-/* === Кнопка "добавить" — красная со свечением === */
+/* === Кнопка "добавить" — красная/зелёная со свечением === */
 .header button {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -295,13 +308,13 @@ body {
   padding: 8px 12px;
   font-size: 14px;
   height: auto;
-  border: none; /* Убираем любую окантовку */
+  border: none;
   border-radius: 6px;
   transition: none;
-  /* Мягкое бело-красное свечение */
+  /* Мягкое бело-цветное свечение */
   box-shadow: 
     0 0 8px rgba(255, 255, 255, 0.4),
-    0 0 16px rgba(220, 53, 69, 0.3);
+    0 0 16px var(--primary-glow);
 }
 
 .orders-wrapper {
@@ -374,7 +387,7 @@ body {
 }
 
 .toggle-switch.active {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
 }
 
 .toggle-switch .toggle-slider {
@@ -406,11 +419,11 @@ body {
 
 .move-select:focus {
   outline: none;
-  border-color: #dc3545;
+  border-color: var(--primary-color);
 }
 
 .right-controls button {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
   border: none;
   padding: 8px 10px;
@@ -486,7 +499,7 @@ body {
 }
 
 .position-btn.active {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
 }
 
@@ -501,13 +514,63 @@ body {
 }
 
 #create-order-ok {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--primary-gradient);
   color: white;
 }
 
 #create-order-cancel {
   background: #e9ecef;
   color: #495057;
+}
+
+/* === Кнопка настроек === */
+.settings-section {
+  position: relative;
+}
+
+.settings-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+}
+
+.settings-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: none;
+}
+
+/* === Меню тем === */
+.theme-menu {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  right: 0;
+  background: #343a40;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.theme-option {
+  padding: 10px 14px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: none;
+}
+
+.theme-option:hover {
+  background: rgba(255,255,255,0.1);
 }
 
 /* === Мобильная адаптация === */
@@ -587,7 +650,7 @@ body {
     /* Сохраняем свечение */
     box-shadow: 
       0 0 5px rgba(255, 255, 255, 0.3),
-      0 0 10px rgba(220, 53, 69, 0.25);
+      0 0 10px var(--primary-glow);
   }
 
   /* Скрываем название ZyNymbo на мобильных */
