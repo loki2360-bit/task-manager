@@ -283,44 +283,48 @@ async function renderOrders(ordersList) {
       }
     });
 
-    // Индикатор "принято" — тонкая зелёная линия
-    const acceptedIndicator = document.createElement('div');
-    acceptedIndicator.className = 'accepted-indicator';
-    acceptedIndicator.style.display = order.accepted ? 'block' : 'none';
+    // Кнопка "Принять"
+    const acceptBtn = document.createElement('button');
+    acceptBtn.className = 'accept-btn';
+    acceptBtn.textContent = 'Принять';
 
-    // Надпись "принято"
+    // Надпись "принято" (изначально скрыта)
     const acceptedStatus = document.createElement('span');
     acceptedStatus.className = 'accepted-status';
     acceptedStatus.textContent = 'принято';
-    acceptedStatus.style.display = order.accepted ? 'inline' : 'none';
+    acceptedStatus.style.display = 'none'; // Скрыта по умолчанию
 
-    // Обработчик клика по карточке — принять заказ
-    if (!order.accepted && currentUserRole !== 'admin') {
-      card.addEventListener('click', async (e) => {
-        // Не срабатывает, если клик по выпадающему списку или кнопкам
-        if (e.target.closest('.move-select') || e.target.closest('.status-buttons')) return;
-
-        try {
-          const { error } = await supabaseClient
-            .from('orders')
-            .update({ accepted: true })
-            .eq('id', order.id);
-
-          if (error) throw error;
-
-          // Показываем индикатор и надпись
-          acceptedIndicator.style.display = 'block';
-          acceptedStatus.style.display = 'inline';
-
-          // Убираем обработчик, чтобы нельзя было повторно нажать
-          card.removeEventListener('click', arguments.callee);
-
-        } catch (error) {
-          console.error('Ошибка принятия заказа:', error);
-          alert('Ошибка при принятии заказа.');
-        }
-      });
+    // Проверяем, был ли заказ принят
+    if (order.accepted) {
+      acceptBtn.classList.add('active');
+      acceptBtn.textContent = '';
+      acceptedStatus.style.display = 'inline';
+      acceptBtn.disabled = true;
+      acceptBtn.style.cursor = 'default';
     }
+
+    // Обработчик клика по кнопке "Принять"
+    acceptBtn.addEventListener('click', async () => {
+      try {
+        const { error } = await supabaseClient
+          .from('orders')
+          .update({ accepted: true })
+          .eq('id', order.id);
+
+        if (error) throw error;
+
+        // Меняем состояние кнопки
+        acceptBtn.classList.add('active');
+        acceptBtn.textContent = '';
+        acceptedStatus.style.display = 'inline';
+        acceptBtn.disabled = true;
+        acceptBtn.style.cursor = 'default';
+
+      } catch (error) {
+        console.error('Ошибка принятия заказа:', error);
+        alert('Ошибка при принятии заказа.');
+      }
+    });
 
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'Закрыть';
@@ -329,21 +333,12 @@ async function renderOrders(ordersList) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.className = 'status-buttons';
     buttonsDiv.appendChild(moveSelect);
+    buttonsDiv.appendChild(acceptBtn);
+    buttonsDiv.appendChild(acceptedStatus);
     buttonsDiv.appendChild(closeBtn);
 
-    // Собираем карточку
     card.appendChild(idContainer);
     card.appendChild(buttonsDiv);
-
-    // Контейнер для индикатора и надписи
-    const indicatorContainer = document.createElement('div');
-    indicatorContainer.style.marginTop = '8px';
-    indicatorContainer.style.display = 'flex';
-    indicatorContainer.style.alignItems = 'center';
-    indicatorContainer.appendChild(acceptedIndicator);
-    indicatorContainer.appendChild(acceptedStatus);
-
-    card.appendChild(indicatorContainer);
     ordersContainer.appendChild(card);
   });
 }
