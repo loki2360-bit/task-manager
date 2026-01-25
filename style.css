@@ -578,8 +578,8 @@ body {
 
   /* Выбор позиций — справа, фиксированная ширина */
   #position-filter {
-    min-width: 100px;
-    max-width: 120px;
+    min-width: 70px;
+    max-width: 90px;
   }
 
   /* === Уменьшенный логотип / название === */
