@@ -14,6 +14,7 @@ const PASSWORDS = {
 
 let currentUserRole = null;
 let currentStation = '';
+let currentPositionFilter = ''; // '' = все позиции
 
 // === DOM элементы ===
 const loginScreen = document.getElementById('login-screen');
@@ -25,9 +26,9 @@ const userRoleEl = document.getElementById('user-role');
 const logoutBtn = document.getElementById('logout-btn');
 const stationsList = document.getElementById('stations-list');
 const ordersContainer = document.getElementById('orders-container');
-const orderInput = document.getElementById('order-input');
 const addOrderBtn = document.getElementById('add-order');
 const searchInput = document.getElementById('search-input');
+const positionFilter = document.getElementById('position-filter');
 const adminControls = document.getElementById('admin-controls');
 const newStationInput = document.getElementById('new-station');
 const addStationBtn = document.getElementById('add-station');
@@ -126,6 +127,69 @@ loginPassword.addEventListener('keypress', (e) => {
   }
 });
 
+// === Открытие модального окна создания заказа ===
+addOrderBtn.addEventListener('click', () => {
+  document.getElementById('create-order-modal').style.display = 'flex';
+  document.getElementById('modal-order-id').value = '';
+  
+  // Сброс выбора позиции
+  document.querySelectorAll('.position-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+});
+
+// === Выбор позиции в модальном окне ===
+document.querySelectorAll('.position-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// === Создание заказа ===
+document.getElementById('create-order-ok').addEventListener('click', async () => {
+  const orderId = document.getElementById('modal-order-id').value.trim();
+  const selectedBtn = document.querySelector('.position-btn.active');
+  
+  if (!orderId) {
+    alert('Введите номер заказа');
+    return;
+  }
+  
+  if (!selectedBtn) {
+    alert('Выберите позицию');
+    return;
+  }
+  
+  const position = selectedBtn.dataset.value;
+  
+  try {
+    const stations = await loadStations();
+    if (stations.length === 0) return alert('Нет участков');
+
+    const { error } = await supabaseClient.from('orders').insert({
+      order_id: orderId,
+      station: stations[0],
+      position: position,
+      accept_status: {}
+    });
+
+    if (error) throw error;
+
+    document.getElementById('create-order-modal').style.display = 'none';
+    if (currentStation === stations[0]) loadOrders();
+    renderStations();
+  } catch (error) {
+    console.error('Ошибка добавления:', error);
+    alert(`Ошибка: ${error.message}`);
+  }
+});
+
+// === Закрытие модального окна ===
+document.getElementById('create-order-cancel').addEventListener('click', () => {
+  document.getElementById('create-order-modal').style.display = 'none';
+});
+
 // === Инициализация приложения ===
 async function initApp() {
   try {
@@ -188,7 +252,7 @@ async function renderStations() {
   }
 }
 
-// === Загрузка заказов ===
+// === Загрузка заказов с фильтрацией по позиции ===
 async function loadOrders(searchTerm = null) {
   try {
     let query = supabaseClient.from('orders').select('*');
@@ -197,6 +261,11 @@ async function loadOrders(searchTerm = null) {
       query = query.ilike('order_id', `%${searchTerm}%`);
     } else {
       query = query.eq('station', currentStation);
+      
+      // Фильтрация по позиции
+      if (currentPositionFilter) {
+        query = query.eq('position', currentPositionFilter);
+      }
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
@@ -224,7 +293,7 @@ async function renderOrders(ordersList) {
     const card = document.createElement('div');
     card.className = 'order-card';
 
-    // Контейнер для ID и возможного комментария
+    // Контейнер для ID и позиции
     const idContainer = document.createElement('div');
     idContainer.style.position = 'relative';
     idContainer.style.cursor = 'pointer';
@@ -233,6 +302,10 @@ async function renderOrders(ordersList) {
     const idDiv = document.createElement('div');
     idDiv.className = 'order-id';
     idDiv.textContent = `#${order.order_id}`;
+    
+    const positionDiv = document.createElement('div');
+    positionDiv.className = 'order-position';
+    positionDiv.textContent = order.position || 'Без позиции';
     
     idContainer.addEventListener('click', () => {
       if (order.comment) {
@@ -243,10 +316,10 @@ async function renderOrders(ordersList) {
     });
 
     idContainer.appendChild(idDiv);
+    idContainer.appendChild(positionDiv);
 
     // Проверяем, принят ли заказ на текущем участке
-    const currentStation = order.station;
-    const isAcceptedHere = order.accept_status?.[currentStation] === true;
+    const isAcceptedHere = order.accept_status?.[order.station] === true;
 
     // Переключатель "Принять"
     const acceptStatus = document.createElement('div');
@@ -258,19 +331,19 @@ async function renderOrders(ordersList) {
       </div>
     `;
 
-    // Если уже принят на этом участке — блокируем
+    // Если уже принят на этом участке — делаем неактивным
     if (isAcceptedHere) {
-      acceptStatus.querySelector('.toggle-switch').style.pointerEvents = 'none';
-      acceptStatus.querySelector('.toggle-slider').style.opacity = '0.8';
+      const toggle = acceptStatus.querySelector('.toggle-switch');
+      toggle.style.pointerEvents = 'none';
+      toggle.style.opacity = '0.7';
     } else {
-      // Разрешаем нажать только если НЕ принят
+      // Разрешаем нажать ТОЛЬКО если НЕ принят
       acceptStatus.querySelector('.toggle-switch').addEventListener('click', async () => {
         const orderId = acceptStatus.querySelector('.toggle-switch').dataset.id;
         
         try {
-          // Получаем текущий статус
           let newStatus = order.accept_status || {};
-          newStatus[currentStation] = true;
+          newStatus[order.station] = true;
 
           const { error } = await supabaseClient
             .from('orders')
@@ -279,14 +352,14 @@ async function renderOrders(ordersList) {
 
           if (error) throw error;
 
-          // Обновляем локально
           order.accept_status = newStatus;
-          acceptStatus.querySelector('.toggle-switch').classList.add('active');
-          acceptStatus.querySelector('.toggle-switch').style.pointerEvents = 'none';
-          acceptStatus.querySelector('.toggle-slider').style.opacity = '0.8';
+          const toggle = acceptStatus.querySelector('.toggle-switch');
+          toggle.classList.add('active');
+          toggle.style.pointerEvents = 'none';
+          toggle.style.opacity = '0.7';
         } catch (error) {
           console.error('Ошибка обновления статуса:', error);
-          alert('Ошибка при изменении статуса.');
+          alert('Не удалось сохранить статус.');
         }
       });
     }
@@ -440,40 +513,15 @@ function showCommentView(comment) {
   document.body.appendChild(modal);
 }
 
-// === Добавление заказа ===
-addOrderBtn.addEventListener('click', async () => {
-  const orderId = orderInput.value.trim();
-  
-  if (!orderId) return alert('Введите номер заказа');
-  
-  try {
-    const stations = await loadStations();
-    if (stations.length === 0) return alert('Нет участков');
-
-    const { error } = await supabaseClient.from('orders').insert({
-      order_id: orderId,
-      station: stations[0],
-      accept_status: {} // ← пустой объект для независимого статуса
-    });
-
-    if (error) {
-      console.error('Ошибка добавления:', error);
-      alert(`Ошибка: ${error.message}`);
-      return;
-    }
-
-    orderInput.value = '';
-    if (currentStation === stations[0]) loadOrders();
-    renderStations();
-  } catch (error) {
-    console.error('Неизвестная ошибка:', error);
-    alert('Неизвестная ошибка. Проверьте консоль.');
-  }
-});
-
 // === Поиск ===
 searchInput.addEventListener('input', (e) => {
   loadOrders(e.target.value.trim());
+});
+
+// === Фильтрация по позиции ===
+positionFilter.addEventListener('change', (e) => {
+  currentPositionFilter = e.target.value;
+  loadOrders();
 });
 
 // === Закрыть заказ ===
