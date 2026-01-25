@@ -199,6 +199,35 @@ body {
   box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
 }
 
+/* === Выбор эмодзи === */
+#emoji-selector {
+  margin-top: 16px;
+}
+
+.emoji-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.emoji-options span {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.emoji-options span:hover {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.1);
+}
+
 .main-content {
   flex: 1;
   display: flex;
@@ -321,7 +350,7 @@ body {
 
 .status-buttons {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 
@@ -363,45 +392,6 @@ body {
 .status-buttons button:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
-}
-
-/* === Индикатор "Принять" — минимальный, бирюзовый === */
-.accept-btn {
-  padding: 3px 6px;
-  background: linear-gradient(135deg, #adb5bd 0%, #999 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: auto;
-  height: 22px;
-  line-height: 1;
-  font-weight: normal;
-}
-
-.accept-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 1px 2px rgba(173, 181, 189, 0.4);
-}
-
-/* Кнопка после нажатия — бирюзовая с анимацией */
-.accept-btn.active {
-  background: linear-gradient(135deg, #21f1a8 0%, #0fd98c 100%);
-  color: #000;
-  font-weight: bold;
-  box-shadow: 0 0 8px rgba(33, 241, 168, 0.6);
-  animation: premiumGlow 2s ease-in-out infinite alternate;
-}
-
-/* Надпись "принято" — только после нажатия */
-.accepted-status {
-  display: inline-block;
-  margin-left: 4px;
-  font-size: 9px;
-  color: #6c757d;
-  line-height: 1;
 }
 
 /* === Модальное окно === */
