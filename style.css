@@ -537,6 +537,7 @@ body {
     border-radius: 8px;
     margin-bottom: 10px;
     min-height: auto;
+    flex-wrap: nowrap;
   }
 
   .header-left {
@@ -544,7 +545,8 @@ body {
     gap: 6px;
     align-items: center;
     flex-wrap: nowrap;
-    width: auto;
+    width: 100%;
+    min-width: 0;
   }
 
   /* Поля ввода и селекты */
@@ -553,18 +555,30 @@ body {
     height: auto;
     padding: 5px 8px;
     font-size: 12px;
-    min-width: auto;
     border-radius: 5px;
     flex: none;
+    min-width: 0;
   }
 
   /* Поиск — растягивается по центру */
   #search-input {
     flex: 1;
+    min-width: 60px;
+  }
+
+  /* Контейнер для селекта позиций */
+  .position-filter-wrapper {
+    flex: 0 0 auto;
+    max-width: 120px;
     min-width: 80px;
   }
 
-  /* Кнопка "добавить" — фиксированная ширина слева */
+  #position-filter {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Кнопка "добавить" — слева */
   #add-order {
     min-width: 70px;
     padding: 5px 8px;
@@ -576,15 +590,9 @@ body {
       0 0 10px rgba(220, 53, 69, 0.25);
   }
 
-  /* Выбор позиций — справа, фиксированная ширина */
-  #position-filter {
-    min-width: 70px;
-    max-width: 90px;
-  }
-
-  /* === Уменьшенный логотип / название === */
+  /* Скрываем название ZyNymbo на мобильных */
   .header-right {
-    display: none; /* Скрываем название ZyNymbo на мобильных */
+    display: none;
   }
 
   .order-card {
