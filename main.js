@@ -31,6 +31,8 @@ const searchInput = document.getElementById('search-input');
 const adminControls = document.getElementById('admin-controls');
 const newStationInput = document.getElementById('new-station');
 const addStationBtn = document.getElementById('add-station');
+const emojiSelector = document.getElementById('emoji-selector');
+const emojiOptions = document.querySelectorAll('.emoji-options span');
 
 // === Кэш участков ===
 let cachedStations = null;
@@ -38,6 +40,7 @@ let cachedStations = null;
 // === Выход из системы ===
 logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('userRole');
+  localStorage.removeItem('userEmoji');
   currentUserRole = null;
   app.style.display = 'none';
   loginScreen.style.display = 'flex';
@@ -57,17 +60,40 @@ function updateUserRoleDisplay() {
     case 'premium':
       roleText = 'Оператор';
       userRoleEl.classList.add('premium');
+      // Показываем выбор эмодзи для премиум-оператора
+      emojiSelector.style.display = 'block';
+      // Загружаем сохранённый эмодзи
+      const savedEmoji = localStorage.getItem('userEmoji');
+      if (savedEmoji) {
+        userRoleEl.innerHTML = `${savedEmoji} ${roleText}`;
+      }
       break;
     case 'operator':
     default:
       roleText = 'Оператор';
       userRoleEl.classList.add('operator');
+      emojiSelector.style.display = 'none';
       break;
   }
   
-  userRoleEl.textContent = roleText;
+  if (currentUserRole !== 'premium') {
+    userRoleEl.textContent = roleText;
+  }
+  
   adminControls.style.display = currentUserRole === 'admin' ? 'block' : 'none';
 }
+
+// === Выбор эмодзи ===
+emojiOptions.forEach(span => {
+  span.addEventListener('click', () => {
+    const emoji = span.getAttribute('data-emoji');
+    localStorage.setItem('userEmoji', emoji);
+    const roleText = 'Оператор';
+    userRoleEl.innerHTML = `${emoji} ${roleText}`;
+    // Скрываем панель выбора после выбора
+    emojiSelector.style.display = 'none';
+  });
+});
 
 // === Вход по паролю ===
 function handleLogin() {
@@ -185,6 +211,7 @@ async function loadOrders(searchTerm = null) {
     ordersContainer.innerHTML = '<p style="text-align:center; color:#dc3545;">Ошибка загрузки</p>';
   }
 }
+
 // === Отображение заказов ===
 async function renderOrders(ordersList) {
   ordersContainer.innerHTML = '';
@@ -261,10 +288,11 @@ async function renderOrders(ordersList) {
     acceptBtn.className = 'accept-btn';
     acceptBtn.textContent = 'Принять';
 
-    // Надпись "принято"
+    // Надпись "принято" (изначально скрыта)
     const acceptedStatus = document.createElement('span');
     acceptedStatus.className = 'accepted-status';
     acceptedStatus.textContent = 'принято';
+    acceptedStatus.style.display = 'none'; // Скрыта по умолчанию
 
     // Проверяем, был ли заказ принят
     if (order.accepted) {
@@ -530,6 +558,15 @@ function checkAutoLogin() {
   if (savedRole && (savedRole === 'operator' || savedRole === 'premium' || savedRole === 'admin')) {
     currentUserRole = savedRole;
     updateUserRoleDisplay();
+    
+    // Для премиум-оператора загружаем эмодзи
+    if (savedRole === 'premium') {
+      const savedEmoji = localStorage.getItem('userEmoji');
+      if (savedEmoji) {
+        const roleText = 'Оператор';
+        userRoleEl.innerHTML = `${savedEmoji} ${roleText}`;
+      }
+    }
     
     loginScreen.style.display = 'none';
     app.style.display = 'block';
