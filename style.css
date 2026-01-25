@@ -604,3 +604,48 @@ body {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
 }
+/* === Индикатор "Принять" === */
+.accept-btn {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #adb5bd 0%, #999 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 60px;
+}
+
+.accept-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(173, 181, 189, 0.5);
+}
+
+/* Кнопка после нажатия */
+.accept-btn.active {
+  background: linear-gradient(135deg, #21f1a8 0%, #0fd98c 100%);
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(33, 241, 168, 0.6);
+  animation: premiumGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes premiumGlow {
+  from {
+    box-shadow: 0 0 8px rgba(33, 241, 168, 0.5),
+                0 0 16px rgba(33, 241, 168, 0.3);
+  }
+  to {
+    box-shadow: 0 0 16px rgba(33, 241, 168, 0.8),
+                0 0 32px rgba(33, 241, 168, 0.5);
+  }
+}
+
+/* Надпись "принято" */
+.accepted-status {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 12px;
+  color: #6c757d;
+}
