@@ -57,12 +57,7 @@ body {
   color: white;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.auth-form button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  transition: none;
 }
 
 /* === Основной интерфейс === */
@@ -139,22 +134,33 @@ body {
   flex-grow: 1;
 }
 
+/* === Участки — без анимаций и фона === */
 .sidebar li {
   padding: 10px 14px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: 0;
+  transition: none;
   font-size: 14px;
   position: relative;
   overflow: hidden;
+  background: transparent !important;
 }
 
-.sidebar li:hover,
+/* Убираем hover-эффект полностью */
+.sidebar li:hover {
+  background: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Активный участок — красный текст */
 .sidebar li.active {
-  background: rgba(255,255,255,0.1);
+  color: #dc3545;
   font-weight: 600;
+  background: transparent !important;
 }
 
+/* Красный маркер слева (только у активного) */
 .sidebar li::before {
   content: '';
   position: absolute;
@@ -164,7 +170,7 @@ body {
   height: 100%;
   background: #dc3545;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: none;
 }
 
 .sidebar li.active::before {
@@ -191,12 +197,7 @@ body {
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-#admin-controls button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+  transition: none;
 }
 
 /* === Выбор эмодзи === */
@@ -219,13 +220,12 @@ body {
   border-radius: 50%;
   background: rgba(255,255,255,0.2);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 18px;
+  transition: none;
 }
 
 .emoji-options span:hover {
   background: rgba(255,255,255,0.3);
-  transform: scale(1.1);
+  transform: none;
 }
 
 .main-content {
@@ -280,7 +280,7 @@ body {
   border: 1px solid #ced4da;
   border-radius: 6px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: none;
   min-width: 100px;
 }
 
@@ -302,12 +302,7 @@ body {
   cursor: pointer;
   white-space: nowrap;
   min-width: 80px;
-  transition: all 0.2s ease;
-}
-
-.header button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+  transition: none;
 }
 
 .orders-wrapper {
@@ -333,13 +328,8 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
+  transition: none;
   border: 1px solid #e9ecef;
-}
-
-.order-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
 .order-id {
@@ -375,7 +365,7 @@ body {
   border-radius: 10px;
   position: relative;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
 }
 
 .toggle-switch.active {
@@ -390,7 +380,7 @@ body {
   position: absolute;
   top: 2px;
   left: 2px;
-  transition: all 0.2s ease;
+  transition: none;
 }
 
 .toggle-switch.active .toggle-slider {
@@ -414,10 +404,6 @@ body {
   border-color: #dc3545;
 }
 
-.move-select:hover {
-  border-color: #dc3545;
-}
-
 .right-controls button {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
@@ -427,13 +413,8 @@ body {
   font-size: 12px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: none;
   min-width: 80px;
-}
-
-.right-controls button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
 }
 
 /* === Модальное окно === */
@@ -487,7 +468,7 @@ body {
   font-size: 16px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: none;
 }
 
 .modal-content button:nth-child(2) {
@@ -498,11 +479,6 @@ body {
 .modal-content button:nth-child(3) {
   background: #e9ecef;
   color: #495057;
-}
-
-.modal-content button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 /* === Мобильная адаптация === */
