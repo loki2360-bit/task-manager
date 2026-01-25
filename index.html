@@ -41,28 +41,39 @@
             <span data-emoji="🚀">🚀</span>
           </div>
         </div>
+
+        <!-- Кнопка настроек -->
+        <div class="settings-section" style="margin-top: auto; padding-top: 16px;">
+          <button id="settings-btn" class="settings-btn">⚙️</button>
+          
+          <!-- Меню тем -->
+          <div id="theme-menu" class="theme-menu" style="display: none;">
+            <div class="theme-option" data-theme="red">🔴 Красная тема</div>
+            <div class="theme-option" data-theme="green">🟢 Зелёная тема</div>
+          </div>
+        </div>
       </aside>
 
       <main class="main-content">
         <div class="header">
           <div class="header-left">
-  <button id="add-order">добавить</button>
-  <input type="text" id="search-input" placeholder="поиск по №" />
-  <div class="position-filter-wrapper">
-    <select id="position-filter">
-      <option value="">Все</option>
-      <option value="внутренняя панель">Внутренняя панель</option>
-      <option value="наружная панель">Наружная панель</option>
-      <option value="наличники">Наличники</option>
-      <option value="откосы">Откосы</option>
-      <option value="фрамуга">Фрамуга</option>
-      <option value="импосты">Импосты</option>
-      <option value="полотна">Полотна</option>
-      <option value="коробки">Коробки</option>
-      <option value="фасады">Фасады</option>
-    </select>
-  </div>
-</div>
+            <button id="add-order">добавить</button>
+            <input type="text" id="search-input" placeholder="поиск по №" />
+            <div class="position-filter-wrapper">
+              <select id="position-filter">
+                <option value="">Все</option>
+                <option value="внутренняя панель">Внутренняя панель</option>
+                <option value="наружная панель">Наружная панель</option>
+                <option value="наличники">Наличники</option>
+                <option value="откосы">Откосы</option>
+                <option value="фрамуга">Фрамуга</option>
+                <option value="импосты">Импосты</option>
+                <option value="полотна">Полотна</option>
+                <option value="коробки">Коробки</option>
+                <option value="фасады">Фасады</option>
+              </select>
+            </div>
+          </div>
           <div class="header-right">
             <div class="app-title">ZyNymbo</div>
           </div>
