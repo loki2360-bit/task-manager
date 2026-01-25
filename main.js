@@ -60,9 +60,7 @@ function updateUserRoleDisplay() {
     case 'premium':
       roleText = 'Оператор';
       userRoleEl.classList.add('premium');
-      // Показываем выбор эмодзи для премиум-оператора
       emojiSelector.style.display = 'block';
-      // Загружаем сохранённый эмодзи
       const savedEmoji = localStorage.getItem('userEmoji');
       if (savedEmoji) {
         userRoleEl.innerHTML = `${savedEmoji} ${roleText}`;
@@ -90,7 +88,6 @@ emojiOptions.forEach(span => {
     localStorage.setItem('userEmoji', emoji);
     const roleText = 'Оператор';
     userRoleEl.innerHTML = `${emoji} ${roleText}`;
-    // Скрываем панель выбора после выбора
     emojiSelector.style.display = 'none';
   });
 });
@@ -227,7 +224,6 @@ async function renderOrders(ordersList) {
     const card = document.createElement('div');
     card.className = 'order-card';
 
-    // Контейнер для ID и возможного комментария
     const idContainer = document.createElement('div');
     idContainer.style.position = 'relative';
     idContainer.style.cursor = 'pointer';
@@ -237,20 +233,16 @@ async function renderOrders(ordersList) {
     idDiv.className = 'order-id';
     idDiv.textContent = `#${order.order_id}`;
     
-    // Обработчик клика по номеру заказа
     idContainer.addEventListener('click', () => {
       if (order.comment) {
-        // Показать существующий комментарий
         showCommentView(order.comment);
       } else {
-        // Добавить новый комментарий
         showCommentDialog(order.id);
       }
     });
 
     idContainer.appendChild(idDiv);
 
-    // Выпадающий список для перемещения
     const moveSelect = document.createElement('select');
     moveSelect.className = 'move-select';
     
@@ -283,49 +275,6 @@ async function renderOrders(ordersList) {
       }
     });
 
-    // Кнопка "Принять"
-    const acceptBtn = document.createElement('button');
-    acceptBtn.className = 'accept-btn';
-    acceptBtn.textContent = 'Принять';
-
-    // Надпись "принято" (изначально скрыта)
-    const acceptedStatus = document.createElement('span');
-    acceptedStatus.className = 'accepted-status';
-    acceptedStatus.textContent = 'принято';
-    acceptedStatus.style.display = 'none'; // Скрыта по умолчанию
-
-    // Проверяем, был ли заказ принят
-    if (order.accepted) {
-      acceptBtn.classList.add('active');
-      acceptBtn.textContent = '';
-      acceptedStatus.style.display = 'inline';
-      acceptBtn.disabled = true;
-      acceptBtn.style.cursor = 'default';
-    }
-
-    // Обработчик клика по кнопке "Принять"
-    acceptBtn.addEventListener('click', async () => {
-      try {
-        const { error } = await supabaseClient
-          .from('orders')
-          .update({ accepted: true })
-          .eq('id', order.id);
-
-        if (error) throw error;
-
-        // Меняем состояние кнопки
-        acceptBtn.classList.add('active');
-        acceptBtn.textContent = '';
-        acceptedStatus.style.display = 'inline';
-        acceptBtn.disabled = true;
-        acceptBtn.style.cursor = 'default';
-
-      } catch (error) {
-        console.error('Ошибка принятия заказа:', error);
-        alert('Ошибка при принятии заказа.');
-      }
-    });
-
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'Закрыть';
     closeBtn.addEventListener('click', () => closeOrder(order.id));
@@ -333,8 +282,6 @@ async function renderOrders(ordersList) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.className = 'status-buttons';
     buttonsDiv.appendChild(moveSelect);
-    buttonsDiv.appendChild(acceptBtn);
-    buttonsDiv.appendChild(acceptedStatus);
     buttonsDiv.appendChild(closeBtn);
 
     card.appendChild(idContainer);
@@ -411,9 +358,7 @@ function showCommentView(comment) {
 
   const commentText = document.createElement('div');
   
-  // Проверяем роль пользователя
   if (currentUserRole === 'admin' || currentUserRole === 'premium') {
-    // Полный доступ
     commentText.textContent = comment;
     commentText.style.fontSize = '14px';
     commentText.style.lineHeight = '1.5';
@@ -422,7 +367,6 @@ function showCommentView(comment) {
     commentText.style.borderRadius = '8px';
     commentText.style.border = '1px solid #e9ecef';
   } else {
-    // Ограниченный доступ для обычного оператора
     commentText.innerHTML = `
       <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
         <div style="font-size: 16px; font-weight: bold; color: #dc3545; margin-bottom: 10px;">🔒 Доступ ограничен</div>
@@ -515,7 +459,7 @@ addStationBtn.addEventListener('click', async () => {
     if (error) throw error;
     
     newStationInput.value = '';
-    cachedStations = null; // Сбрасываем кэш
+    cachedStations = null;
     renderStations();
   } catch (error) {
     console.error('Ошибка добавления участка:', error);
@@ -542,7 +486,7 @@ stationsList.addEventListener('contextmenu', async (e) => {
       
       if (error) throw error;
       
-      cachedStations = null; // Сбрасываем кэш
+      cachedStations = null;
       renderStations();
     } catch (error) {
       console.error('Ошибка удаления участка:', error);
@@ -559,7 +503,6 @@ function checkAutoLogin() {
     currentUserRole = savedRole;
     updateUserRoleDisplay();
     
-    // Для премиум-оператора загружаем эмодзи
     if (savedRole === 'premium') {
       const savedEmoji = localStorage.getItem('userEmoji');
       if (savedEmoji) {
