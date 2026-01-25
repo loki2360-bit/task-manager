@@ -86,7 +86,6 @@ body {
 
 .user-role {
   padding: 6px 10px;
-  background: rgba(255,255,255,0.1);
   border-radius: 6px;
   text-align: center;
   font-size: 13px;
@@ -564,4 +563,31 @@ body {
     padding: 10px;
     font-size: 14px;
   }
+}
+/* === Стили для ролей === */
+.user-role {
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Обычный оператор - серый */
+.user-role.operator {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* Премиум оператор - золотой */
+.user-role.premium {
+  background: linear-gradient(135deg, #ffd700 0%, #ff9800 100%);
+  color: #333;
+  font-weight: bold;
+}
+
+/* Администратор - красный */
+.user-role.admin {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
 }
