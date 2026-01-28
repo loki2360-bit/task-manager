@@ -1,23 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Оператор</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет оператора</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Личный кабинет оператора</h1>
-    <input id="search-input" placeholder="Поиск">
+
+    <input type="text" id="search-input" placeholder="Поиск по номеру заказа" />
+
     <div class="form">
-      <input id="order-number" placeholder="Номер">
-      <select id="item-type">...</select>
-      <select id="workstation">...</select>
+      <input type="text" id="order-number" placeholder="Номер заказа" />
+      <select id="item-type">
+        <option value="наружняя панель">наружняя панель</option>
+        <option value="внутренняя панель">внутренняя панель</option>
+        <option value="откосы">откосы</option>
+        <option value="наличники">наличники</option>
+        <option value="внутренние наличники">внутренние наличники</option>
+        <option value="импасы">импасы</option>
+        <option value="фрумуги">фрумуги</option>
+        <option value="упаковка">упаковка</option>
+      </select>
+      <select id="workstation">
+        <option value="распил">распил</option>
+        <option value="чпу">чпу</option>
+        <option value="фанеровка">фанеровка</option>
+        <option value="шлифовка">шлифовка</option>
+        <option value="сборка">сборка</option>
+        <option value="покраска">покраска</option>
+        <option value="пвх">пвх</option>
+        <option value="упаковка">упаковка</option>
+      </select>
       <button id="create-btn">+</button>
     </div>
+
     <div id="items-list"></div>
   </div>
 
-  <!-- ВАЖНО: НИКАКИХ ДРУГИХ СКРИПТОВ ДО ЭТОГО -->
+  <!-- 🔑 ОБЯЗАТЕЛЬНО В ЭТОМ ПОРЯДКЕ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.40.0/dist/umd/supabase.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
