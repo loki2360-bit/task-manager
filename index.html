@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Личный кабинет оператора</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Личный кабинет оператора</h1>
-
-    <input type="text" id="search-input" placeholder="Поиск по номеру заказа" />
-
+    <input id="search-input" placeholder="Поиск по номеру заказа">
     <div class="form">
-      <input type="text" id="order-number" placeholder="Номер заказа" />
+      <input id="order-number" placeholder="Номер заказа">
       <select id="item-type">
         <option value="наружняя панель">наружняя панель</option>
         <option value="внутренняя панель">внутренняя панель</option>
@@ -36,11 +33,11 @@
       </select>
       <button id="create-btn">+</button>
     </div>
-
     <div id="items-list"></div>
   </div>
 
-  <!-- 🔑 КРИТИЧЕСКИ ВАЖНО: ТОЛЬКО ЭТИ ДВЕ СТРОКИ, В ТАКОМ ПОРЯДКЕ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.41.1/umd/supabase.min.js"></script>
+  <!-- 🔑 ТОЛЬКО ЭТИ ДВЕ СТРОКИ -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2.41.1/dist/umd/supabase.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
