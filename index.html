@@ -15,7 +15,10 @@
     <input type="text" id="search-input" placeholder="Поиск по номеру заказа" />
 
     <div class="form">
+      <label for="order-number">Номер заказа:</label>
       <input type="text" id="order-number" placeholder="Номер заказа" />
+
+      <label for="item-type">Тип изделия:</label>
       <select id="item-type">
         <option value="наружняя панель">наружняя панель</option>
         <option value="внутренняя панель">внутренняя панель</option>
@@ -26,6 +29,8 @@
         <option value="фрумуги">фрумуги</option>
         <option value="упаковка">упаковка</option>
       </select>
+
+      <label for="workstation">Рабочая станция:</label>
       <select id="workstation">
         <option value="распил">распил</option>
         <option value="чпу">чпу</option>
@@ -36,14 +41,15 @@
         <option value="пвх">пвх</option>
         <option value="упаковка">упаковка</option>
       </select>
-      <button id="create-btn">+</button>
+
+      <button id="create-btn" aria-label="Добавить заказ">+</button>
     </div>
 
     <div id="items-list"></div>
   </div>
 
-  <!-- Supabase SDK — стабильная версия через jsDelivr -->
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.41.1/dist/umd/supabase.min.js?module"></script>
-  <script src="script.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
