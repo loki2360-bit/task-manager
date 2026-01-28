@@ -1,5 +1,5 @@
-// === НАСТРОЙКИ ===
-const ADMIN_PASSWORD = 'admin'; // ← замените на ваш пароль
+// === КОНФИГУРАЦИЯ ===
+const ADMIN_PASSWORD = '12345'; // ← замените на ваш пароль
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 
@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', renderOrders);
 });
 
-// === АВТОРИЗАЦИЯ ===
 function showLogin() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
@@ -48,8 +47,6 @@ function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('user-role').textContent = currentUser.role;
-  document.getElementById('admin-controls').style.display = 
-    currentUser.role === 'admin' ? 'block' : 'none';
   
   renderStations();
   renderOrders();
@@ -76,13 +73,11 @@ function logout() {
   showLogin();
 }
 
-// === УЧАСТКИ ===
 function renderStations() {
   const list = document.getElementById('stations-list');
   list.innerHTML = WORKSTATIONS.map(ws => `<li>${ws}</li>`).join('');
 }
 
-// === ДОБАВЛЕНИЕ ЗАКАЗА ===
 function addOrder() {
   const orderNum = document.getElementById('order-input').value.trim();
   if (!orderNum) return alert('Введите номер заказа');
@@ -115,7 +110,6 @@ async function createItem(orderNumber, itemType) {
   }
 }
 
-// === ОТОБРАЖЕНИЕ ЗАКАЗОВ ===
 async function renderOrders() {
   try {
     const term = document.getElementById('search-input').value.toLowerCase().trim();
@@ -163,7 +157,6 @@ async function renderOrders() {
       container.appendChild(groupEl);
     }
 
-    // Обработчик перемещения
     document.querySelectorAll('.workstation-select').forEach(sel => {
       sel.addEventListener('change', async (e) => {
         const id = e.target.dataset.id;
