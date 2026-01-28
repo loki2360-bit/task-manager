@@ -1,7 +1,7 @@
 // === Настройки Supabase ===
 // ⚠️ ЗАМЕНИТЕ НА ВАШИ КЛЮЧИ ИЗ SUPABASE
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
-const SUPABASE_ANON_KEY = 'ваш-anon-key';
+const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // === DOM-элементы ===
