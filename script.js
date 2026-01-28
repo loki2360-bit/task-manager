@@ -1,6 +1,6 @@
 // === Настройки Supabase ===
 // ⚠️ ЗАМЕНИТЕ НА ВАШИ КЛЮЧИ ИЗ SUPABASE
-const SUPABASE_URL = 'https://ваш-проект.supabase.co';
+const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
 const SUPABASE_ANON_KEY = 'ваш-anon-key';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
