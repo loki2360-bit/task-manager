@@ -1,10 +1,8 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // Проверка: если Supabase не загружен — показать ошибку
+document.addEventListener('DOMContentLoaded', () => {
+  // --- ПРОВЕРКА ЗАГРУЗКИ ---
   if (typeof createClient !== 'function') {
-    console.error('❌ Supabase SDK не загружен! Проверьте index.html');
-    document.getElementById('create-btn')?.addEventListener('click', () => {
-      alert('Ошибка: Supabase не подключён. Обратитесь к разработчику.');
-    });
+    console.error('❌ Supabase SDK не загружен! Проверьте index.html.');
+    alert('Ошибка: Supabase не подключён. Обратитесь к разработчику.');
     return;
   }
 
@@ -19,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const orderInput = document.getElementById('order-number');
   const typeSelect = document.getElementById('item-type');
   const wsSelect = document.getElementById('workstation');
-  const searchInput = document.getElementById('search-input');
 
   async function loadItems() {
     try {
@@ -34,10 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
       itemsList.innerHTML = data.length
         ? data.map(item => `
             <div class="item-row">
-              <div>
-                <strong>${item.order_number}</strong>
-                <div class="item-type">${item.item_type}</div>
-              </div>
+              <div><strong>${item.order_number}</strong> • ${item.item_type}</div>
               <select onchange="moveItem('${item.id}', this.value)">
                 ${['распил','чпу','фанеровка','шлифовка','сборка','покраска','пвх','упаковка']
                   .map(ws => `<option value="${ws}" ${ws === item.current_workstation ? 'selected' : ''}>${ws}</option>`)
@@ -47,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
           `).join('')
         : '<p>Нет записей</p>';
     } catch (err) {
-      console.error('Загрузка данных:', err);
-      itemsList.innerHTML = `<p style="color:red;">Ошибка: ${err.message || 'неизвестно'}</p>`;
+      console.error('Загрузка:', err);
+      itemsList.innerHTML = `<p style="color:red;">Ошибка: ${err.message}</p>`;
     }
   }
 
@@ -91,8 +85,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  searchInput.addEventListener('input', loadItems);
-
-  // Запуск
   loadItems();
 });
