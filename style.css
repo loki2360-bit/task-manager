@@ -1,4 +1,3 @@
-/* Общие стили */
 * {
   margin: 0;
   padding: 0;
@@ -67,7 +66,6 @@ body {
   min-height: 100vh;
 }
 
-/* Сайдбар */
 .sidebar {
   width: 220px;
   background: #2c3e50;
@@ -92,6 +90,7 @@ body {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 8px;
+  align-self: flex-start;
 }
 
 .sidebar h2 {
@@ -116,7 +115,6 @@ body {
   border-bottom: none;
 }
 
-/* Основной контент */
 .main-content {
   flex: 1;
   padding: 16px;
@@ -176,7 +174,6 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Группы заказов */
 .order-group {
   background: #fff9f9;
   border-radius: 8px;
@@ -208,7 +205,6 @@ body {
   cursor: pointer;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
