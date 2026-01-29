@@ -1,8 +1,6 @@
 // === НАСТРОЙКИ ===
 const ADMIN_PASSWORD = 'admin'; // ← замените на ваш пароль
 const SUPABASE_URL = 'https://zitdekerfjocbulmfuyo.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_41ROEqZ74QbA4B6_JASt4w_DeRDGXWR';
-
 let supabase;
 let currentUser = null;
 
@@ -16,33 +14,33 @@ const WORKSTATIONS = [
   'сборка', 'покраска', 'пвх', 'упаковка'
 ];
 
-// === ИНИЦИАЛИЗАЦИЯ ===
-window.addEventListener('load', async () => {
-  // Проверка Supabase
-  if (typeof createClient !== 'function') {
-    alert('❌ Supabase не загружен. Проверьте подключение в index.html.');
+// === АВТОРИЗАЦИЯ (работает сразу!) ===
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const pwd = document.getElementById('login-password').value.trim();
+  const err = document.getElementById('login-error');
+  
+  if (!pwd) {
+    err.style.display = 'block';
+    err.textContent = 'Введите пароль';
     return;
   }
 
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // Восстановление сессии
-  const saved = localStorage.getItem('user');
-  if (saved) {
-    currentUser = JSON.parse(saved);
-    showApp();
-  } else {
-    showLogin();
+  // Инициализация Supabase при первом входе
+  if (!supabase) {
+    if (typeof createClient !== 'function') {
+      alert('❌ Supabase не загружен. Проверьте index.html.');
+      return;
+    }
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 
-  // Обработчики
-  document.getElementById('login-btn').addEventListener('click', login);
-  document.getElementById('logout-btn').addEventListener('click', logout);
-  document.getElementById('add-order').addEventListener('click', addOrder);
-  document.getElementById('search-input').addEventListener('input', renderOrders);
+  currentUser = { role: pwd === ADMIN_PASSWORD ? 'admin' : 'operator' };
+  localStorage.setItem('user', JSON.stringify(currentUser));
+  
+  showApp();
 });
 
-// === АВТОРИЗАЦИЯ ===
+// === ОСНОВНАЯ ЛОГИКА ===
 function showLogin() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
@@ -54,21 +52,11 @@ function showApp() {
   document.getElementById('user-role').textContent = currentUser.role;
   renderStations();
   renderOrders();
-}
-
-async function login() {
-  const pwd = document.getElementById('login-password').value.trim();
-  const err = document.getElementById('login-error');
   
-  if (!pwd) {
-    err.style.display = 'block';
-    err.textContent = 'Введите пароль';
-    return;
-  }
-
-  currentUser = { role: pwd === ADMIN_PASSWORD ? 'admin' : 'operator' };
-  localStorage.setItem('user', JSON.stringify(currentUser));
-  showApp();
+  // Назначаем остальные обработчики
+  document.getElementById('logout-btn').onclick = logout;
+  document.getElementById('add-order').onclick = addOrder;
+  document.getElementById('search-input').oninput = renderOrders;
 }
 
 function logout() {
@@ -77,13 +65,11 @@ function logout() {
   showLogin();
 }
 
-// === УЧАСТКИ ===
 function renderStations() {
   const list = document.getElementById('stations-list');
   list.innerHTML = WORKSTATIONS.map(ws => `<li>${ws}</li>`).join('');
 }
 
-// === ДОБАВЛЕНИЕ ЗАКАЗА ===
 function addOrder() {
   const orderNum = document.getElementById('order-input').value.trim();
   if (!orderNum) return alert('Введите номер заказа');
@@ -116,7 +102,6 @@ async function createItem(orderNumber, itemType) {
   }
 }
 
-// === ОТОБРАЖЕНИЕ ЗАКАЗОВ ===
 async function renderOrders() {
   try {
     const term = document.getElementById('search-input').value.toLowerCase().trim();
@@ -164,9 +149,8 @@ async function renderOrders() {
       container.appendChild(groupEl);
     }
 
-    // Обработчик перемещения
     document.querySelectorAll('.workstation-select').forEach(sel => {
-      sel.addEventListener('change', async (e) => {
+      sel.onchange = async (e) => {
         const id = e.target.dataset.id;
         const ws = e.target.value;
         await supabase
@@ -174,9 +158,17 @@ async function renderOrders() {
           .update({ current_workstation: ws })
           .eq('id', id);
         renderOrders();
-      });
+      };
     });
   } catch (err) {
     console.error('Рендер:', err);
   }
+}
+
+// === ВОССТАНОВЛЕНИЕ СЕССИИ ===
+if (localStorage.getItem('user')) {
+  currentUser = JSON.parse(localStorage.getItem('user'));
+  showApp();
+} else {
+  showLogin();
 }
