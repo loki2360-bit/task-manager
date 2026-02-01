@@ -12,6 +12,7 @@
   <div class="container">
     <h1>🛠️ Avito Seller Assistant</h1>
 
+    <!-- Добавление конкурента -->
     <section class="form-section">
       <h2>➕ Добавить конкурента</h2>
       <form id="competitorForm">
@@ -23,18 +24,33 @@
         <input type="text" id="deviceType" placeholder="Тип устройства (например: iPhone 13)" required />
         <input type="url" id="avitoUrl" placeholder="Ссылка на объявление Avito (опц.)" />
         <input type="text" id="title" placeholder="Краткое описание" required />
-        <input type="number" id="price" placeholder="Цена (₽)" required />
+        <input type="number" id="price" placeholder="Цена (₽)" required min="0" />
         <input type="text" id="city" placeholder="Город или район" />
         <textarea id="notes" placeholder="Заметки: отзывы, гарантия, скорость..."></textarea>
         <button type="submit">Сохранить</button>
       </form>
     </section>
 
+    <!-- Шаблоны -->
+    <section class="templates-section">
+      <h2>📝 Мои шаблоны описаний</h2>
+      <div id="templatesList"></div>
+      <form id="templateForm" style="margin-top: 12px;">
+        <input type="text" id="templateTitle" placeholder="Название шаблона (например: iPhone экран)" required />
+        <textarea id="templateText" placeholder="Текст описания..." required></textarea>
+        <button type="submit">Добавить шаблон</button>
+      </form>
+    </section>
+
+    <!-- Список конкурентов -->
     <section class="list-section">
       <div class="controls">
         <h2>📋 Мои конкуренты (<span id="count">0</span>)</h2>
-        <button id="exportBtn">📥 Экспорт CSV</button>
-        <button id="clearBtn" style="margin-left: 10px; background: #e74c3c;">🗑️ Очистить</button>
+        <div>
+          <button id="exportBtn">📥 Экспорт CSV</button>
+          <button id="copyTableBtn">📋 Копировать таблицу</button>
+          <button id="clearBtn" style="margin-left: 10px; background: #e74c3c;">🗑️ Очистить</button>
+        </div>
       </div>
       <div id="competitorsList"></div>
     </section>
