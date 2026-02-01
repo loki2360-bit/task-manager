@@ -93,3 +93,14 @@ h2 {
   font-style: italic;
   color: #666;
 }
+.filter-section {
+  margin-bottom: 16px;
+}
+
+.filter-section select,
+.filter-section input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
