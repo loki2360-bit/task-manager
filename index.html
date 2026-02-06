@@ -532,11 +532,11 @@
           <i class="fas fa-save"></i> Сохранить предзаказ
         </button>
         <button class="btn-outline" onclick="document.getElementById('jsonImportInput').click()">
-          <i class="fas fa-upload"></i> Загрузить JSON
+          <i class="fas fa-upload"></i> Загрузить TXT/JSON
         </button>
       </div>
 
-      <input type="file" id="jsonImportInput" accept=".json" style="display: none;" />
+      <input type="file" id="jsonImportInput" accept=".txt,.json" style="display: none;" />
 
       <div class="preorders-label">Список предзаказов</div>
       <div id="preordersList"></div>
@@ -1367,6 +1367,7 @@
     URL.revokeObjectURL(url);
   }
 
+  // === УНИВЕРСАЛЬНЫЙ ИМПОРТ TXT/JSON ===
   document.getElementById('jsonImportInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -1374,15 +1375,28 @@
     const reader = new FileReader();
     reader.onload = function(event) {
       try {
-        const imported = JSON.parse(event.target.result);
+        const content = event.target.result;
+        let importedOrders = [];
 
-        if (!Array.isArray(imported)) {
-          alert('Файл должен содержать массив заказов!');
+        // Определяем формат файла по содержимому
+        if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
+          // Это JSON
+          importedOrders = JSON.parse(content);
+          if (!Array.isArray(importedOrders)) {
+            importedOrders = [importedOrders]; // Оборачиваем в массив если один объект
+          }
+        } else {
+          // Это TXT - парсим вручную
+          importedOrders = parseTxtOrders(content);
+        }
+
+        if (importedOrders.length === 0) {
+          alert('Не удалось найти заказы в файле!');
           return;
         }
 
         const preorders = loadPreorders();
-        const newPreorders = imported.map(item => ({
+        const newPreorders = importedOrders.map(item => ({
           id: Date.now() + Math.random(),
           orderNumber: item.orderNumber || 'ИМП-' + (preorders.length + 1),
           tariff: item.tariff || 'RASPIL_M2',
@@ -1409,11 +1423,107 @@
 
       } catch (err) {
         console.error(err);
-        alert('Ошибка при чтении JSON:\n' + err.message);
+        alert('Ошибка при чтении файла:\n' + err.message);
       }
     };
-    reader.readAsText(file);
+    
+    // Читаем как текст (не как JSON!)
+    reader.readAsText(file, 'utf-8');
   });
+
+  // НОВАЯ ФУНКЦИЯ: Парсинг TXT-файла с заказами
+  function parseTxtOrders(txtContent) {
+    const orders = [];
+    const blocks = txtContent.split('---\n');
+    
+    for (const block of blocks) {
+      const lines = block.trim().split('\n').filter(line => line.trim() !== '');
+      if (lines.length < 3) continue; // Слишком короткий блок
+      
+      const order = {
+        orderNumber: '',
+        detail: '',
+        tariff: '',
+        qty: 1,
+        length: null,
+        width: null,
+        hours: null,
+        amount: 0
+      };
+      
+      let currentDetail = '';
+      let currentTariff = '';
+      
+      for (const line of lines) {
+        const cleanLine = line.trim();
+        
+        // № заказа (например: "№1. ORD-123" или просто "ORD-123")
+        if (cleanLine.startsWith('№') && cleanLine.includes('.')) {
+          const match = cleanLine.match(/№\d+\.\s*(.+)/);
+          if (match) order.orderNumber = match[1].trim();
+        } else if (/^[A-Z0-9]/.test(cleanLine) && !cleanLine.includes(':') && !cleanLine.includes('Сумма') && !cleanLine.includes('ИТОГО')) {
+          // Предполагаем, что это номер заказа (если нет префикса №)
+          if (!order.orderNumber && cleanLine.length > 2) {
+            order.orderNumber = cleanLine;
+          }
+        }
+        
+        // Деталь и тариф (строка типа: "   Деталь (Тариф)")
+        if (cleanLine.includes('(') && cleanLine.includes(')') && !cleanLine.includes('Сумма')) {
+          const match = cleanLine.match(/(.+)\s*\((.+)\)/);
+          if (match) {
+            currentDetail = match[1].trim();
+            currentTariff = match[2].trim();
+          }
+        }
+        
+        // Параметры
+        if (cleanLine.startsWith('Длина:')) {
+          const match = cleanLine.match(/Длина:\s*([\d.]+)\s*м/);
+          if (match) order.length = parseFloat(match[1]);
+        }
+        if (cleanLine.startsWith('Ширина:')) {
+          const match = cleanLine.match(/Ширина:\s*([\d.]+)\s*м/);
+          if (match) order.width = parseFloat(match[1]);
+        }
+        if (cleanLine.startsWith('Часы:')) {
+          const match = cleanLine.match(/Часы:\s*([\d.]+)\s*ч/);
+          if (match) order.hours = parseFloat(match[1]);
+        }
+        if (cleanLine.startsWith('Кол-во:')) {
+          const match = cleanLine.match(/Кол-во:\s*(\d+)/);
+          if (match) order.qty = parseInt(match[1]);
+        }
+        if (cleanLine.startsWith('Сумма:')) {
+          const match = cleanLine.match(/Сумма:\s*([\d.]+)\s*₽/);
+          if (match) order.amount = parseFloat(match[1]);
+        }
+      }
+      
+      // Определяем тариф по названию
+      if (currentTariff) {
+        const tariffMap = {
+          'Распил': 'RASPIL_M2',
+          'Лин. распил': 'LINEAR_RASPIL',
+          'Склейка +': 'SKLEIKA_OB',
+          'Склейка –': 'SKLEIKA_NO_OB',
+          'Пазы': 'PAZY',
+          'Фаска': 'FREZER_FASKA',
+          'Время': 'TIME'
+        };
+        order.tariff = tariffMap[currentTariff] || 'RASPIL_M2';
+      }
+      
+      order.detail = currentDetail || '—';
+      
+      // Добавляем заказ только если есть номер
+      if (order.orderNumber) {
+        orders.push(order);
+      }
+    }
+    
+    return orders;
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('viewDate').value = todayYMD();
