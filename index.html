@@ -13,7 +13,7 @@
     }
     .container { max-width: 600px; margin: 0 auto; }
     h2 { margin: 20px 0 12px; }
-    input, button {
+    input, button, select {
       width: 100%;
       padding: 12px;
       margin: 8px 0;
@@ -28,19 +28,21 @@
       cursor: pointer;
     }
     button:hover { opacity: 0.9; }
-    button.export-btn {
-      background: #9c27b0;
-      font-size: 14px;
-      padding: 8px;
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
-    button.send-btn, button.print-btn, button.reset-btn {
+    .settings-grid input, .settings-grid label {
+      width: 100%;
+      margin: 0;
       font-size: 14px;
-      padding: 8px;
-      margin-top: 10px;
     }
+    button.export-btn { background: #9c27b0; font-size: 14px; padding: 8px; }
     button.send-btn { background: #0088cc; }
     button.print-btn { background: #4CAF50; }
     button.reset-btn { background: #f44336; }
+    button.settings-btn { background: #607D8B; }
     .section { background: white; padding: 16px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .hidden { display: none !important; }
     .promo-alert {
@@ -67,7 +69,6 @@
     }
     .footer-note { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }
 
-    /* Стили для печати */
     @media print {
       body { background: white; padding: 0; }
       .container { max-width: 100%; margin: 0; }
@@ -88,11 +89,35 @@
   <div class="container">
     <h1>🎟️ Система лояльности</h1>
 
+    <!-- НАСТРОЙКИ -->
+    <div class="section no-print">
+      <h2>⚙️ Настройки</h2>
+      <p>Баллы за операцию:</p>
+      <input type="number" id="points-per-op" min="1" max="100" value="5" />
+
+      <p>Уровни скидок:</p>
+      <div class="settings-grid">
+        <div>
+          <label>15 баллов →</label>
+          <input type="number" id="disc1" min="0" max="100" value="5" placeholder="%"/>%
+        </div>
+        <div>
+          <label>25 баллов →</label>
+          <input type="number" id="disc2" min="0" max="100" value="20" placeholder="%"/>%
+        </div>
+        <div>
+          <label>30 баллов →</label>
+          <input type="number" id="disc3" min="0" max="100" value="30" placeholder="%"/>%
+        </div>
+      </div>
+      <button class="settings-btn" onclick="saveSettings()">💾 Сохранить настройки</button>
+    </div>
+
     <!-- НОВЫЙ КЛИЕНТ -->
     <div class="section">
       <h2>➕ Новая карта</h2>
       <input type="text" id="contact-link" placeholder="Telegram (@user) или VK (https://vk.com/user)" />
-      <button onclick="generateNewUser()">Выдать карту с 5 баллами</button>
+      <button onclick="generateNewUser()">Выдать карту</button>
       <div id="new-qr-display" class="hidden">
         <div class="pin-display">PIN: <span id="new-pin"></span></div>
         <h3>QR для клиента:</h3>
@@ -104,10 +129,10 @@
 
     <!-- НАЧИСЛЕНИЕ БАЛЛОВ -->
     <div class="section">
-      <h2>🔄 Начислить 5 баллов</h2>
+      <h2>🔄 Начислить баллы</h2>
       <p>Введите 5-значный PIN клиента:</p>
       <input type="text" id="input-pin" placeholder="Например: 48291" maxlength="5" />
-      <button onclick="addPointsByPin()">Добавить 5 баллов</button>
+      <button onclick="addPointsByPin()">Начислить</button>
       <button class="reset-btn no-print" onclick="resetPoints()">🔄 Обнулить баллы</button>
 
       <div id="promo-notification" class="hidden"></div>
@@ -130,21 +155,46 @@
     </div>
   </div>
 
-  <!-- Область для печати (скрыта на экране) -->
   <div id="print-area" class="hidden">
     <h1>Ваша карта лояльности</h1>
     <div id="print-qr-container"></div>
     <p style="margin-top:20px; font-size:14px;">Предъявите QR-код при оплате.</p>
   </div>
 
-  <!-- QR Generator -->
   <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
   <script>
-    const SECRET = "loyalty-secret-2026";
+    // === ЗАГРУЗКА НАСТРОЕК ===
+    let settings = JSON.parse(localStorage.getItem('loyalty_settings')) || {
+      pointsPerOp: 5,
+      levels: [
+        { threshold: 15, discount: 5 },
+        { threshold: 25, discount: 20 },
+        { threshold: 30, discount: 30 }
+      ]
+    };
+
     let history = JSON.parse(localStorage.getItem('loyalty_history') || '[]');
     let currentContactLink = null;
     let currentPin = null;
 
+    // Применить настройки к UI при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('points-per-op').value = settings.pointsPerOp;
+      document.getElementById('disc1').value = settings.levels[0].discount;
+      document.getElementById('disc2').value = settings.levels[1].discount;
+      document.getElementById('disc3').value = settings.levels[2].discount;
+    });
+
+    function saveSettings() {
+      settings.pointsPerOp = parseInt(document.getElementById('points-per-op').value) || 5;
+      settings.levels[0].discount = parseInt(document.getElementById('disc1').value) || 5;
+      settings.levels[1].discount = parseInt(document.getElementById('disc2').value) || 20;
+      settings.levels[2].discount = parseInt(document.getElementById('disc3').value) || 30;
+      localStorage.setItem('loyalty_settings', JSON.stringify(settings));
+      alert("✅ Настройки сохранены!");
+    }
+
+    // === ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений, кроме использования settings) ===
     function generateUniquePin() {
       let pin;
       do {
@@ -154,6 +204,7 @@
     }
 
     function makeHash(id, points) {
+      const SECRET = "loyalty-secret-2026";
       return btoa(`${id}|${points}|${SECRET}`).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12).toUpperCase();
     }
 
@@ -252,13 +303,12 @@
       }, 300);
     }
 
-    // === ПЕЧАТЬ ===
     function printQR(type) {
       const imgElement = document.querySelector(`#${type}-qr-img img`);
       if (!imgElement) return alert("QR не найден");
 
       const printContainer = document.getElementById('print-qr-container');
-      printContainer.innerHTML = ''; // очистить
+      printContainer.innerHTML = '';
       const clone = imgElement.cloneNode(true);
       printContainer.appendChild(clone);
       document.getElementById('print-area').classList.remove('hidden');
@@ -269,7 +319,6 @@
       }, 300);
     }
 
-    // === НОВАЯ КАРТА (5 баллов) ===
     function generateNewUser() {
       const contact = document.getElementById('contact-link').value.trim();
       if (!contact) return alert("Укажите контакт");
@@ -277,7 +326,7 @@
       currentContactLink = contact;
       const id = Math.random().toString(36).substring(2, 10) + Date.now().toString(36).slice(-4);
       const pin = generateUniquePin();
-      const points = 5; // ← изменено с 100 на 5
+      const points = 5;
       const qrStr = encodeToQRString(id, points);
 
       document.getElementById('new-pin').innerText = pin;
@@ -287,7 +336,6 @@
       addToHistory(id, 0, points, contact, pin);
     }
 
-    // === НАЧИСЛЕНИЕ ПО PIN ===
     function addPointsByPin() {
       const pinInput = document.getElementById('input-pin').value.trim();
       if (!/^\d{5}$/.test(pinInput)) {
@@ -302,17 +350,19 @@
       currentContactLink = entry.contact;
       currentPin = entry.pin;
 
-      let newPoints = entry.newPoints + 5;
+      const addPoints = settings.pointsPerOp;
+      let newPoints = entry.newPoints + addPoints;
 
-      // Проверка порогов и сброс
-      let promoLevel = null, discount = 0;
-      if (newPoints >= 30) {
-        promoLevel = '30'; discount = 30;
-        newPoints = 0; // сброс после 30
-      } else if (newPoints >= 25) {
-        promoLevel = '20'; discount = 20;
-      } else if (newPoints >= 15) {
-        promoLevel = '5'; discount = 5;
+      // Проверка уровней (снизу вверх!)
+      let promoLevel = null, discount = 0, reset = false;
+      if (newPoints >= settings.levels[2].threshold) { // 30
+        promoLevel = '30'; discount = settings.levels[2].discount;
+        reset = true;
+        newPoints = 0;
+      } else if (newPoints >= settings.levels[1].threshold) { // 25
+        promoLevel = '20'; discount = settings.levels[1].discount;
+      } else if (newPoints >= settings.levels[0].threshold) { // 15
+        promoLevel = '5'; discount = settings.levels[0].discount;
       }
 
       addToHistory(entry.id, entry.newPoints, newPoints, entry.contact, entry.pin);
@@ -321,7 +371,6 @@
       document.getElementById('result-qr-img').innerHTML = generateQRImage(newQrStr);
       document.getElementById('result-qr-display').classList.remove('hidden');
 
-      // Уведомление
       const promoDiv = document.getElementById('promo-notification');
       promoDiv.className = 'promo-alert hidden';
       if (promoLevel) {
@@ -334,7 +383,6 @@
       document.getElementById('input-pin').value = '';
     }
 
-    // === ОБНУЛЕНИЕ БАЛЛОВ ===
     function resetPoints() {
       const pinInput = document.getElementById('input-pin').value.trim();
       if (!/^\d{5}$/.test(pinInput)) {
@@ -349,7 +397,6 @@
       currentContactLink = entry.contact;
       currentPin = entry.pin;
 
-      // Обнуляем баллы
       addToHistory(entry.id, entry.newPoints, 0, entry.contact, entry.pin);
 
       const newQrStr = encodeToQRString(entry.id, 0);
