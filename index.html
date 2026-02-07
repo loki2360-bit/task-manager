@@ -57,6 +57,13 @@
     .level-25 { background: #fff8e1; color: #e65100; }
     .level-30 { background: #e8f5e8; color: #1b5e20; }
     .footer-note { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }
+    .pin-display {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #2196F3;
+    }
   </style>
 </head>
 <body>
@@ -66,20 +73,23 @@
     <!-- НОВЫЙ КЛИЕНТ -->
     <div class="section">
       <h2>➕ Новый клиент</h2>
-      <input type="text" id="contact-link" placeholder="Ссылка на Telegram (@user) или VK (https://vk.com/user)" />
+      <input type="text" id="contact-link" placeholder="Telegram (@user) или VK (https://vk.com/user)" />
       <button onclick="generateNewUser()">Выдать QR с 100 баллами</button>
       <div id="new-qr-display" class="hidden">
+        <div class="pin-display">PIN: <span id="new-pin"></span></div>
         <h3>QR для клиента:</h3>
         <div id="new-qr-img"></div>
         <button class="send-btn" onclick="sendToClient('new')">📤 Отправить клиенту</button>
+        <p style="font-size:12px;color:#666;margin-top:8px;">Сообщите клиенту его 5-значный PIN.</p>
       </div>
     </div>
 
     <!-- НАЧИСЛЕНИЕ БАЛЛОВ -->
     <div class="section">
       <h2>🔄 Начислить 5 баллов</h2>
-      <input type="text" id="input-qr-full" placeholder="Вставьте строку из QR-кода" />
-      <button onclick="addPointsAutomatically()">Добавить 5 баллов</button>
+      <p>Введите 5-значный PIN клиента:</p>
+      <input type="text" id="input-pin" placeholder="Например: 48291" maxlength="5" />
+      <button onclick="addPointsByPin()">Добавить 5 баллов</button>
 
       <div id="promo-notification" class="hidden"></div>
 
@@ -105,28 +115,25 @@
   <script>
     const SECRET = "loyalty-secret-2026";
     let history = JSON.parse(localStorage.getItem('loyalty_history') || '[]');
-    let currentContactLink = null; // хранится временно для отправки
+    let currentContactLink = null;
+    let currentPin = null;
+
+    // Генерация уникального 5-значного PIN
+    function generateUniquePin() {
+      let pin;
+      do {
+        pin = Math.floor(10000 + Math.random() * 90000).toString(); // 10000–99999
+      } while (history.some(h => h.pin === pin));
+      return pin;
+    }
 
     // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function makeHash(id, points) {
       return btoa(`${id}|${points}|${SECRET}`).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12).toUpperCase();
     }
 
-    function verifyData(id, points, hash) {
-      return makeHash(id, points) === hash;
-    }
-
     function encodeToQRString(id, points) {
       return `id:${id}|points:${points}|hash:${makeHash(id, points)}`;
-    }
-
-    function parseQRString(str) {
-      const data = {};
-      str.split('|').forEach(part => {
-        const [k, v] = part.split(':');
-        if (k && v) data[k] = k === 'points' ? parseInt(v) : v;
-      });
-      return data;
     }
 
     function generateQRImage(str) {
@@ -151,8 +158,8 @@
       } catch (e) {}
     }
 
-    function addToHistory(id, oldPoints, newPoints, contact = '') {
-      history.unshift({ time: new Date().toISOString(), id, oldPoints, newPoints, contact });
+    function addToHistory(id, oldPoints, newPoints, contact = '', pin = '') {
+      history.unshift({ time: new Date().toISOString(), id, oldPoints, newPoints, contact, pin });
       if (history.length > 500) history = history.slice(0, 500);
       localStorage.setItem('loyalty_history', JSON.stringify(history));
     }
@@ -161,7 +168,7 @@
       let txt = "История\n=======\n\n";
       history.forEach(item => {
         const date = new Date(item.time).toLocaleString('ru-RU');
-        txt += `${date} | ${item.contact || '—'} | ID: ${item.id} | ${item.oldPoints} → ${item.newPoints}\n`;
+        txt += `${date} | PIN: ${item.pin} | ${item.contact || '—'} | ID: ${item.id} | ${item.oldPoints} → ${item.newPoints}\n`;
       });
       const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -174,95 +181,94 @@
       URL.revokeObjectURL(url);
     }
 
-    // === ОТПРАВКА КЛИЕНТУ ===
-    function sendToClient(type) {
-      if (!currentContactLink) {
-        alert("Сначала укажите контакт при создании клиента!");
-        return;
-      }
-
-      // Получаем изображение QR
-      const img = document.querySelector(`#${type}-qr-img img`);
-      if (!img) return;
-
-      // Создаём Blob из Data URL
+    function saveQRAsFile(imgElement) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(blob => {
-        const qrUrl = URL.createObjectURL(blob);
-        const message = `Ваш обновлённый QR-код:\n${qrUrl}\n\nСохраните изображение!`;
+      const img = new Image();
+      img.src = imgElement.src;
+      
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `loyalty_qr_${new Date().getTime()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      };
+    }
 
+    function sendToClient(type) {
+      const imgElement = document.querySelector(`#${type}-qr-img img`);
+      if (!imgElement) return alert("QR не найден");
+
+      saveQRAsFile(imgElement);
+
+      if (currentContactLink) {
         let url = '';
         if (currentContactLink.startsWith('@')) {
-          // Telegram username
           const username = currentContactLink.replace(/^@/, '');
-          url = `https://t.me/${username}?start=qr`;
-          // Telegram не позволяет предзаполнять сообщение через URL, поэтому просто откроем чат
           url = `https://t.me/${username}`;
         } else if (currentContactLink.includes('vk.com')) {
-          // VK: откроем диалог
           const vkId = currentContactLink.split('/').pop();
           url = `https://vk.com/im?sel=${vkId}`;
-        } else {
-          alert("Поддерживаются только @username (Telegram) или https://vk.com/...");
-          return;
         }
+        if (url) window.open(url, '_blank');
+      }
 
-        // Открываем чат
-        window.open(url, '_blank');
-
-        // Показываем инструкцию
-        setTimeout(() => {
-          alert("QR-код готов к отправке!\n\n1. Открыт чат с клиентом.\n2. Скопируйте эту ссылку и отправьте:\n\n" + qrUrl);
-        }, 1000);
-      });
+      setTimeout(() => {
+        alert("✅ QR сохранён как файл!\n\nОтправьте его клиенту.");
+      }, 300);
     }
 
     // === ГЕНЕРАЦИЯ НОВОГО КЛИЕНТА ===
     function generateNewUser() {
       const contact = document.getElementById('contact-link').value.trim();
-      if (!contact) return alert("Укажите контакт (Telegram или VK)");
+      if (!contact) return alert("Укажите контакт");
 
       currentContactLink = contact;
-
       const id = Math.random().toString(36).substring(2, 10) + Date.now().toString(36).slice(-4);
+      const pin = generateUniquePin();
       const points = 100;
       const qrStr = encodeToQRString(id, points);
+
+      document.getElementById('new-pin').innerText = pin;
       document.getElementById('new-qr-img').innerHTML = generateQRImage(qrStr);
       document.getElementById('new-qr-display').classList.remove('hidden');
 
-      addToHistory(id, 0, points, contact);
+      addToHistory(id, 0, points, contact, pin);
     }
 
-    // === НАЧИСЛЕНИЕ БАЛЛОВ ===
-    function addPointsAutomatically() {
-      const fullStr = document.getElementById('input-qr-full').value.trim();
-      if (!fullStr) return alert("Вставьте строку из QR-кода");
-
-      const data = parseQRString(fullStr);
-      if (!data.id || isNaN(data.points) || !data.hash) {
-        return alert("❌ Неверный формат QR");
+    // === НАЧИСЛЕНИЕ ПО PIN ===
+    function addPointsByPin() {
+      const pinInput = document.getElementById('input-pin').value.trim();
+      if (!/^\d{5}$/.test(pinInput)) {
+        return alert("Введите 5-значный PIN");
       }
 
-      if (!verifyData(data.id, data.points, data.hash)) {
-        return alert("❌ Поддельный QR!");
+      const entry = history.find(h => h.pin === pinInput);
+      if (!entry) {
+        return alert("Клиент с таким PIN не найден");
       }
 
-      // Найти контакт из истории
-      const histEntry = history.find(h => h.id === data.id);
-      currentContactLink = histEntry ? histEntry.contact : null;
+      currentContactLink = entry.contact;
+      currentPin = entry.pin;
 
-      const newPoints = data.points + 5;
-      addToHistory(data.id, data.points, newPoints, currentContactLink);
+      const newPoints = entry.newPoints + 5; // всегда берём последний баланс
+      addToHistory(entry.id, entry.newPoints, newPoints, entry.contact, entry.pin);
 
-      const newQrStr = encodeToQRString(data.id, newPoints);
+      const newQrStr = encodeToQRString(entry.id, newPoints);
       document.getElementById('result-qr-img').innerHTML = generateQRImage(newQrStr);
       document.getElementById('result-qr-display').classList.remove('hidden');
 
-      // Уведомление
+      // Уведомление о промокоде
       const promoDiv = document.getElementById('promo-notification');
       promoDiv.className = 'promo-alert hidden';
       let level = null, discount = 0;
@@ -277,7 +283,7 @@
         playSound();
       }
 
-      document.getElementById('input-qr-full').value = '';
+      document.getElementById('input-pin').value = '';
     }
   </script>
 </body>
