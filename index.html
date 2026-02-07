@@ -4,151 +4,270 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Лояльность</title>
-  <style>/* ... минималистичный стиль ... */</style>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body {
+      padding: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    .container { max-width: 600px; margin: 0 auto; }
+    h2 { margin: 16px 0; }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #4A90E2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+    button.small {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 14px;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    #qr-code img { display: block; margin: 16px auto; max-width: 200px; }
+    .hidden { display: none !important; }
+    .promo { 
+      background: #fff8e1; 
+      padding: 12px; 
+      border-radius: 8px; 
+      margin-top: 12px;
+      font-weight: bold;
+      color: #e65100;
+    }
+    .admin-section { background: #f0f7ff; padding: 16px; border-radius: 8px; margin-top: 20px; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <!-- КЛИЕНТСКИЙ ВИДЖЕТ -->
+    <div id="client-view">
+      <h2>📱 Ваш телефон</h2>
+      <input id="phone" type="tel" placeholder="+7 (999) 123-45-67" />
+      <button onclick="showQR()">Получить QR-код</button>
+      <div id="qr-code"></div>
+      <div id="promo-hint" class="promo hidden"></div>
+    </div>
 
-<!-- Основной виджет для клиента -->
-<div id="client-view">
-  <h2>Ваш телефон:</h2>
-  <input id="phone" placeholder="+7..." />
-  <button onclick="showQR()">Получить QR</button>
-  <div id="qr-code"></div>
-</div>
+    <!-- ПЕРЕКЛЮЧАТЕЛЬ -->
+    <button onclick="toggleMode()" style="background:#666;">Админка / Клиент</button>
 
-<!-- Админка (скрыта по умолчанию) -->
-<div id="admin-panel" style="display:none;">
-  <h2>Админка</h2>
-  <input id="admin-pin" type="password" placeholder="PIN" />
-  <button onclick="unlockAdmin()">Войти</button>
-  
-  <div id="admin-content" style="display:none;">
-    <video id="camera" autoplay></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button onclick="startScan()">Сканировать QR</button>
-    <div id="scan-result"></div>
-    
-    <div id="user-info" style="display:none;">
-      <p>Телефон: <span id="user-phone"></span></p>
-      <p>Баллы: <span id="user-points"></span></p>
-      <input id="points-change" type="number" placeholder="± баллы" />
-      <button onclick="applyPoints()">Применить</button>
+    <!-- АДМИНКА -->
+    <div id="admin-panel" class="hidden">
+      <h2>🔐 Админка</h2>
+      <input id="admin-pin" type="password" placeholder="PIN (по умолчанию: 1234)" />
+      <button onclick="unlockAdmin()">Войти</button>
+
+      <div id="admin-content" class="hidden admin-section">
+        <h3>🔍 Найти пользователя</h3>
+        <p>Введите ID из QR-кода (часть после LOYALTY:)</p>
+        <input id="manual-id" placeholder="abc123..." />
+        <button onclick="loadUserById()">Найти</button>
+
+        <div id="user-info" class="hidden">
+          <h3>👤 Пользователь</h3>
+          <p><strong>Телефон:</strong> <span id="user-phone"></span></p>
+          <p><strong>Баллы:</strong> <span id="user-points">0</span></p>
+          <div id="current-promo" class="promo hidden"></div>
+
+          <h4>± Баллы</h4>
+          <input id="points-change" type="number" placeholder="Например: 100 или -50" />
+          <button onclick="applyPoints()">Применить</button>
+
+          <h4 style="margin-top:20px;">📤 Экспорт</h4>
+          <button onclick="exportData('txt')">Скачать TXT</button>
+          <button onclick="exportData('json')">Скачать JSON</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Переключатель -->
-<button onclick="toggleMode()">Админка / Клиент</button>
+  <!-- QR Generator -->
+  <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script>
+    // === КОНФИГУРАЦИЯ ===
+    const ADMIN_PIN = "1234"; // ← ЗАМЕНИТЕ НА СВОЙ!
+    let users = JSON.parse(localStorage.getItem('loyalty_users') || '{}');
 
-<script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
-<script>
-// === ДАННЫЕ ===
-const ADMINS = ["1234"]; // PIN для входа в админку
-let users = JSON.parse(localStorage.getItem('loyalty_users') || '{}');
+    // === КЛИЕНТ: ГЕНЕРАЦИЯ QR ===
+    function showQR() {
+      const phone = document.getElementById('phone').value.trim().replace(/\D/g, '');
+      if (!phone || phone.length < 10) return alert("Введите корректный телефон");
+      const cleanPhone = '+' + phone;
 
-// === КЛИЕНТСКАЯ ЧАСТЬ ===
-function showQR() {
-  const phone = document.getElementById('phone').value.trim();
-  if (!phone) return alert("Введите телефон");
-  
-  // Сохраняем пользователя, если нового
-  if (!users[phone]) {
-    users[phone] = { points: 0, id: Date.now().toString(36) };
-    saveUsers();
-  }
-  
-  const userId = users[phone].id;
-  const qrData = `LOYALTY:${userId}`; // формат: LOYALTY:abc123
-  
-  // Генерация QR
-  const qr = qrcode(0, 'M');
-  qr.addData(qrData);
-  qr.make();
-  document.getElementById('qr-code').innerHTML = qr.createImgTag(5);
-}
+      if (!users[cleanPhone]) {
+        users[cleanPhone] = {
+          points: 0,
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          promo500: null, // {code, expires}
+          promo1000: null  // {code, expires} — бессрочный
+        };
+        saveUsers();
+      }
 
-// === АДМИНКА ===
-function toggleMode() {
-  const client = document.getElementById('client-view');
-  const admin = document.getElementById('admin-panel');
-  client.style.display = client.style.display === 'none' ? 'block' : 'none';
-  admin.style.display = admin.style.display === 'none' ? 'block' : 'none';
-}
+      const userId = users[cleanPhone].id;
+      const qrData = `LOYALTY:${userId}`;
+      const qr = qrcode(0, 'M');
+      qr.addData(qrData);
+      qr.make();
+      document.getElementById('qr-code').innerHTML = qr.createImgTag(5);
 
-function unlockAdmin() {
-  const pin = document.getElementById('admin-pin').value;
-  if (ADMINS.includes(pin)) {
-    document.getElementById('admin-content').style.display = 'block';
-    startCamera();
-  } else {
-    alert("Неверный PIN");
-  }
-}
+      // Показать подсказку о промокодах
+      checkAndShowPromoHint(cleanPhone);
+    }
 
-// === КАМЕРА + СКАНИРОВАНИЕ QR ===
-let scannerActive = false;
-async function startCamera() {
-  const video = document.getElementById('camera');
-  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-  video.srcObject = stream;
-}
+    function checkAndShowPromoHint(phone) {
+      const el = document.getElementById('promo-hint');
+      el.classList.add('hidden');
+      const u = users[phone];
+      if (u.promo1000) {
+        el.innerText = `🎁 У вас есть промокод на 30%: ${u.promo1000.code}`;
+        el.classList.remove('hidden');
+      } else if (u.promo500 && new Date(u.promo500.expires) > new Date()) {
+        el.innerText = `🎁 Промокод на 5%: ${u.promo500.code} (действует до ${new Date(u.promo500.expires).toLocaleDateString()})`;
+        el.classList.remove('hidden');
+      }
+    }
 
-async function startScan() {
-  if (scannerActive) return;
-  scannerActive = true;
-  const video = document.getElementById('camera');
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  
-  const scanInterval = setInterval(() => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Простой способ: использовать внешнюю библиотеку (но она увеличит размер)
-    // В упрощённой версии — вручную ввод ID или использовать input
-    
-    // Альтернатива: отключим камеру и будем вводить ID вручную (для простоты и совместимости)
-    clearInterval(scanInterval);
-    scannerActive = false;
-    alert("Сканирование пока недоступно. Введите ID вручную.");
-  }, 500);
-}
+    // === АДМИНКА ===
+    function toggleMode() {
+      const client = document.getElementById('client-view');
+      const admin = document.getElementById('admin-panel');
+      if (client.classList.contains('hidden')) {
+        client.classList.remove('hidden');
+        admin.classList.add('hidden');
+      } else {
+        client.classList.add('hidden');
+        admin.classList.remove('hidden');
+      }
+    }
 
-// === РУЧНОЙ ВВОД ID (резерв) ===
-// Можно добавить поле: <input id="manual-id"> + кнопка "Найти"
+    function unlockAdmin() {
+      const pin = document.getElementById('admin-pin').value;
+      if (pin === ADMIN_PIN) {
+        document.getElementById('admin-content').classList.remove('hidden');
+      } else {
+        alert("Неверный PIN");
+      }
+    }
 
-// === УПРАВЛЕНИЕ БАЛЛАМИ ===
-function findUserById(id) {
-  for (let phone in users) {
-    if (users[phone].id === id) return { phone, ...users[phone] };
-  }
-  return null;
-}
+    function loadUserById() {
+      const id = document.getElementById('manual-id').value.trim();
+      if (!id) return alert("Введите ID");
+      
+      let found = null;
+      for (let phone in users) {
+        if (users[phone].id === id) {
+          found = { phone, ...users[phone] };
+          break;
+        }
+      }
 
-function applyPoints() {
-  const change = parseInt(document.getElementById('points-change').value);
-  const phone = document.getElementById('user-phone').innerText;
-  if (!users[phone]) return;
-  
-  users[phone].points += change;
-  if (users[phone].points < 0) users[phone].points = 0;
-  
-  saveUsers();
-  document.getElementById('user-points').innerText = users[phone].points;
-  alert(`Баллы обновлены!`);
-}
+      if (!found) {
+        alert("Пользователь не найден");
+        document.getElementById('user-info').classList.add('hidden');
+        return;
+      }
 
-function saveUsers() {
-  localStorage.setItem('loyalty_users', JSON.stringify(users));
-}
+      document.getElementById('user-phone').innerText = found.phone;
+      document.getElementById('user-points').innerText = found.points;
+      document.getElementById('user-info').classList.remove('hidden');
 
-// === ЗАГРУЗКА ===
-window.onload = () => {
-  // Скрыть админку при старте
-  document.getElementById('admin-panel').style.display = 'none';
-};
-</script>
+      // Показ текущего промокода
+      const promoEl = document.getElementById('current-promo');
+      promoEl.classList.add('hidden');
+      if (found.promo1000) {
+        promoEl.innerText = `30% промокод: ${found.promo1000.code} (бессрочный)`;
+        promoEl.classList.remove('hidden');
+      } else if (found.promo500 && new Date(found.promo500.expires) > new Date()) {
+        promoEl.innerText = `5% промокод: ${found.promo500.code} (до ${new Date(found.promo500.expires).toLocaleDateString()})`;
+        promoEl.classList.remove('hidden');
+      }
+    }
 
+    function applyPoints() {
+      const phone = document.getElementById('user-phone').innerText;
+      const change = parseInt(document.getElementById('points-change').value);
+      if (isNaN(change)) return alert("Введите число");
+
+      users[phone].points += change;
+      if (users[phone].points < 0) users[phone].points = 0;
+
+      // Генерация промокодов
+      checkPromoConditions(phone);
+
+      saveUsers();
+      document.getElementById('user-points').innerText = users[phone].points;
+      alert(`Баллы обновлены! Текущий баланс: ${users[phone].points}`);
+      loadUserById(); // обновить отображение
+    }
+
+    function checkPromoConditions(phone) {
+      const u = users[phone];
+      const now = new Date();
+
+      // 500 → 5% на 2 дня
+      if (u.points >= 500 && !u.promo500) {
+        const code = "LOYAL5-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const expires = new Date(now);
+        expires.setDate(expires.getDate() + 2);
+        u.promo500 = { code, expires: expires.toISOString() };
+      }
+
+      // 1000 → 30% навсегда
+      if (u.points >= 1000 && !u.promo1000) {
+        const code = "LOYAL30-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        u.promo1000 = { code, expires: null };
+      }
+    }
+
+    function saveUsers() {
+      localStorage.setItem('loyalty_users', JSON.stringify(users));
+    }
+
+    // === ЭКСПОРТ ===
+    function exportData(format) {
+      let dataStr, filename;
+      if (format === 'txt') {
+        let txt = "";
+        for (let phone in users) {
+          const u = users[phone];
+          txt += `Телефон: ${phone}\n`;
+          txt += `Баллы: ${u.points}\n`;
+          if (u.promo500) txt += `Промо 5%: ${u.promo500.code} (до ${new Date(u.promo500.expires).toLocaleDateString()})\n`;
+          if (u.promo1000) txt += `Промо 30%: ${u.promo1000.code} (бессрочный)\n`;
+          txt += "---\n";
+        }
+        dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
+        filename = `loyalty_${new Date().toISOString().slice(0,10)}.txt`;
+      } else {
+        dataStr = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(users, null, 2));
+        filename = `loyalty_${new Date().toISOString().slice(0,10)}.json`;
+      }
+
+      const link = document.createElement("a");
+      link.setAttribute("href", dataStr);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Инициализация
+    window.onload = () => {
+      document.getElementById('admin-panel').classList.add('hidden');
+    };
+  </script>
 </body>
 </html>
