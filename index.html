@@ -1,438 +1,214 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Программа лояльности</title>
-    <style>
-        :root {
-            --primary-yellow: #FFD700;
-            --primary-black: #1a1a1a;
-            --primary-gray: #f5f5f5;
-            --primary-red: #e74c3c;
-            --primary-green: #2ecc71;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --glow: 0 0 15px rgba(255, 215, 0, 0.5);
-            --border-radius: 12px;
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: var(--primary-black);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--primary-yellow);
-            text-shadow: var(--glow);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .scan-section {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-        }
-
-        #cameraContainer {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto 20px;
-            position: relative;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            background: #eee;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-        }
-
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        #qrInput {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--primary-gray);
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            transition: var(--transition);
-        }
-
-        #qrInput:focus {
-            outline: none;
-            border-color: var(--primary-yellow);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-
-        #manualScanBtn {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: bold;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        #manualScanBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .user-info {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-        }
-
-        .user-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-        }
-
-        .user-name {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .user-points {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .promo-code {
-            background: var(--primary-yellow);
-            color: var(--primary-black);
-            padding: 10px;
-            border-radius: var(--border-radius);
-            font-weight: bold;
-            font-family: monospace;
-            letter-spacing: 2px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary-green);
-            color: white;
-            padding: 15px 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .notification.show {
-            opacity: 1;
-        }
-
-        .notification.error {
-            background: var(--primary-red);
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
-            color: var(--primary-black);
-        }
-
-        .btn-secondary {
-            background: var(--primary-gray);
-            color: var(--primary-black);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Программа лояльности</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #f9f9f9;
+    }
+    .section { display: none; }
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    #qrcode { text-align: center; margin: 15px 0; }
+    .admin-toggle {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .admin-toggle a {
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    ul { padding-left: 20px; }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">✨ Арома-Квест ✨</div>
-        <div class="subtitle">Скан QR-кода или введите его вручную</div>
 
-        <div class="scan-section">
-            <div id="cameraContainer">
-                <video id="video" playsinline></video>
-                <div id="fallbackMessage">Камера не доступна. Введите QR вручную.</div>
-            </div>
+<div class="admin-toggle">
+  <a onclick="toggleMode()">🔄 Переключить в режим администратора</a>
+</div>
 
-            <div class="input-group">
-                <input type="text" id="qrInput" placeholder="Введите QR-код вручную..." autocomplete="off" />
-                <button id="manualScanBtn">Начислить</button>
-            </div>
-        </div>
+<!-- Режим пользователя -->
+<div id="user-mode" class="section">
+  <h1>Программа лояльности</h1>
 
-        <div class="user-info">
-            <div id="userInfo" style="display: none;">
-                <div class="user-card">
-                    <div class="user-name" id="userName">Имя пользователя</div>
-                    <div>Баллы:</div>
-                    <div class="user-points" id="userPoints">0</div>
-                    <div class="promo-code" id="promoCode"></div>
-                </div>
-                <button class="btn btn-secondary" id="resetUserBtn">Сбросить пользователя</button>
-            </div>
+  <div id="register-section">
+    <h2>Зарегистрируйтесь</h2>
+    <input type="text" id="username" placeholder="Ваше имя" />
+    <button onclick="registerUser()">Зарегистрироваться</button>
+  </div>
 
-            <div id="registerSection" style="display: none;">
-                <h3>Зарегистрировать нового пользователя</h3>
-                <p>QR-код не найден в системе.</p>
-                <button class="btn btn-primary" id="registerBtn">Зарегистрировать</button>
-            </div>
-        </div>
-    </div>
+  <div id="profile-section" style="display:none;">
+    <h2>Привет, <span id="user-name"></span>!</h2>
+    <p>Баллы: <strong id="points">0</strong></p>
+    <div id="qrcode"></div>
+    <h3>Ваши промокоды:</h3>
+    <ul id="promocodes"></ul>
+    <button onclick="logout()">Выйти</button>
+  </div>
+</div>
 
-    <div class="notification" id="notification"></div>
+<!-- Режим администратора -->
+<div id="admin-mode" class="section">
+  <h1>Админ-панель</h1>
+  <p>Введите ID пользователя (из QR-кода):</p>
+  <input type="text" id="admin-user-id" placeholder="ID пользователя" />
+  <button onclick="awardPoints()">+100 баллов</button>
+  <p id="admin-message"></p>
+  <button onclick="toggleMode()">← Вернуться как пользователь</button>
+</div>
 
-    <audio id="successSound" preload="auto">
-        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-    </audio>
+<!-- QR Code Generator (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <script>
-        // Глобальные переменные
-        let currentScannedUser = null;
-        window.loyaltyUsers = [];
+<script>
+  let isAdminMode = false;
 
-        // Загрузка данных
-        function loadUserData() {
-            const saved = localStorage.getItem('loyaltyUsers');
-            if (saved) {
-                try {
-                    window.loyaltyUsers = JSON.parse(saved);
-                } catch (e) {
-                    console.error('Ошибка загрузки пользователей:', e);
-                    window.loyaltyUsers = [];
-                }
-            }
-        }
+  // Переключение режимов
+  function toggleMode() {
+    isAdminMode = !isAdminMode;
+    document.getElementById('user-mode').style.display = isAdminMode ? 'none' : 'block';
+    document.getElementById('admin-mode').style.display = isAdminMode ? 'block' : 'none';
+  }
 
-        // Сохранение данных
-        function saveUserData() {
-            localStorage.setItem('loyaltyUsers', JSON.stringify(window.loyaltyUsers));
-        }
+  // Генерация уникального ID
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+  }
 
-        // Показ уведомления
-        function showNotification(message, type = 'success') {
-            const el = document.getElementById('notification');
-            el.textContent = message;
-            el.className = `notification ${type === 'error' ? 'error' : ''} show`;
-            setTimeout(() => el.classList.remove('show'), 3000);
-        }
+  // Регистрация
+  function registerUser() {
+    const name = document.getElementById('username').value.trim();
+    if (!name) return alert('Введите имя!');
+    
+    const userId = generateId();
+    const user = {
+      id: userId,
+      name: name,
+      points: 0,
+      promocodes: []
+    };
+    localStorage.setItem(`user_${userId}`, JSON.stringify(user));
+    localStorage.setItem('currentUserId', userId);
+    showProfile(user);
+  }
 
-        // Воспроизведение звука
-        function playSuccessSound() {
-            const audio = document.getElementById('successSound');
-            audio.currentTime = 0;
-            audio.play().catch(e => console.log('Звук не воспроизведён:', e));
-        }
+  // Показ профиля
+  function showProfile(user) {
+    document.getElementById('register-section').style.display = 'none';
+    document.getElementById('profile-section').style.display = 'block';
+    document.getElementById('user-name').textContent = user.name;
+    document.getElementById('points').textContent = user.points;
 
-        // Обработка отсканированного кода
-        function processScannedCode(qrData) {
-            if (!qrData || typeof qrData !== 'string') {
-                showNotification('Неверный формат QR-кода', 'error');
-                return;
-            }
+    // Очистка и генерация QR
+    const qrDiv = document.getElementById('qrcode');
+    qrDiv.innerHTML = '';
+    new QRCode(qrDiv, user.id);
 
-            const user = window.loyaltyUsers.find(u => u.qrCode === qrData);
-            if (user) {
-                // Начисление баллов
-                user.points += 10;
-                currentScannedUser = user;
-                saveUserData();
-                updateUserInfo();
+    // Промокоды
+    const list = document.getElementById('promocodes');
+    list.innerHTML = '';
+    const now = Date.now();
+    user.promocodes = user.promocodes.filter(pc => pc.expiresAt > now); // удаляем просроченные
+    user.promocodes.forEach(pc => {
+      const li = document.createElement('li');
+      const exp = new Date(pc.expiresAt).toLocaleString('ru-RU');
+      li.textContent = `${pc.code} — скидка ${pc.discount}%, действует до ${exp}`;
+      list.appendChild(li);
+    });
 
-                showNotification(`+10 баллов! Всего: ${user.points}`, 'success');
-                playSuccessSound();
+    localStorage.setItem(`user_${user.id}`, JSON.stringify(user));
+  }
 
-                // Проверка на промокод (каждые 100 баллов)
-                if (user.points % 100 === 0) {
-                    const promo = `AROMA${user.points}`;
-                    user.promoCodes = user.promoCodes || [];
-                    user.promoCodes.push(promo);
-                    saveUserData();
-                    document.getElementById('promoCode').textContent = `Промокод: ${promo}`;
-                    document.getElementById('promoCode').style.display = 'block';
-                    showNotification(`🎉 Получен промокод: ${promo}`, 'success');
-                }
-            } else {
-                // Пользователь не найден — показ регистрации
-                document.getElementById('registerSection').style.display = 'block';
-                document.getElementById('userInfo').style.display = 'none';
-                currentScannedUser = { qrCode: qrData };
-            }
-        }
+  // Выход
+  function logout() {
+    localStorage.removeItem('currentUserId');
+    location.reload();
+  }
 
-        // Обновление информации о пользователе
-        function updateUserInfo() {
-            if (!currentScannedUser) return;
+  // Начисление баллов (админка)
+  function awardPoints() {
+    const userId = document.getElementById('admin-user-id').value.trim();
+    if (!userId) return showMessage('Введите ID!', 'red');
 
-            document.getElementById('userName').textContent = currentScannedUser.name || 'Пользователь';
-            document.getElementById('userPoints').textContent = currentScannedUser.points || 0;
+    const key = `user_${userId}`;
+    const data = localStorage.getItem(key);
+    if (!data) return showMessage('Пользователь не найден.', 'red');
 
-            const promoEl = document.getElementById('promoCode');
-            if (currentScannedUser.promoCodes && currentScannedUser.promoCodes.length > 0) {
-                promoEl.textContent = `Промокод: ${currentScannedUser.promoCodes[currentScannedUser.promoCodes.length - 1]}`;
-                promoEl.style.display = 'block';
-            } else {
-                promoEl.style.display = 'none';
-            }
+    let user = JSON.parse(data);
+    user.points += 100;
+    const now = Date.now();
 
-            document.getElementById('userInfo').style.display = 'block';
-            document.getElementById('registerSection').style.display = 'none';
-        }
+    // Удаляем просроченные промокоды
+    user.promocodes = user.promocodes.filter(pc => pc.expiresAt > now);
 
-        // Регистрация нового пользователя
-        function registerUser() {
-            if (!currentScannedUser || !currentScannedUser.qrCode) {
-                showNotification('Нет данных для регистрации', 'error');
-                return;
-            }
+    // 500 баллов → промокод 5% (если ещё нет активного)
+    const hasActive5 = user.promocodes.some(pc => pc.threshold === 500 && pc.expiresAt > now);
+    if (user.points >= 500 && !hasActive5) {
+      user.promocodes.push({
+        code: 'LOYAL5_' + generateId().substring(0, 6),
+        discount: 5,
+        threshold: 500,
+        expiresAt: now + 2 * 24 * 60 * 60 * 1000 // 2 дня
+      });
+    }
 
-            const name = prompt('Введите имя пользователя:');
-            if (!name) {
-                showNotification('Регистрация отменена', 'error');
-                return;
-            }
+    // 1000 баллов → промокод 30% и списание 1000
+    if (user.points >= 1000) {
+      user.promocodes.push({
+        code: 'LOYAL30_' + generateId().substring(0, 6),
+        discount: 30,
+        threshold: 1000,
+        expiresAt: now + 2 * 24 * 60 * 60 * 1000
+      });
+      user.points -= 1000;
+    }
 
-            const newUser = {
-                qrCode: currentScannedUser.qrCode,
-                name: name.trim(),
-                points: 0,
-                promoCodes: []
-            };
+    localStorage.setItem(key, JSON.stringify(user));
+    showMessage('✅ +100 баллов начислено!', 'green');
+  }
 
-            window.loyaltyUsers.push(newUser);
-            currentScannedUser = newUser;
-            saveUserData();
-            updateUserInfo();
-            showNotification('Пользователь зарегистрирован!', 'success');
-        }
+  function showMessage(text, color) {
+    const el = document.getElementById('admin-message');
+    el.textContent = text;
+    el.style.color = color;
+  }
 
-        // Сброс текущего пользователя
-        function resetUser() {
-            currentScannedUser = null;
-            document.getElementById('userInfo').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('qrInput').value = '';
-        }
+  // Автоматическая загрузка текущего пользователя
+  window.onload = function () {
+    const currentId = localStorage.getItem('currentUserId');
+    if (currentId) {
+      const userData = localStorage.getItem(`user_${currentId}`);
+      if (userData) {
+        const user = JSON.parse(userData);
+        document.getElementById('user-mode').style.display = 'block';
+        showProfile(user);
+        return;
+      }
+    }
+    document.getElementById('user-mode').style.display = 'block';
+    document.getElementById('register-section').style.display = 'block';
+  };
+</script>
 
-        // Инициализация камеры (упрощённая)
-        function initCamera() {
-            const video = document.getElementById('video');
-            const fallback = document.getElementById('fallbackMessage');
-
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                fallback.textContent = 'Камера не поддерживается. Введите QR вручную.';
-                return;
-            }
-
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.play();
-                    video.style.display = 'block';
-                    fallback.style.display = 'none';
-
-                    // Здесь можно добавить QR-сканер (например, через jsQR),
-                    // но для простоты оставим только ручной ввод.
-                })
-                .catch(err => {
-                    console.warn('Камера недоступна:', err);
-                    fallback.textContent = 'Камера заблокирована или недоступна. Введите QR вручную.';
-                });
-        }
-
-        // 🔥 КРИТИЧЕСКИ ВАЖНАЯ ФУНКЦИЯ — была пропущена!
-        function manualScan() {
-            const input = document.getElementById('qrInput');
-            const code = input.value.trim();
-            if (!code) {
-                showNotification('Введите QR-код', 'error');
-                return;
-            }
-            processScannedCode(code);
-            input.value = '';
-        }
-
-        // Инициализация
-        function init() {
-            loadUserData();
-
-            // Кнопки
-            document.getElementById('manualScanBtn').addEventListener('click', manualScan);
-            document.getElementById('qrInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    manualScan();
-                }
-            });
-            document.getElementById('registerBtn').addEventListener('click', registerUser);
-            document.getElementById('resetUserBtn').addEventListener('click', resetUser);
-
-            // Камера
-            initCamera();
-        }
-
-        // Запуск при загрузке
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
 </body>
 </html>
