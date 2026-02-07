@@ -7,17 +7,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
+      /* Основные цвета */
       --bg-light: #fffdf5;
       --bg-card: #ffffff;
       --text-dark: #2d2d2d;
       --text-muted: #777;
-      --accent-yellow: #ffeb3b;
-      --accent-orange: #ff9800;
-      --accent-green: #4caf50;
-      --accent-blue: #2196f3;
-      --accent-red: #f44336;
+      
+      /* Жёлтая палитра (мягкая, не агрессивная) */
+      --accent-yellow: #ffeaa7;   /* светло-жёлтый (фон для плана) */
+      --accent-yellow-dark: #ffd54f; /* насыщенный жёлтый для акцентов */
+      --accent-yellow-hover: #ffd140; /* при наведении */
+      
+      /* Акценты (не яркие, но заметные) */
+      --accent-green: #66bb6a;   /* мягкий зелёный — для успеха */
+      --accent-blue: #42a5f5;   /* спокойный синий — для действий */
+      --accent-red: #ef5350;    /* мягкий красный — для удаления */
+      --accent-orange: #ffa726; /* тёплый оранжевый — для начала/конца смены */
+      
+      /* Границы и тени */
       --border: #eaeaea;
-      --shadow: rgba(0,0,0,0.05);
+      --shadow: rgba(0,0,0,0.04);
     }
 
     * {
@@ -104,7 +113,7 @@
     /* Plan Box */
     .plan-box {
       padding: 18px 16px;
-      background: #fffde7;
+      background: var(--accent-yellow);
       margin: 16px;
       border-radius: 12px;
       position: relative;
@@ -117,11 +126,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      color: var(--text-dark);
     }
 
     .progress-container {
       height: 16px;
-      background: #f0f0f0;
+      background: #f8f8f8;
       border-radius: 8px;
       overflow: hidden;
       margin: 8px 0;
@@ -131,6 +141,7 @@
       height: 100%;
       border-radius: 8px;
       transition: width 0.4s ease, background 0.4s ease;
+      background: linear-gradient(90deg, var(--accent-yellow-dark), var(--accent-orange));
     }
 
     .progress-text {
@@ -139,12 +150,12 @@
       font-size: 0.95rem;
       font-weight: 500;
       margin-top: 6px;
+      color: var(--text-dark);
     }
 
     .shift-status {
       font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 6px;
+      color: var(--text-muted      margin-top: 6px;
       font-style: italic;
     }
 
@@ -193,11 +204,12 @@
       border-radius: 8px;
       font-size: 14px;
       transition: all 0.2s;
+      background: white;
     }
     input:focus, select:focus {
       outline: none;
-      border-color: var(--accent-yellow);
-      box-shadow: 0 0 0 2px rgba(255, 235, 59, 0.3);
+      border-color: var(--accent-yellow-dark);
+      box-shadow: 0 0 0 2px rgba(255, 213, 79, 0.3);
     }
 
     .btn-row {
@@ -221,45 +233,74 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
+    /* Кнопки — в едином стиле */
     .btn-start {
-      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      background: linear-gradient(135deg, var(--accent-orange), #f57c00);
       color: white;
     }
+    .btn-start:hover {
+      background: linear-gradient(135deg, #ff9800, #e65100);
+    }
+
     .btn-end {
-      background: linear-gradient(135deg, #f44336, #d32f2f);
+      background: linear-gradient(135deg, var(--accent-red), #d32f2f);
       color: white;
     }
+    .btn-end:hover {
+      background: linear-gradient(135deg, #f44336, #b71c1c);
+    }
+
     .btn-blue {
-      background: linear-gradient(135deg, var(--accent-blue), #1976d2);
+      background: linear-gradient(135deg, var(--accent-blue), #1e88e5);
       color: white;
     }
+    .btn-blue:hover {
+      background: linear-gradient(135deg, #2196f3, #0d47a1);
+    }
+
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-dark);
     }
+    .btn-outline:hover {
+      background: #f8f8f8;
+      border-color: var(--accent-yellow-dark);
+    }
+
     .btn-accept {
-      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      background: linear-gradient(135deg, var(--accent-green), #388e3c);
       color: white;
       font-size: 13px;
       padding: 8px 10px;
     }
+    .btn-accept:hover {
+      background: linear-gradient(135deg, #66bb6a, #2e7d32);
+    }
+
     .btn-delete {
-      background: linear-gradient(135deg, var(--accent-red), #c62828);
+      background: linear-gradient(135deg, var(--accent-red), #d32f2f);
       color: white;
       font-size: 13px;
       padding: 8px 10px;
       min-width: auto;
     }
+    .btn-delete:hover {
+      background: linear-gradient(135deg, #ef5350, #c62828);
+    }
+
     .btn-view {
       background: linear-gradient(135deg, #9c27b0, #7b1fa2);
       color: white;
       font-size: 13px;
       padding: 8px 10px;
       min-width: auto;
+    }
+    .btn-view:hover {
+      background: linear-gradient(135deg, #ab47bc, #6a1b9a);
     }
 
     /* Orders list */
@@ -284,11 +325,13 @@
       text-align: left;
       font-weight: 600;
       border-bottom: 1px solid var(--border);
+      color: var(--text-dark);
     }
 
     td {
       padding: 10px 8px;
       border-bottom: 1px solid #f5f5f5;
+      color: var(--text-dark);
     }
 
     .amount {
@@ -311,6 +354,7 @@
       font-size: 13px;
       border: 1px dashed var(--border);
       border-radius: 8px;
+      background: #fff9c4;
     }
 
     .fade-in {
@@ -331,7 +375,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.3);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -345,13 +389,16 @@
       border-radius: 12px;
       max-width: 400px;
       width: 90%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      border: 1px solid var(--border);
     }
     .modal-title {
       font-size: 1.2rem;
       font-weight: 600;
       margin-bottom: 16px;
       color: var(--text-dark);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
     }
     .modal-row {
       margin-bottom: 16px;
@@ -375,6 +422,17 @@
     }
     .details-value {
       color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    /* Улучшенная визуализация таблицы */
+    table tr:hover {
+      background: #f9f9f9;
+    }
+    
+    /* Иконки — чуть темнее для контраста */
+    .fas, .far {
+      color: var(--text-dark);
     }
   </style>
 </head>
@@ -470,7 +528,7 @@
       </div>
 
       <div class="btn-row">
-        <button style="background:linear-gradient(135deg,#ffeb3b,#ff9800);color:#000;" onclick="createMainOrder()">
+        <button style="background:linear-gradient(135deg,var(--accent-yellow-dark),var(--accent-orange));color:#000;" onclick="createMainOrder()">
           <i class="fas fa-check"></i> Создать заказ
         </button>
       </div>
@@ -676,20 +734,6 @@
   let editingOrder = null;
   let pendingPreorderId = null;
 
-  // === Анимации для уведомления ===
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-
   // === Звуковой сигнал: чёткий двойной звонок ===
   function playBellSound() {
     try {
@@ -745,11 +789,11 @@
           position: fixed;
           top: 20px;
           right: 20px;
-          background: linear-gradient(135deg, #ff9800, #ff5722);
-          color: white;
+          background: linear-gradient(135deg, var(--accent-yellow-dark), var(--accent-orange));
+          color: #000;
           padding: 16px 24px;
           border-radius: 12px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
           z-index: 2000;
           font-weight: bold;
           animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 3s forwards;
@@ -862,7 +906,7 @@
         .filter(o => o.shiftId === shift.id)
         .reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
       progressWidth = Math.min(100, (currentShiftAmount / 3000) * 100);
-      fillColor = `linear-gradient(90deg, #ffeb3b 0%, #ff9800 50%, #4caf50 100%)`;
+      fillColor = `linear-gradient(90deg, var(--accent-yellow-dark), var(--accent-orange))`;
       statusText = 'Смена активна';
       
       // Проверить уведомление на 1000₽
@@ -870,7 +914,7 @@
     } else if (shift && !shift.active) {
       currentShiftAmount = shift.finalAmount || 0;
       progressWidth = Math.min(100, (currentShiftAmount / 3000) * 100);
-      fillColor = shift.finalAmount >= 3000 ? '#4caf50' : '#ff9800';
+      fillColor = currentShiftAmount >= 3000 ? 'var(--accent-green)' : 'var(--accent-orange)';
       statusText = 'Смена завершена';
     }
 
@@ -1429,7 +1473,7 @@
               <button class="btn-view" onclick="viewOrderDetails(${o.id})" style="margin-right:4px;">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn-accept" onclick="openEditModal(${o.id})" style="background:linear-gradient(135deg,#2196f3,#1976d2);min-width:auto;padding:8px 10px;margin-right:4px;">
+              <button class="btn-accept" onclick="openEditModal(${o.id})" style="background:linear-gradient(135deg,var(--accent-blue),#1e88e5);min-width:auto;padding:8px 10px;margin-right:4px;">
                 <i class="fas fa-edit"></i>
               </button>
               <button class="btn-delete" onclick="deleteOrder(${o.id})">
@@ -1703,7 +1747,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('viewDate').value = todayYMD();
+    document.getElementById('viewDate = todayYMD();
 
     const mainSelect = document.getElementById('tariff');
     const preSelect = document.getElementById('preTariff');
