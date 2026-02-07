@@ -28,105 +28,83 @@
       cursor: pointer;
     }
     button:hover { opacity: 0.9; }
-    button.copy-btn {
-      background: #4CAF50;
-      width: auto;
-      padding: 6px 12px;
+    button.export-btn {
+      background: #9c27b0;
       font-size: 14px;
-      margin-left: 8px;
-    }
-    #qr-display img {
-      display: block;
-      margin: 20px auto;
-      max-width: 250px;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      background: white;
       padding: 8px;
     }
     .section { background: white; padding: 16px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .hidden { display: none !important; }
-    .info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin: 12px 0; }
-    .error { background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px; margin: 10px 0; }
-    .success { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; margin: 10px 0; }
-    .history-item { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .promo-alert {
+      padding: 14px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-weight: bold;
+      text-align: center;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .level-20 { background: #e3f2fd; color: #0d47a1; }
+    .level-25 { background: #fff8e1; color: #e65100; }
+    .level-30 { background: #e8f5e8; color: #1b5e20; }
+    .footer-note { text-align: center; font-size: 12px; color: #888; margin-top: 20px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎟️ Система лояльности</h1>
 
-    <!-- ГЕНЕРАЦИЯ НОВОГО КЛИЕНТА -->
+    <!-- НОВЫЙ КЛИЕНТ -->
     <div class="section">
-      <h2>➕ Выдать новый QR</h2>
-      <button onclick="generateNewUser()">Создать QR для нового клиента</button>
+      <h2>➕ Новый клиент</h2>
+      <button onclick="generateNewUser()">Выдать QR с 100 баллами</button>
       <div id="new-qr-display" class="hidden">
-        <h3>Новый QR:</h3>
+        <h3>QR для клиента:</h3>
         <div id="new-qr-img"></div>
-        <p><strong>Строка для копирования:</strong></p>
-        <input id="new-qr-text" readonly />
-        <button class="copy-btn" onclick="copyToClipboard('new-qr-text')">Копировать</button>
-        <p><em>Отправьте клиенту картинку или строку.</em></p>
       </div>
     </div>
 
-    <!-- ОБРАБОТКА СУЩЕСТВУЮЩЕГО QR -->
+    <!-- НАЧИСЛЕНИЕ БАЛЛОВ -->
     <div class="section">
-      <h2>🔄 Обновить баллы по QR</h2>
-      <p>Вставьте всю строку из QR-кода (или введите ID и баллы):</p>
-      
-      <input type="text" id="input-qr-full" placeholder="id:abc|points:100|hash:XYZ..." />
-      <div id="qr-error" class="error hidden"></div>
-      <div id="qr-valid" class="success hidden">✅ QR подтверждён</div>
+      <h2>🔄 Начислить 5 баллов</h2>
+      <input type="text" id="input-qr-full" placeholder="Вставьте строку из QR-кода" />
+      <button onclick="addPointsAutomatically()">Добавить 5 баллов</button>
 
-      <h3>Изменение баллов</h3>
-      <input type="number" id="change-points" placeholder="± баллы (например: 50 или -30)" />
-      
-      <button onclick="processUpdate()">Обновить и сгенерировать новый QR</button>
+      <!-- УВЕДОМЛЕНИЕ О ПРОМОКОДЕ -->
+      <div id="promo-notification" class="hidden"></div>
 
+      <!-- ОБНОВЛЁННЫЙ QR -->
       <div id="result-qr-display" class="hidden">
         <h3>Обновлённый QR:</h3>
         <div id="result-qr-img"></div>
-        <p><strong>Строка:</strong></p>
-        <input id="result-qr-text" readonly />
-        <button class="copy-btn" onclick="copyToClipboard('result-qr-text')">Копировать</button>
-        <p class="info">✅ Отправьте этот QR клиенту.</p>
       </div>
     </div>
 
-    <!-- ИСТОРИЯ И ЭКСПОРТ -->
-    <div class="section">
-      <h2>💾 История операций</h2>
-      <button onclick="exportHistory('txt')">Экспорт в TXT</button>
-      <button onclick="exportHistory('json')">Экспорт в JSON</button>
-      <div id="history-list" style="margin-top:12px; max-height:200px; overflow:auto;"></div>
+    <!-- ЭКСПОРТ ИСТОРИИ (МИНИМАЛЬНО) -->
+    <div style="text-align:center; margin-top:20px;">
+      <button class="export-btn" onclick="exportHistory()">📤 Экспорт истории</button>
     </div>
 
-    <!-- ИНСТРУКЦИЯ -->
-    <div class="section" style="margin-top: 30px; font-size: 14px; color: #666;">
-      <h3>ℹ️ Как использовать</h3>
-      <ul>
-        <li>Новый клиент → «Создать QR» → получите QR с 100 баллами.</li>
-        <li>Клиент показывает QR → вы вставляете ВСЮ строку в поле выше.</li>
-        <li>Система проверит подлинность → введите изменение баллов.</li>
-        <li>Получите новый QR → отправьте клиенту.</li>
-      </ul>
+    <div class="footer-note">
+      Все данные хранятся только на этом устройстве.
     </div>
   </div>
 
   <!-- QR Generator -->
   <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
   <script>
-    // === СЕКРЕТ ДЛЯ ПОДПИСИ ===
-    const SECRET = "loyalty-secret-2026"; // ← ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ!
+    // === КОНФИГУРАЦИЯ ===
+    const SECRET = "loyalty-secret-2026"; // ← ЗАМЕНИТЕ НА СВОЙ!
 
-    // История операций
+    // История
     let history = JSON.parse(localStorage.getItem('loyalty_history') || '[]');
 
-    // Хэш
+    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function makeHash(id, points) {
-      const str = `${id}|${points}|${SECRET}`;
-      return btoa(str).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12).toUpperCase();
+      return btoa(`${id}|${points}|${SECRET}`).replace(/[^a-zA-Z0-9]/g, '').substring(0, 12).toUpperCase();
     }
 
     function verifyData(id, points, hash) {
@@ -134,145 +112,131 @@
     }
 
     function encodeToQRString(id, points) {
-      const hash = makeHash(id, points);
-      return `id:${id}|points:${points}|hash:${hash}`;
+      return `id:${id}|points:${points}|hash:${makeHash(id, points)}`;
     }
 
     function parseQRString(str) {
-      const parts = str.split('|');
       const data = {};
-      parts.forEach(part => {
-        const [key, val] = part.split(':');
-        if (key && val) data[key] = key === 'points' ? parseInt(val) : val;
+      str.split('|').forEach(part => {
+        const [k, v] = part.split(':');
+        if (k && v) data[k] = k === 'points' ? parseInt(v) : v;
       });
       return data;
     }
 
-    function generateQRImage(dataStr) {
+    function generateQRImage(str) {
       const qr = qrcode(0, 'M');
-      qr.addData(dataStr);
+      qr.addData(str);
       qr.make();
       return qr.createImgTag(6);
     }
 
-    function addToHistory(action, id, oldPoints, newPoints) {
-      const entry = {
+    // === ЗВУК ===
+    function playSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.frequency.value = 800; // частота
+        gainNode.gain.value = 0.2;
+        oscillator.type = 'sine';
+        oscillator.start();
+        setTimeout(() => {
+          oscillator.stop();
+        }, 200);
+      } catch (e) {
+        console.warn("Звук недоступен", e);
+      }
+    }
+
+    // === ИСТОРИЯ ===
+    function addToHistory(id, oldPoints, newPoints) {
+      history.unshift({
         time: new Date().toISOString(),
-        action,
         id,
         oldPoints,
         newPoints
-      };
-      history.unshift(entry);
-      if (history.length > 200) history = history.slice(0, 200); // ограничение
+      });
+      if (history.length > 500) history = history.slice(0, 500);
       localStorage.setItem('loyalty_history', JSON.stringify(history));
-      renderHistory();
     }
 
-    function renderHistory() {
-      const list = document.getElementById('history-list');
-      list.innerHTML = history.map(item => `
-        <div class="history-item">
-          ${new Date(item.time).toLocaleString()} — ${item.action} 
-          ID: ${item.id} (${item.oldPoints} → ${item.newPoints})
-        </div>
-      `).join('');
+    function exportHistory() {
+      let txt = "История начисления баллов\n=========================\n\n";
+      history.forEach(item => {
+        const date = new Date(item.time).toLocaleString('ru-RU');
+        txt += `${date} | ID: ${item.id} | ${item.oldPoints} → ${item.newPoints}\n`;
+      });
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `loyalty_history_${new Date().toISOString().slice(0,10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
-    // === КОПИРОВАНИЕ ===
-    function copyToClipboard(id) {
-      const el = document.getElementById(id);
-      el.select();
-      document.execCommand('copy');
-      alert("Скопировано!");
-    }
-
-    // === НОВЫЙ КЛИЕНТ ===
+    // === ОСНОВНЫЕ ФУНКЦИИ ===
     function generateNewUser() {
       const id = Math.random().toString(36).substring(2, 10) + Date.now().toString(36).slice(-4);
       const points = 100;
       const qrStr = encodeToQRString(id, points);
-      const imgTag = generateQRImage(qrStr);
-
-      document.getElementById('new-qr-img').innerHTML = imgTag;
-      document.getElementById('new-qr-text').value = qrStr;
+      document.getElementById('new-qr-img').innerHTML = generateQRImage(qrStr);
       document.getElementById('new-qr-display').classList.remove('hidden');
-
-      addToHistory("Новый клиент", id, 0, points);
+      addToHistory(id, 0, points);
     }
 
-    // === ОБНОВЛЕНИЕ ===
-    function processUpdate() {
+    function addPointsAutomatically() {
       const fullStr = document.getElementById('input-qr-full').value.trim();
-      if (!fullStr) {
-        alert("Вставьте строку из QR-кода");
-        return;
-      }
+      if (!fullStr) return alert("Вставьте строку из QR-кода");
 
       const data = parseQRString(fullStr);
       if (!data.id || isNaN(data.points) || !data.hash) {
-        document.getElementById('qr-error').innerText = "❌ Неверный формат QR";
-        document.getElementById('qr-error').classList.remove('hidden');
-        document.getElementById('qr-valid').classList.add('hidden');
-        return;
+        return alert("❌ Неверный формат QR");
       }
 
       if (!verifyData(data.id, data.points, data.hash)) {
-        document.getElementById('qr-error').innerText = "❌ Поддельный QR! Хэш не совпадает.";
-        document.getElementById('qr-error').classList.remove('hidden');
-        document.getElementById('qr-valid').classList.add('hidden');
-        return;
+        return alert("❌ Поддельный QR!");
       }
 
-      document.getElementById('qr-error').classList.add('hidden');
-      document.getElementById('qr-valid').classList.remove('hidden');
+      const added = 5;
+      const newPoints = data.points + added;
 
-      const change = parseInt(document.getElementById('change-points').value);
-      if (isNaN(change)) {
-        alert("Введите изменение баллов");
-        return;
-      }
+      // Сохраняем в историю
+      addToHistory(data.id, data.points, newPoints);
 
-      let newPoints = data.points + change;
-      if (newPoints < 0) newPoints = 0;
-
+      // Генерация нового QR
       const newQrStr = encodeToQRString(data.id, newPoints);
-      const imgTag = generateQRImage(newQrStr);
-
-      document.getElementById('result-qr-img').innerHTML = imgTag;
-      document.getElementById('result-qr-text').value = newQrStr;
+      document.getElementById('result-qr-img').innerHTML = generateQRImage(newQrStr);
       document.getElementById('result-qr-display').classList.remove('hidden');
 
-      addToHistory("Обновление", data.id, data.points, newPoints);
-    }
+      // Уведомление о промокоде
+      const promoDiv = document.getElementById('promo-notification');
+      promoDiv.className = 'promo-alert hidden';
 
-    // === ЭКСПОРТ ИСТОРИИ ===
-    function exportHistory(format) {
-      let dataStr, filename;
-      if (format === 'txt') {
-        let txt = "История операций лояльности\n===========================\n\n";
-        history.forEach(item => {
-          txt += `${new Date(item.time).toLocaleString()} | ${item.action} | ID: ${item.id} | ${item.oldPoints} → ${item.newPoints}\n`;
-        });
-        dataStr = "text/plain;charset=utf-8," + encodeURIComponent(txt);
-        filename = `loyalty_history_${new Date().toISOString().slice(0,10)}.txt`;
-      } else {
-        dataStr = "application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history, null, 2));
-        filename = `loyalty_history_${new Date().toISOString().slice(0,10)}.json`;
+      let level = null, discount = 0;
+      if (newPoints >= 100) {
+        level = '30'; discount = 30;
+      } else if (newPoints >= 75) {
+        level = '25'; discount = 25;
+      } else if (newPoints >= 50) {
+        level = '20'; discount = 20;
       }
 
-      const link = document.createElement("a");
-      link.setAttribute("href", dataStr);
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+      if (level) {
+        promoDiv.innerText = `🎁 Доступен промокод на ${discount}% скидку!`;
+        promoDiv.classList.add(`level-${level}`);
+        promoDiv.classList.remove('hidden');
+        playSound(); // 🔊 звук!
+      }
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
-    window.onload = () => {
-      renderHistory();
-    };
+      // Очистка
+      document.getElementById('input-qr-full').value = '';
+    }
   </script>
 </body>
 </html>
