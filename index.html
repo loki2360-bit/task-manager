@@ -11,6 +11,8 @@
             --primary-gray: #f5f5f5;
             --primary-red: #e74c3c;
             --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --primary-blue: #3498db;
             --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --glow: 0 0 15px rgba(255, 215, 0, 0.5);
             --border-radius: 12px;
@@ -32,7 +34,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -62,47 +64,56 @@
             margin-top: 10px;
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--primary-yellow);
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            background: rgba(255,255,255,0.2);
             border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            box-shadow: var(--glow);
-            font-size: 1.5em;
             transition: var(--transition);
         }
 
-        .theme-toggle:hover {
-            transform: rotate(180deg);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--primary-yellow);
+            color: var(--primary-black);
+            transform: translateY(-2px);
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
         }
 
-        .quests-section, .profile-section {
+        .quests-section, .profile-section, .calendar-section, .leaderboard-section {
             background: white;
             border-radius: var(--border-radius);
             padding: 25px;
             box-shadow: var(--shadow);
             transition: var(--transition);
+            display: none;
         }
 
-        .quests-section:hover, .profile-section:hover {
+        .quests-section.active, .profile-section.active, .calendar-section.active, .leaderboard-section.active {
+            display: block;
+        }
+
+        .quests-section:hover, .profile-section:hover, .calendar-section:hover, .leaderboard-section:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
@@ -162,9 +173,23 @@
             left: 100%;
         }
 
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
         .quest-title {
             font-size: 1.3em;
-            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .quest-type {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
             font-weight: bold;
         }
 
@@ -172,10 +197,35 @@
             font-size: 0.95em;
             margin-bottom: 15px;
             opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .quest-progress {
+            margin-bottom: 10px;
+        }
+
+        .quest-progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .quest-progress-fill {
+            height: 100%;
+            background: var(--primary-yellow);
+            transition: width 0.3s ease;
+        }
+
+        .quest-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
         }
 
         .quest-reward {
-            display: inline-block;
             background: var(--primary-yellow);
             color: var(--primary-black);
             padding: 5px 15px;
@@ -190,6 +240,7 @@
             font-size: 0.85em;
             padding: 3px 10px;
             border-radius: 15px;
+            font-weight: bold;
         }
 
         .status-available {
@@ -202,31 +253,66 @@
             color: white;
         }
 
+        .status-locked {
+            background: #34495e;
+            color: white;
+        }
+
+        .status-cooldown {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .cooldown-timer {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+        }
+
         .profile-info {
             text-align: center;
             margin-bottom: 25px;
         }
 
         .avatar {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
             margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3em;
+            font-size: 3.5em;
             color: var(--primary-black);
             box-shadow: var(--glow);
             animation: rotate 3s linear infinite;
             cursor: pointer;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
         }
 
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
         }
 
         .avatar:hover {
@@ -235,7 +321,7 @@
         }
 
         .user-name {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
             margin-bottom: 5px;
             color: var(--primary-black);
@@ -243,7 +329,12 @@
 
         .user-level {
             color: var(--primary-gray);
-            font-size: 0.9em;
+            font-size: 1em;
+            background: linear-gradient(90deg, var(--primary-yellow), #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
         }
 
         .stats-grid {
@@ -259,6 +350,24 @@
             border-radius: var(--border-radius);
             text-align: center;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-card:hover {
@@ -289,20 +398,22 @@
             margin-bottom: 8px;
             font-size: 0.9em;
             color: var(--primary-black);
+            font-weight: bold;
         }
 
         .progress-bar {
-            height: 25px;
+            height: 30px;
             background: var(--primary-gray);
-            border-radius: 12px;
+            border-radius: 15px;
             overflow: hidden;
             position: relative;
+            border: 2px solid var(--primary-yellow);
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary-yellow), #ffd700);
-            border-radius: 12px;
+            border-radius: 15px;
             transition: width 0.5s ease;
             position: relative;
         }
@@ -318,9 +429,14 @@
             animation: shine 2s infinite;
         }
 
-        @keyframes shine {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-black);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
         .rewards-section {
@@ -334,6 +450,8 @@
             margin-bottom: 10px;
             color: white;
             transition: var(--transition);
+            position: relative;
+            cursor: pointer;
         }
 
         .reward-card:hover {
@@ -341,14 +459,35 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
+        .reward-card.claimed {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .reward-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
         .reward-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .reward-points {
+            background: rgba(255,255,255,0.3);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
         }
 
         .reward-desc {
             font-size: 0.85em;
             opacity: 0.9;
+            margin-bottom: 8px;
         }
 
         .reward-code {
@@ -358,6 +497,8 @@
             font-family: monospace;
             margin-top: 5px;
             display: inline-block;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
 
         .notification {
@@ -372,6 +513,11 @@
             transform: translateX(400px);
             transition: transform 0.3s ease;
             z-index: 1000;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateX(0); }
         }
 
         .notification.show {
@@ -382,6 +528,11 @@
             background: var(--primary-red);
         }
 
+        .notification.warning {
+            background: var(--primary-yellow);
+            color: var(--primary-black);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -389,19 +540,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 2000;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
             background: white;
             border-radius: var(--border-radius);
             padding: 30px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             animation: modalOpen 0.3s ease;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         @keyframes modalOpen {
@@ -429,17 +589,139 @@
             margin-bottom: 20px;
             color: var(--primary-black);
             text-align: center;
+            border-bottom: 2px solid var(--primary-yellow);
+            padding-bottom: 15px;
         }
 
         .modal-desc {
             margin-bottom: 20px;
             line-height: 1.6;
+            color: var(--primary-black);
+        }
+
+        .mini-game {
+            background: var(--primary-gray);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary-black);
+            box-shadow: var(--shadow);
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+            background: white;
+        }
+
+        .memory-card.matched {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-black);
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            background: var(--primary-gray);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            color: var(--primary-black);
+        }
+
+        .quiz-option:hover {
+            background: var(--primary-yellow);
+            border-color: var(--primary-yellow);
+        }
+
+        .quiz-option.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .quiz-option.correct {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .quiz-option.incorrect {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .typing-game {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .word-to-type {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-black);
+            letter-spacing: 2px;
+        }
+
+        .typing-input {
+            padding: 12px;
+            font-size: 1.2em;
+            border: 2px solid var(--primary-yellow);
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            margin: 0 auto;
+            display: block;
+            color: var(--primary-black);
+        }
+
+        .typing-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
         }
 
         .modal-actions {
             display: flex;
             justify-content: space-between;
             gap: 15px;
+            margin-top: 20px;
         }
 
         .btn {
@@ -463,9 +745,154 @@
             color: var(--primary-black);
         }
 
-        .btn:hover {
+        .btn-success {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 8px;
+            color: var(--primary-black);
+            font-size: 0.9em;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            font-size: 0.9em;
+            color: var(--primary-black);
+        }
+
+        .calendar-day:hover {
+            background: var(--primary-yellow);
+            transform: scale(1.1);
+        }
+
+        .calendar-day.today {
+            background: var(--primary-yellow);
+            color: var(--primary-black);
+            font-weight: bold;
+            box-shadow: var(--glow);
+        }
+
+        .calendar-day.past {
+            opacity: 0.6;
+        }
+
+        .calendar-day.future {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.completed {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .calendar-day.missed {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .day-number {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .day-reward {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7em;
+            font-weight: bold;
+            color: var(--primary-yellow);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: var(--primary-gray);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .leaderboard-item:hover {
+            background: var(--primary-yellow);
+        }
+
+        .leaderboard-item.current {
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            color: var(--primary-black);
+            font-weight: bold;
+            box-shadow: var(--glow);
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leaderboard-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-black);
+        }
+
+        .leaderboard-points {
+            font-weight: bold;
+            color: var(--primary-yellow);
         }
 
         footer {
@@ -483,7 +910,9 @@
         }
 
         body.dark-theme .quests-section,
-        body.dark-theme .profile-section {
+        body.dark-theme .profile-section,
+        body.dark-theme .calendar-section,
+        body.dark-theme .leaderboard-section {
             background: #2c3e50;
             color: white;
         }
@@ -514,6 +943,19 @@
         body.dark-theme .reward-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
+        body.dark-theme .quiz-option {
+            color: white;
+        }
+
+        body.dark-theme .typing-input {
+            color: white;
+            background: #34495e;
+        }
+
+        body.dark-theme .calendar-day {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -521,11 +963,16 @@
         <header>
             <div class="logo">✨ Арома-Квест ✨</div>
             <div class="subtitle">Откройте мир эфирных масел и получите уникальные бонусы!</div>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="quests">🎯 Квесты</button>
+                <button class="tab-btn" data-tab="profile">👤 Профиль</button>
+                <button class="tab-btn" data-tab="calendar">📅 Календарь</button>
+                <button class="tab-btn" data-tab="leaderboard">🏆 Рейтинги</button>
+            </div>
         </header>
 
         <div class="main-content">
-            <div class="quests-section">
+            <div class="quests-section active">
                 <h2 class="section-title">Доступные квесты</h2>
                 <div id="questsContainer"></div>
             </div>
@@ -563,7 +1010,9 @@
                         <span id="progressText">0/1000</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 0%">
+                            <div class="progress-text" id="progressPercent">0%</div>
+                        </div>
                     </div>
                 </div>
 
@@ -571,6 +1020,28 @@
                     <h3 style="margin-bottom: 15px; color: var(--primary-black);">Ваши промокоды:</h3>
                     <div id="rewardsContainer"></div>
                 </div>
+            </div>
+
+            <div class="calendar-section">
+                <h2 class="section-title">Календарь заданий</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: var(--primary-black);">
+                    Ежедневные задания обновляются в полночь. Не пропустите!
+                </p>
+                <div class="calendar" id="calendar"></div>
+                <div style="margin-top: 20px; padding: 15px; background: var(--primary-gray); border-radius: var(--border-radius);">
+                    <p style="color: var(--primary-black); font-weight: bold;">
+                        📊 Статистика месяца:
+                    </p>
+                    <p id="calendarStats" style="color: var(--primary-black); margin-top: 10px;"></p>
+                </div>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2 class="section-title">Таблица лидеров</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: var(--primary-black);">
+                    Соревнуйтесь с другими арома-путешественниками!
+                </p>
+                <ul class="leaderboard-list" id="leaderboard"></ul>
             </div>
         </div>
 
@@ -587,9 +1058,10 @@
             <span class="close-modal" id="closeModal">&times;</span>
             <h3 class="modal-title" id="modalTitle">Название квеста</h3>
             <p class="modal-desc" id="modalDesc">Описание квеста...</p>
+            <div id="questContent"></div>
             <div class="modal-actions">
-                <button class="btn btn-secondary" id="declineBtn">Отклонить</button>
-                <button class="btn btn-primary" id="acceptBtn">Принять квест</button>
+                <button class="btn btn-secondary" id="declineBtn">Отмена</button>
+                <button class="btn btn-primary" id="actionBtn">Начать задание</button>
             </div>
         </div>
     </div>
@@ -598,78 +1070,189 @@
         // Данные приложения
         const appData = {
             user: {
+                id: generateUserId(),
                 name: 'Путешественник',
                 level: 1,
                 points: 0,
                 completedQuests: 0,
                 streakDays: 0,
                 lastLogin: null,
-                avatar: '👤'
+                avatar: '👤',
+                dailyLogin: null,
+                weeklyReset: null,
+                achievements: []
             },
             quests: [
                 {
                     id: 1,
-                    title: 'Первый шаг в мир ароматов',
-                    description: 'Зарегистрируйтесь в программе лояльности и получите приветственный бонус',
-                    reward: 100,
+                    title: 'Изучение лаванды',
+                    description: 'Лаванда - королева эфирных масел. Пройдите тест и узнайте её свойства.',
+                    reward: 50,
                     status: 'available',
-                    type: 'registration'
+                    type: 'daily',
+                    difficulty: 'easy',
+                    cooldown: 86400000, // 24 часа
+                    lastCompleted: null,
+                    gameType: 'quiz',
+                    gameData: {
+                        question: 'Какое свойство лаванды наиболее известно?',
+                        options: [
+                            { text: 'Антибактериальное', correct: false },
+                            { text: 'Успокаивающее', correct: true },
+                            { text: 'Отбеливающее', correct: false },
+                            { text: 'Согревающее', correct: false }
+                        ]
+                    }
                 },
                 {
                     id: 2,
-                    title: 'Изучение базовых масел',
-                    description: 'Узнайте о 5 самых популярных эфирных маслах и их свойствах',
-                    reward: 150,
+                    title: 'Запоминание ароматов',
+                    description: 'Запомните пары эфирных масел. Тренируйте память и узнавайте новые ароматы!',
+                    reward: 75,
                     status: 'available',
-                    type: 'education'
+                    type: 'daily',
+                    difficulty: 'medium',
+                    cooldown: 86400000,
+                    lastCompleted: null,
+                    gameType: 'memory',
+                    gameData: {
+                        pairs: [
+                            { emoji: '🌿', name: 'Розмарин' },
+                            { emoji: '🌸', name: 'Роза' },
+                            { emoji: '🍋', name: 'Лимон' },
+                            { emoji: '🍊', name: 'Апельсин' },
+                            { emoji: '🌲', name: 'Пихта' },
+                            { emoji: '🌺', name: 'Иланг-иланг' },
+                            { emoji: '🌱', name: 'Мята' },
+                            { emoji: '🌼', name: 'Ромашка' }
+                        ]
+                    }
                 },
                 {
                     id: 3,
-                    title: 'Создание первого букета',
-                    description: 'Скомбинируйте 3 разных эфирных масла для создания уникального аромата',
-                    reward: 200,
-                    status: 'locked',
-                    type: 'creation'
+                    title: 'Создание ароматической композиции',
+                    description: 'Напишите название эфирного масла правильно. Практикуйте правописание и узнавайте новые названия!',
+                    reward: 60,
+                    status: 'available',
+                    type: 'daily',
+                    difficulty: 'easy',
+                    cooldown: 86400000,
+                    lastCompleted: null,
+                    gameType: 'typing',
+                    gameData: {
+                        words: ['лаванда', 'розмарин', 'иланг-иланг', 'эвкалипт', 'бергамот', 'петитгрейн']
+                    }
                 },
                 {
                     id: 4,
-                    title: 'Ежедневный ароматерапевт',
-                    description: 'Посетите приложение 7 дней подряд для получения бонуса за лояльность',
-                    reward: 300,
-                    status: 'available',
-                    type: 'streak'
+                    title: 'Эксперт по цитрусовым',
+                    description: 'Пройдите сложный тест о цитрусовых маслах и станьте настоящим экспертом!',
+                    reward: 120,
+                    status: 'locked',
+                    type: 'weekly',
+                    difficulty: 'hard',
+                    cooldown: 604800000, // 7 дней
+                    lastCompleted: null,
+                    gameType: 'quiz',
+                    gameData: {
+                        question: 'Какое цитрусовое масло нельзя использовать на солнце?',
+                        options: [
+                            { text: 'Апельсин', correct: false },
+                            { text: 'Лимон', correct: true },
+                            { text: 'Грейпфрут', correct: false },
+                            { text: 'Мандарин', correct: false }
+                        ]
+                    },
+                    unlockRequirement: { level: 2 }
                 },
                 {
                     id: 5,
                     title: 'Мастер смешивания',
-                    description: 'Создайте 10 уникальных комбинаций эфирных масел',
-                    reward: 500,
+                    description: 'Запомните 10 пар эфирных масел и их свойств. Только для настоящих мастеров!',
+                    reward: 200,
                     status: 'locked',
-                    type: 'advanced'
+                    type: 'weekly',
+                    difficulty: 'hard',
+                    cooldown: 604800000,
+                    lastCompleted: null,
+                    gameType: 'memory',
+                    gameData: {
+                        pairs: [
+                            { emoji: '🌿', name: 'Розмарин - концентрация' },
+                            { emoji: '🌸', name: 'Роза - любовь' },
+                            { emoji: '🍋', name: 'Лимон - энергия' },
+                            { emoji: '🍊', name: 'Апельсин - радость' },
+                            { emoji: '🌲', name: 'Пихта - сила' },
+                            { emoji: '🌺', name: 'Иланг-иланг - страсть' },
+                            { emoji: '🌱', name: 'Мята - свежесть' },
+                            { emoji: '🌼', name: 'Ромашка - спокойствие' },
+                            { emoji: '💧', name: 'Лаванда - сон' },
+                            { emoji: '☀️', name: 'Бергамот - настроение' }
+                        ]
+                    },
+                    unlockRequirement: { completedQuests: 5 }
                 },
                 {
                     id: 6,
-                    title: 'Рецепт красоты',
-                    description: 'Изучите и сохраните 3 рецепта домашней косметики с эфирными маслами',
-                    reward: 250,
-                    status: 'available',
-                    type: 'beauty'
+                    title: 'Ароматерапия для сна',
+                    description: 'Напишите 5 названий масел для сна без ошибок.',
+                    reward: 100,
+                    status: 'locked',
+                    type: 'weekly',
+                    difficulty: 'medium',
+                    cooldown: 604800000,
+                    lastCompleted: null,
+                    gameType: 'typing',
+                    gameData: {
+                        words: ['лаванда', 'ромашка', 'иланг-иланг', 'сандал', 'нероли']
+                    },
+                    unlockRequirement: { streakDays: 3 }
                 },
                 {
                     id: 7,
-                    title: 'Ароматическое путешествие',
-                    description: 'Откройте для себя эфирные масла из 5 разных стран мира',
-                    reward: 350,
-                    status: 'locked',
-                    type: 'exploration'
+                    title: 'История эфирных масел',
+                    description: 'Узнайте историю использования эфирных масел в древности.',
+                    reward: 80,
+                    status: 'available',
+                    type: 'daily',
+                    difficulty: 'medium',
+                    cooldown: 86400000,
+                    lastCompleted: null,
+                    gameType: 'quiz',
+                    gameData: {
+                        question: 'В какой древней цивилизации впервые начали использовать эфирные масла?',
+                        options: [
+                            { text: 'Древний Египет', correct: true },
+                            { text: 'Древняя Греция', correct: false },
+                            { text: 'Древний Рим', correct: false },
+                            { text: 'Вавилон', correct: false }
+                        ]
+                    }
                 },
                 {
                     id: 8,
-                    title: 'Здоровый образ жизни',
-                    description: 'Изучите 5 способов использования эфирных масел для улучшения сна',
-                    reward: 200,
-                    status: 'available',
-                    type: 'wellness'
+                    title: 'Ботанический сад',
+                    description: 'Запомните растения, из которых добывают эфирные масла.',
+                    reward: 90,
+                    status: 'locked',
+                    type: 'weekly',
+                    difficulty: 'medium',
+                    cooldown: 604800000,
+                    lastCompleted: null,
+                    gameType: 'memory',
+                    gameData: {
+                        pairs: [
+                            { emoji: '🌹', name: 'Роза' },
+                            { emoji: '🌼', name: 'Ромашка' },
+                            { emoji: '🌿', name: 'Лаванда' },
+                            { emoji: '🌱', name: 'Мята' },
+                            { emoji: '🍋', name: 'Лимон' },
+                            { emoji: '🍊', name: 'Апельсин' },
+                            { emoji: '🌲', name: 'Пихта' },
+                            { emoji: '🌸', name: 'Жасмин' }
+                        ]
+                    },
+                    unlockRequirement: { level: 3 }
                 }
             ],
             rewards: [
@@ -704,8 +1287,18 @@
                     code: 'VIP20',
                     pointsRequired: 1000,
                     claimed: false
+                },
+                {
+                    id: 5,
+                    title: 'Мастер ароматов',
+                    description: 'Скидка 25% на весь ассортимент',
+                    code: 'MASTER25',
+                    pointsRequired: 2000,
+                    claimed: false
                 }
-            ]
+            ],
+            dailyTasks: [],
+            leaderboard: []
         };
 
         // DOM элементы
@@ -719,39 +1312,61 @@
             userName: document.getElementById('userName'),
             progressFill: document.getElementById('progressFill'),
             progressText: document.getElementById('progressText'),
+            progressPercent: document.getElementById('progressPercent'),
             rewardsContainer: document.getElementById('rewardsContainer'),
             notification: document.getElementById('notification'),
             questModal: document.getElementById('questModal'),
             modalTitle: document.getElementById('modalTitle'),
             modalDesc: document.getElementById('modalDesc'),
-            acceptBtn: document.getElementById('acceptBtn'),
+            questContent: document.getElementById('questContent'),
+            actionBtn: document.getElementById('actionBtn'),
             declineBtn: document.getElementById('declineBtn'),
             closeModal: document.getElementById('closeModal'),
-            themeToggle: document.getElementById('themeToggle'),
-            avatar: document.getElementById('avatar')
+            avatar: document.getElementById('avatar'),
+            calendar: document.getElementById('calendar'),
+            calendarStats: document.getElementById('calendarStats'),
+            leaderboard: document.getElementById('leaderboard'),
+            tabBtns: document.querySelectorAll('.tab-btn')
         };
 
         let currentQuest = null;
+        let gameInstance = null;
+        let dailyResetTimer = null;
+
+        // Генерация уникального ID пользователя
+        function generateUserId() {
+            return 'user_' + Math.random().toString(36).substr(2, 9);
+        }
 
         // Инициализация приложения
         function init() {
             loadUserData();
             checkDailyStreak();
+            checkQuestCooldowns();
+            generateDailyTasks();
+            updateLeaderboard();
             renderQuests();
             renderRewards();
+            renderCalendar();
             updateUI();
             setupEventListeners();
+            setupDailyReset();
         }
 
         // Загрузка данных пользователя
         function loadUserData() {
             const savedData = localStorage.getItem('aromaQuestData');
             if (savedData) {
-                const parsedData = JSON.parse(savedData);
-                appData.user = {...appData.user, ...parsedData.user};
-            } else {
-                // Первый вход - даем приветственный бонус
-                completeQuest(1);
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appData.user = {...appData.user, ...parsedData.user};
+                    appData.quests = parsedData.quests || appData.quests;
+                    appData.rewards = parsedData.rewards || appData.rewards;
+                    appData.dailyTasks = parsedData.dailyTasks || [];
+                    appData.leaderboard = parsedData.leaderboard || appData.leaderboard;
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                }
             }
         }
 
@@ -762,20 +1377,85 @@
             
             if (!lastLogin) {
                 appData.user.streakDays = 1;
+                showNotification('🎯 Добро пожаловать! Начните своё ароматическое путешествие!', 'success');
             } else {
                 const lastDate = new Date(lastLogin).toDateString();
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
+                yesterday.setHours(0, 0, 0, 0);
                 
-                if (lastDate === yesterday.toDateString()) {
+                const lastLoginDate = new Date(lastLogin);
+                lastLoginDate.setHours(0, 0, 0, 0);
+                
+                if (lastLoginDate.getTime() === yesterday.getTime()) {
                     appData.user.streakDays++;
-                } else if (lastDate !== today) {
+                    showNotification(`🔥 Отлично! ${appData.user.streakDays} дней подряд! +20 бонусных баллов!`, 'success');
+                    appData.user.points += 20;
+                } else if (lastLoginDate.getTime() !== new Date().setHours(0, 0, 0, 0)) {
+                    if (appData.user.streakDays > 1) {
+                        showNotification(`⚠️ Серия прервана. Начните заново!`, 'warning');
+                    }
                     appData.user.streakDays = 1;
                 }
             }
             
-            appData.user.lastLogin = today;
+            appData.user.lastLogin = new Date().toISOString();
             saveUserData();
+        }
+
+        // Проверка кулдауна квестов
+        function checkQuestCooldowns() {
+            const now = Date.now();
+            
+            appData.quests.forEach(quest => {
+                if (quest.lastCompleted && quest.cooldown) {
+                    const timeSinceCompletion = now - new Date(quest.lastCompleted).getTime();
+                    
+                    if (timeSinceCompletion < quest.cooldown) {
+                        quest.status = 'cooldown';
+                    } else if (quest.status === 'cooldown') {
+                        quest.status = 'available';
+                    }
+                }
+                
+                // Проверка разблокировки
+                if (quest.status === 'locked' && quest.unlockRequirement) {
+                    if (quest.unlockRequirement.level && appData.user.level >= quest.unlockRequirement.level) {
+                        quest.status = 'available';
+                    } else if (quest.unlockRequirement.completedQuests && appData.user.completedQuests >= quest.unlockRequirement.completedQuests) {
+                        quest.status = 'available';
+                    } else if (quest.unlockRequirement.streakDays && appData.user.streakDays >= quest.unlockRequirement.streakDays) {
+                        quest.status = 'available';
+                    }
+                }
+            });
+        }
+
+        // Генерация ежедневных заданий
+        function generateDailyTasks() {
+            const today = new Date().toDateString();
+            
+            if (appData.user.dailyLogin !== today) {
+                appData.user.dailyLogin = today;
+                
+                // Очистка старых заданий
+                appData.dailyTasks = [];
+                
+                // Выбор 3 случайных ежедневных квестов
+                const dailyQuests = appData.quests
+                    .filter(q => q.type === 'daily' && q.status === 'available')
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 3);
+                
+                dailyQuests.forEach(quest => {
+                    appData.dailyTasks.push({
+                        questId: quest.id,
+                        available: true
+                    });
+                });
+                
+                saveUserData();
+            }
         }
 
         // Сохранение данных пользователя
@@ -783,7 +1463,9 @@
             localStorage.setItem('aromaQuestData', JSON.stringify({
                 user: appData.user,
                 quests: appData.quests,
-                rewards: appData.rewards
+                rewards: appData.rewards,
+                dailyTasks: appData.dailyTasks,
+                leaderboard: appData.leaderboard
             }));
         }
 
@@ -791,42 +1473,127 @@
         function renderQuests() {
             elements.questsContainer.innerHTML = '';
             
-            appData.quests.forEach(quest => {
-                if (quest.status === 'locked' && !canUnlockQuest(quest)) return;
+            // Сначала показываем ежедневные задания
+            if (appData.dailyTasks.length > 0) {
+                const dailySection = document.createElement('div');
+                dailySection.innerHTML = '<h3 style="color: var(--primary-black); margin-bottom: 15px; border-left: 4px solid var(--primary-yellow); padding-left: 10px;">📅 Ежедневные задания</h3>';
+                elements.questsContainer.appendChild(dailySection);
                 
-                const questCard = document.createElement('div');
-                questCard.className = 'quest-card';
-                questCard.innerHTML = `
-                    <div class="quest-title">${quest.title}</div>
-                    <div class="quest-desc">${quest.description}</div>
-                    <div>
-                        <span class="quest-reward">+${quest.reward} баллов</span>
-                        <span class="quest-status ${quest.status === 'available' ? 'status-available' : 'status-completed'}">
-                            ${quest.status === 'available' ? 'Доступен' : 'Завершен'}
-                        </span>
-                    </div>
-                `;
+                appData.dailyTasks.forEach(task => {
+                    const quest = appData.quests.find(q => q.id === task.questId);
+                    if (quest && task.available) {
+                        renderQuestCard(quest, dailySection);
+                    }
+                });
+            }
+            
+            // Потом остальные квесты
+            const otherSection = document.createElement('div');
+            otherSection.innerHTML = '<h3 style="color: var(--primary-black); margin: 20px 0 15px 0; border-left: 4px solid var(--primary-blue); padding-left: 10px;">🏆 Основные квесты</h3>';
+            elements.questsContainer.appendChild(otherSection);
+            
+            appData.quests
+                .filter(q => !appData.dailyTasks.some(t => t.questId === q.id))
+                .forEach(quest => {
+                    if (quest.status === 'locked' && !canUnlockQuest(quest)) return;
+                    renderQuestCard(quest, otherSection);
+                });
+        }
+
+        // Рендер карточки квеста
+        function renderQuestCard(quest, container) {
+            const questCard = document.createElement('div');
+            questCard.className = 'quest-card';
+            
+            let statusText = '';
+            let statusClass = '';
+            let cooldownText = '';
+            
+            if (quest.status === 'available') {
+                statusText = 'Доступен';
+                statusClass = 'status-available';
+            } else if (quest.status === 'completed') {
+                statusText = 'Завершен';
+                statusClass = 'status-completed';
+            } else if (quest.status === 'locked') {
+                statusText = 'Заблокирован';
+                statusClass = 'status-locked';
+            } else if (quest.status === 'cooldown') {
+                statusText = 'Перезарядка';
+                statusClass = 'status-cooldown';
                 
-                if (quest.status === 'available') {
-                    questCard.addEventListener('click', () => showQuestModal(quest));
+                if (quest.lastCompleted && quest.cooldown) {
+                    const remaining = quest.cooldown - (Date.now() - new Date(quest.lastCompleted).getTime());
+                    if (remaining > 0) {
+                        const hours = Math.floor(remaining / 3600000);
+                        const minutes = Math.floor((remaining % 3600000) / 60000);
+                        cooldownText = `<div class="cooldown-timer">⏱️ Осталось: ${hours}ч ${minutes}м</div>`;
+                    }
                 }
-                
-                elements.questsContainer.appendChild(questCard);
-            });
+            }
+            
+            questCard.innerHTML = `
+                <div class="quest-header">
+                    <div class="quest-title">${quest.title}</div>
+                    <div class="quest-type">${getDifficultyIcon(quest.difficulty)} ${quest.type === 'daily' ? 'Ежедневный' : 'Еженедельный'}</div>
+                </div>
+                <div class="quest-desc">${quest.description}</div>
+                <div class="quest-footer">
+                    <span class="quest-reward">+${quest.reward} баллов</span>
+                    <span class="quest-status ${statusClass}">${statusText}</span>
+                </div>
+                ${cooldownText}
+            `;
+            
+            if (quest.status === 'available') {
+                questCard.addEventListener('click', () => showQuestModal(quest));
+            } else if (quest.status === 'locked') {
+                questCard.title = getUnlockRequirementText(quest);
+            }
+            
+            container.appendChild(questCard);
+        }
+
+        // Получить иконку сложности
+        function getDifficultyIcon(difficulty) {
+            switch(difficulty) {
+                case 'easy': return '🟢';
+                case 'medium': return '🟡';
+                case 'hard': return '🔴';
+                default: return '⚪';
+            }
+        }
+
+        // Получить текст требования разблокировки
+        function getUnlockRequirementText(quest) {
+            if (!quest.unlockRequirement) return '';
+            
+            if (quest.unlockRequirement.level) {
+                return `Требуется уровень ${quest.unlockRequirement.level}`;
+            } else if (quest.unlockRequirement.completedQuests) {
+                return `Требуется завершить ${quest.unlockRequirement.completedQuests} квестов`;
+            } else if (quest.unlockRequirement.streakDays) {
+                return `Требуется серия из ${quest.unlockRequirement.streakDays} дней`;
+            }
+            
+            return 'Требуется выполнить предыдущие задания';
         }
 
         // Проверка возможности разблокировать квест
         function canUnlockQuest(quest) {
-            switch(quest.type) {
-                case 'creation':
-                    return appData.user.points >= 200;
-                case 'advanced':
-                    return appData.user.completedQuests >= 3;
-                case 'exploration':
-                    return appData.user.level >= 2;
-                default:
-                    return false;
+            if (!quest.unlockRequirement) return false;
+            
+            if (quest.unlockRequirement.level && appData.user.level >= quest.unlockRequirement.level) {
+                return true;
             }
+            if (quest.unlockRequirement.completedQuests && appData.user.completedQuests >= quest.unlockRequirement.completedQuests) {
+                return true;
+            }
+            if (quest.unlockRequirement.streakDays && appData.user.streakDays >= quest.unlockRequirement.streakDays) {
+                return true;
+            }
+            
+            return false;
         }
 
         // Показать модальное окно квеста
@@ -834,7 +1601,207 @@
             currentQuest = quest;
             elements.modalTitle.textContent = quest.title;
             elements.modalDesc.textContent = quest.description;
+            
+            // Создаем игру в зависимости от типа
+            createGameInstance(quest);
+            
             elements.questModal.style.display = 'flex';
+        }
+
+        // Создать инстанс игры
+        function createGameInstance(quest) {
+            elements.questContent.innerHTML = '';
+            
+            switch(quest.gameType) {
+                case 'quiz':
+                    createQuizGame(quest.gameData);
+                    break;
+                case 'memory':
+                    createMemoryGame(quest.gameData);
+                    break;
+                case 'typing':
+                    createTypingGame(quest.gameData);
+                    break;
+            }
+        }
+
+        // Создать викторину
+        function createQuizGame(gameData) {
+            const quizDiv = document.createElement('div');
+            quizDiv.className = 'mini-game';
+            quizDiv.innerHTML = `
+                <div class="quiz-question">${gameData.question}</div>
+                <div class="quiz-options" id="quizOptions"></div>
+            `;
+            
+            elements.questContent.appendChild(quizDiv);
+            
+            const optionsDiv = document.getElementById('quizOptions');
+            let selectedOption = null;
+            
+            gameData.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = option.text;
+                optionDiv.dataset.index = index;
+                
+                optionDiv.addEventListener('click', () => {
+                    if (selectedOption !== null) return;
+                    
+                    selectedOption = index;
+                    optionDiv.className = 'quiz-option selected';
+                    
+                    // Проверка ответа
+                    setTimeout(() => {
+                        if (option.correct) {
+                            optionDiv.className = 'quiz-option correct';
+                            elements.actionBtn.textContent = 'Получить награду';
+                            elements.actionBtn.disabled = false;
+                            elements.actionBtn.onclick = () => completeQuest(currentQuest.id);
+                        } else {
+                            optionDiv.className = 'quiz-option incorrect';
+                            showNotification('❌ Неправильно! Попробуйте еще раз в следующий раз.', 'error');
+                            elements.actionBtn.textContent = 'Закрыть';
+                            elements.actionBtn.onclick = () => elements.questModal.style.display = 'none';
+                        }
+                    }, 1000);
+                });
+                
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            elements.actionBtn.disabled = true;
+        }
+
+        // Создать игру на память
+        function createMemoryGame(gameData) {
+            const memoryDiv = document.createElement('div');
+            memoryDiv.className = 'mini-game';
+            memoryDiv.innerHTML = `
+                <p style="margin-bottom: 15px; color: var(--primary-black);">Найдите все пары одинаковых карточек!</p>
+                <div class="memory-game" id="memoryGrid"></div>
+                <p id="memoryStatus" style="margin-top: 15px; color: var(--primary-black); font-weight: bold;">Осталось пар: ${gameData.pairs.length}</p>
+            `;
+            
+            elements.questContent.appendChild(memoryDiv);
+            
+            const grid = document.getElementById('memoryGrid');
+            const status = document.getElementById('memoryStatus');
+            const pairs = [...gameData.pairs, ...gameData.pairs].sort(() => 0.5 - Math.random());
+            
+            let flippedCards = [];
+            let matchedPairs = 0;
+            let lockBoard = false;
+            
+            pairs.forEach((pair, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.dataset.value = pair.emoji;
+                
+                card.addEventListener('click', () => {
+                    if (lockBoard || flippedCards.includes(card) || card.className.includes('matched')) return;
+                    
+                    card.className = 'memory-card flipped';
+                    card.textContent = pair.emoji;
+                    flippedCards.push(card);
+                    
+                    if (flippedCards.length === 2) {
+                        lockBoard = true;
+                        
+                        if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+                            // Нашли пару
+                            flippedCards.forEach(c => c.className = 'memory-card matched');
+                            matchedPairs++;
+                            status.textContent = `Осталось пар: ${gameData.pairs.length - matchedPairs}`;
+                            
+                            flippedCards = [];
+                            lockBoard = false;
+                            
+                            // Проверка победы
+                            if (matchedPairs === gameData.pairs.length) {
+                                setTimeout(() => {
+                                    showNotification('🎉 Отлично! Все пары найдены!', 'success');
+                                    elements.actionBtn.textContent = 'Получить награду';
+                                    elements.actionBtn.disabled = false;
+                                    elements.actionBtn.onclick = () => completeQuest(currentQuest.id);
+                                }, 1000);
+                            }
+                        } else {
+                            // Не нашли пару
+                            setTimeout(() => {
+                                flippedCards.forEach(c => {
+                                    c.className = 'memory-card';
+                                    c.textContent = '';
+                                });
+                                flippedCards = [];
+                                lockBoard = false;
+                            }, 1000);
+                        }
+                    }
+                });
+                
+                grid.appendChild(card);
+            });
+            
+            elements.actionBtn.disabled = true;
+        }
+
+        // Создать игру на печатание
+        function createTypingGame(gameData) {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'mini-game typing-game';
+            
+            const currentWordIndex = { value: 0 };
+            const words = [...gameData.words];
+            
+            function showNextWord() {
+                if (currentWordIndex.value >= words.length) {
+                    showNotification('🎉 Отлично! Все слова написаны правильно!', 'success');
+                    elements.actionBtn.textContent = 'Получить награду';
+                    elements.actionBtn.disabled = false;
+                    elements.actionBtn.onclick = () => completeQuest(currentQuest.id);
+                    return;
+                }
+                
+                typingDiv.innerHTML = `
+                    <div class="word-to-type">${words[currentWordIndex.value]}</div>
+                    <input type="text" class="typing-input" id="typingInput" placeholder="Напишите слово..." autocomplete="off">
+                    <p id="typingStatus" style="margin-top: 10px; color: var(--primary-black);">Слово ${currentWordIndex.value + 1} из ${words.length}</p>
+                `;
+                
+                const input = document.getElementById('typingInput');
+                const status = document.getElementById('typingStatus');
+                
+                input.focus();
+                
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const answer = input.value.trim().toLowerCase();
+                        const correct = words[currentWordIndex.value].toLowerCase();
+                        
+                        if (answer === correct) {
+                            status.textContent = '✅ Правильно!';
+                            status.style.color = 'var(--primary-green)';
+                            
+                            setTimeout(() => {
+                                currentWordIndex.value++;
+                                showNextWord();
+                            }, 800);
+                        } else {
+                            status.textContent = '❌ Неправильно, попробуйте еще раз';
+                            status.style.color = 'var(--primary-red)';
+                            input.value = '';
+                            input.focus();
+                        }
+                    }
+                });
+            }
+            
+            elements.questContent.appendChild(typingDiv);
+            showNextWord();
+            
+            elements.actionBtn.disabled = true;
         }
 
         // Завершить квест
@@ -848,9 +1815,13 @@
             
             // Обновляем статус квеста
             quest.status = 'completed';
+            quest.lastCompleted = new Date().toISOString();
             
-            // Разблокируем следующие квесты
-            unlockNextQuests();
+            // Если это ежедневное задание, помечаем как выполненное
+            const dailyTask = appData.dailyTasks.find(t => t.questId === questId);
+            if (dailyTask) {
+                dailyTask.available = false;
+            }
             
             // Проверяем уровень
             checkLevelUp();
@@ -862,17 +1833,14 @@
             updateUI();
             renderQuests();
             
+            // Закрываем модальное окно
+            elements.questModal.style.display = 'none';
+            
             // Показываем уведомление
-            showNotification(`Квест "${quest.title}" завершен! +${quest.reward} баллов`);
-        }
-
-        // Разблокировать следующие квесты
-        function unlockNextQuests() {
-            appData.quests.forEach(quest => {
-                if (quest.status === 'locked' && canUnlockQuest(quest)) {
-                    quest.status = 'available';
-                }
-            });
+            showNotification(`🏆 Квест "${quest.title}" завершен! +${quest.reward} баллов`, 'success');
+            
+            // Обновляем лидерборд
+            updateLeaderboard();
         }
 
         // Проверка повышения уровня
@@ -880,7 +1848,7 @@
             const pointsForNextLevel = appData.user.level * 1000;
             if (appData.user.points >= pointsForNextLevel) {
                 appData.user.level++;
-                showNotification(`🎉 Поздравляем! Вы достигли ${appData.user.level} уровня!`);
+                showNotification(`🎉 Поздравляем! Вы достигли ${appData.user.level} уровня!`, 'success');
             }
         }
 
@@ -893,18 +1861,17 @@
                 
                 const canClaim = appData.user.points >= reward.pointsRequired;
                 const rewardCard = document.createElement('div');
-                rewardCard.className = 'reward-card';
+                rewardCard.className = `reward-card ${canClaim ? '' : 'disabled'}`;
                 rewardCard.style.opacity = canClaim ? '1' : '0.6';
                 rewardCard.style.cursor = canClaim ? 'pointer' : 'not-allowed';
                 
                 rewardCard.innerHTML = `
-                    <div class="reward-title">${reward.title}</div>
+                    <div class="reward-header">
+                        <div class="reward-title">${reward.title}</div>
+                        <div class="reward-points">${reward.pointsRequired} 🪙</div>
+                    </div>
                     <div class="reward-desc">${reward.description}</div>
                     <div class="reward-code">${reward.code}</div>
-                    <div style="margin-top: 8px; font-size: 0.8em;">
-                        Требуется: ${reward.pointsRequired} баллов | 
-                        ${canClaim ? '✅ Доступен' : '🔒 Недоступен'}
-                    </div>
                 `;
                 
                 if (canClaim) {
@@ -926,11 +1893,134 @@
             renderRewards();
             updateUI();
             
-            showNotification(`🎁 Вы получили промокод: ${reward.code}`);
+            showNotification(`🎁 Вы получили промокод: ${reward.code}`, 'success');
             showNotification('Промокод скопирован в буфер обмена!', 'success');
             
             // Копируем промокод в буфер обмена
-            navigator.clipboard.writeText(reward.code);
+            navigator.clipboard.writeText(reward.code).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Рендер календаря
+        function renderCalendar() {
+            elements.calendar.innerHTML = '';
+            
+            // Заголовки дней недели
+            ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                elements.calendar.appendChild(header);
+            });
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Первый день месяца
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const startingDay = firstDay.getDay() || 7; // Воскресенье = 0
+            
+            // Добавляем пустые дни до начала месяца
+            for (let i = 1; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                elements.calendar.appendChild(emptyDay);
+            }
+            
+            // Дни месяца
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDate = new Date(currentYear, currentMonth, day);
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Стили для разных типов дней
+                if (dayDate.toDateString() === today.toDateString()) {
+                    dayElement.className += ' today';
+                } else if (dayDate < today) {
+                    dayElement.className += ' past';
+                } else {
+                    dayElement.className += ' future';
+                }
+                
+                // Проверяем, было ли задание выполнено в этот день
+                const dayString = dayDate.toISOString().split('T')[0];
+                const taskCompleted = appData.dailyTasks.some(t => {
+                    const taskDate = new Date(t.completedAt || '');
+                    return taskDate.toISOString().split('T')[0] === dayString && t.completed;
+                });
+                
+                if (taskCompleted) {
+                    dayElement.className += ' completed';
+                }
+                
+                dayElement.innerHTML = `
+                    <span class="day-number">${day}</span>
+                    <span class="day-reward">+20</span>
+                `;
+                
+                elements.calendar.appendChild(dayElement);
+            }
+            
+            // Статистика
+            const completedDays = appData.dailyTasks.filter(t => t.completed).length;
+            const totalDays = daysInMonth;
+            elements.calendarStats.innerHTML = `
+                Завершено: ${completedDays} из ${totalDays} дней<br>
+                Серия: ${appData.user.streakDays} дней подряд
+            `;
+        }
+
+        // Обновить лидерборд
+        function updateLeaderboard() {
+            // Добавляем текущего пользователя
+            const currentUser = {
+                id: appData.user.id,
+                name: appData.user.name,
+                avatar: appData.user.avatar,
+                points: appData.user.points,
+                level: appData.user.level
+            };
+            
+            // Если пользователя нет в лидерборде, добавляем
+            const existingUserIndex = appData.leaderboard.findIndex(u => u.id === currentUser.id);
+            if (existingUserIndex !== -1) {
+                appData.leaderboard[existingUserIndex] = currentUser;
+            } else {
+                appData.leaderboard.push(currentUser);
+            }
+            
+            // Сортируем по баллам
+            appData.leaderboard.sort((a, b) => b.points - a.points);
+            
+            // Ограничиваем до 10 игроков
+            appData.leaderboard = appData.leaderboard.slice(0, 10);
+            
+            renderLeaderboard();
+            saveUserData();
+        }
+
+        // Рендер лидерборда
+        function renderLeaderboard() {
+            elements.leaderboard.innerHTML = '';
+            
+            appData.leaderboard.forEach((user, index) => {
+                const item = document.createElement('li');
+                item.className = `leaderboard-item ${user.id === appData.user.id ? 'current' : ''}`;
+                
+                item.innerHTML = `
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div class="leaderboard-name">
+                        <div class="leaderboard-avatar">${user.avatar}</div>
+                        <span>${user.name}</span>
+                    </div>
+                    <div class="leaderboard-points">${user.points} 🪙 (Ур. ${user.level})</div>
+                `;
+                
+                elements.leaderboard.appendChild(item);
+            });
         }
 
         // Обновить интерфейс
@@ -940,38 +2030,57 @@
             elements.streak.textContent = appData.user.streakDays;
             elements.userLevel.textContent = appData.user.level;
             elements.userName.textContent = appData.user.name;
+            elements.avatar.textContent = appData.user.avatar;
             
             // Расчет скидки
-            const discount = Math.min(Math.floor(appData.user.points / 100), 25);
+            const discount = Math.min(Math.floor(appData.user.points / 100), 30);
             elements.discount.textContent = `${discount}%`;
             
             // Прогресс до следующего уровня
             const pointsForNextLevel = appData.user.level * 1000;
             const progress = (appData.user.points / pointsForNextLevel) * 100;
-            elements.progressFill.style.width = `${Math.min(progress, 100)}%`;
+            const progressPercent = Math.min(Math.floor(progress), 100);
+            
+            elements.progressFill.style.width = `${progressPercent}%`;
             elements.progressText.textContent = `${appData.user.points}/${pointsForNextLevel}`;
+            elements.progressPercent.textContent = `${progressPercent}%`;
         }
 
         // Показать уведомление
         function showNotification(message, type = 'success') {
             elements.notification.textContent = message;
-            elements.notification.className = `notification ${type === 'success' ? '' : 'error'} show`;
+            elements.notification.className = `notification ${type}`;
+            elements.notification.style.display = 'block';
             
             setTimeout(() => {
-                elements.notification.classList.remove('show');
+                elements.notification.style.display = 'none';
             }, 3000);
+        }
+
+        // Настройка ежедневного сброса
+        function setupDailyReset() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            const msUntilMidnight = midnight - now;
+            
+            dailyResetTimer = setTimeout(() => {
+                resetDailyTasks();
+                location.reload();
+            }, msUntilMidnight);
+        }
+
+        // Сброс ежедневных заданий
+        function resetDailyTasks() {
+            appData.dailyTasks = [];
+            generateDailyTasks();
+            checkQuestCooldowns();
+            saveUserData();
         }
 
         // Настройка обработчиков событий
         function setupEventListeners() {
             // Кнопки модального окна
-            elements.acceptBtn.addEventListener('click', () => {
-                if (currentQuest) {
-                    completeQuest(currentQuest.id);
-                    elements.questModal.style.display = 'none';
-                }
-            });
-            
             elements.declineBtn.addEventListener('click', () => {
                 elements.questModal.style.display = 'none';
             });
@@ -987,37 +2096,41 @@
                 }
             });
             
-            // Переключение темы
-            elements.themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-theme');
-                const isDark = document.body.classList.contains('dark-theme');
-                elements.themeToggle.textContent = isDark ? '☀️' : '🌙';
-                localStorage.setItem('darkTheme', isDark);
+            // Переключение табов
+            elements.tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Убираем активный класс со всех кнопок
+                    elements.tabBtns.forEach(b => b.classList.remove('active'));
+                    // Добавляем активный класс к текущей
+                    btn.classList.add('active');
+                    
+                    // Скрываем все секции
+                    document.querySelectorAll('.quests-section, .profile-section, .calendar-section, .leaderboard-section')
+                        .forEach(section => section.classList.remove('active'));
+                    
+                    // Показываем нужную секцию
+                    const tabName = btn.dataset.tab;
+                    document.querySelector(`.${tabName}-section`).classList.add('active');
+                    
+                    // Обновляем календарь при переключении
+                    if (tabName === 'calendar') {
+                        renderCalendar();
+                    } else if (tabName === 'leaderboard') {
+                        renderLeaderboard();
+                    }
+                });
             });
-            
-            // Загрузка сохраненной темы
-            const savedTheme = localStorage.getItem('darkTheme');
-            if (savedTheme === 'true') {
-                document.body.classList.add('dark-theme');
-                elements.themeToggle.textContent = '☀️';
-            }
             
             // Смена аватара
             elements.avatar.addEventListener('click', () => {
-                const emojis = ['👤', '🌿', '🌸', '🌺', '🌼', '🍀', '🍁', '🌹'];
+                const emojis = ['👤', '🌿', '🌸', '🌺', '🌼', '🍀', '🍁', '🌹', '💧', '✨', '🌟', '🌙'];
                 const currentIndex = emojis.indexOf(appData.user.avatar);
                 const nextIndex = (currentIndex + 1) % emojis.length;
                 appData.user.avatar = emojis[nextIndex];
                 elements.avatar.textContent = appData.user.avatar;
                 saveUserData();
+                updateLeaderboard();
             });
-            
-            // Имитация выполнения квестов для демо
-            setTimeout(() => {
-                if (appData.user.completedQuests === 0) {
-                    showNotification('💡 Совет: Нажмите на доступный квест, чтобы начать!');
-                }
-            }, 2000);
         }
 
         // Инициализация приложения
