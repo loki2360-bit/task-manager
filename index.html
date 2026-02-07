@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Арома-Бонус | Программа лояльности — Арома Вятка</title>
+    <title>Арома-Бонус | Программа лояльности</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Open+Sans:wght@400;500;600&display=swap">
     <style>
         :root {
-            --cream: #f9f5ed;
-            --beige: #f2ebe3;
-            --taupe: #d9cfc3;
-            --dark-brown: #4a3a2e;
-            --medium-brown: #7a6a5a;
-            --light-brown: #b8a894;
-            --gold: #d4af37;
-            --green-leaf: #4a8a5a;
-            --red-bc1272d;
-            --white: #ffffff;
-            --shadow: 0 4px 12px rgba(74, 58, 46, 0.08);
-            --border-radius: 10px;
+            --primary-yellow: #FFD700;
+            --primary-black: #1a1a1a;
+            --primary-gray: #f5f5f5;
+            --primary-red: #e74c3c;
+            --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --primary-blue: #3498db;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --glow: 0 0 15px rgba(255, 215, 0, 0.5);
+            --border-radius: 12px;
             --transition: all 0.3s ease;
         }
 
@@ -31,472 +28,383 @@
         }
 
         body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: var(--cream);
-            color: var(--dark-brown);
-            line-height: 1.6;
-            padding-bottom: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--primary-black);
         }
 
-        /* Фоновые декоративные элементы */
-        .deco-left-top {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: -1;
-            width: 80px;
-            height: auto;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .deco-right-top {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: -1;
-            width: 100px;
-            height: auto;
-        }
-
-        .deco-left-bottom {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: -1;
-            width: 90px;
-            height: auto;
-        }
-
-        .deco-right-bottom {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: -1;
-            width: 120px;
-            height: auto;
-        }
-
-        /* Шапка — как на сайте */
         header {
-            background-color: var(--cream);
-            padding: 15px 0;
-            border-bottom: 1px solid var(--taupe);
-            position: relative;
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logo-img {
-            width: 120px;
-            height: auto;
-        }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4em;
-            color: var(--dark-brown);
-            letter-spacing: 1px;
-        }
-
-        .logo-subtext {
-            font-size: 0.9em;
-            color: var(--medium-brown);
-            font-weight: 500;
-        }
-
-        .contact-info {
             text-align: center;
-            font-size: 0.95em;
-        }
-
-        .phone {
-            font-weight: 600;
-            color: var(--dark-brown);
-            font-size: 1.1em;
-        }
-
-        .email {
-            color: var(--medium-brown);
-            margin-top: 5px;
-        }
-
-        .cta-button {
-            background: linear-gradient(to right, var(--gold), #b89a6a);
-            color: var(--dark-brown);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .cta-button:hover {
-            background: linear-gradient(to right, #e6c27a, #c8ab80);
-            transform: translateY(-2px);
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 12px;
-            margin-top: 8px;
-        }
-
-        .social-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--taupe);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--dark-brown);
-            font-size: 0.9em;
-            transition: var(--transition);
-        }
-
-        .social-icon:hover {
-            background: var(--gold);
-            color: var(--white);
-        }
-
-        .cart-badge {
+            margin-bottom: 30px;
             position: relative;
-            display: inline-block;
         }
 
-        .cart-badge::after {
-            content: "1";
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--red-berry);
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-yellow);
+            text-shadow: var(--glow);
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
             color: white;
-            font-size: 0.6em;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin-top: 10px;
         }
 
-        /* Навигация по категориям — как на сайте */
-        .category-nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .tabs {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
 
-        .category-link {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1em;
-            color: var(--dark-brown);
-            text-decoration: none;
-            position: relative;
-            padding-bottom: 8px;
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
             transition: var(--transition);
+            font-size: 0.95em;
         }
 
-        .category-link:hover {
-            color: var(--gold);
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--primary-yellow);
+            color: var(--primary-black);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
         }
 
-        .category-link::after {
-            content: '';
+        .admin-tab {
+            display: none;
+        }
+
+        .admin-access {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gold);
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary-yellow);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
             transition: var(--transition);
+            font-size: 0.9em;
         }
 
-        .category-link:hover::after {
-            width: 100%;
+        .admin-access:hover {
+            background: var(--primary-yellow);
+            color: var(--primary-black);
         }
 
-        /* Основной контент */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .main-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .main-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2em;
-            color: var(--dark-brown);
+            color: var(--primary-black);
+            margin-bottom: 25px;
+            font-size: 2em;
             text-align: center;
-            margin: 40px 0 30px;
             position: relative;
+            padding-bottom: 10px;
         }
 
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 2px;
-            background: var(--gold);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-yellow);
+            border-radius: 2px;
         }
 
-        /* Табы */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        /* Страница регистрации */
+        .registration-form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--primary-gray);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
         }
 
-        .tab-btn {
-            padding: 10px 25px;
-            background: var(--beige);
-            border: 1px solid var(--taupe);
-            border-radius: 30px;
-            color: var(--dark-brown);
-            font-weight: 600;
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-black);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: var(--transition);
+            color: var(--primary-black);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-yellow);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--primary-black);
             cursor: pointer;
             transition: var(--transition);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.05em;
+            margin-top: 10px;
         }
 
-        .tab-btn.active {
-            background: var(--gold);
-            color: var(--white);
-            border-color: var(--dark-brown);
-            box-shadow: var(--shadow);
-        }
-
-        .tab-btn:hover:not(.active) {
-            background: var(--taupe);
+        .submit-btn:hover {
             transform: translateY(-2px);
-        }
-
-        /* Карточки разделов — как на сайте */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .category-card {
-            position: relative;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            height: 280px;
-            transition: var(--transition);
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(74, 58, 46, 0.15);
-        }
-
-        .card-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            color: white;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6em;
-            text-align: center;
-            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
         }
 
         /* Личный кабинет */
-        .profile-section,
-        .admin-section {
-            background: var(--white);
+        .profile-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: var(--border-radius);
             padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
             box-shadow: var(--shadow);
-            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .profile-header {
-            text-align: center;
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .user-info {
             margin-bottom: 25px;
         }
 
-        .user-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--beige);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            color: var(--gold);
-            margin: 0 auto 15px;
-            font-family: 'Playfair Display', serif;
-        }
-
         .user-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            color: var(--dark-brown);
-            margin-bottom: 8px;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .user-points {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: var(--gold);
+        .user-email {
+            font-size: 0.95em;
+            opacity: 0.9;
             margin-bottom: 15px;
         }
 
-        .points-desc {
-            color: var(--medium-brown);
-            font-size: 0.95em;
+        .points-display {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 20px 0;
+            font-size: 1.8em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .points-label {
+            display: block;
+            font-size: 0.9em;
+            margin-top: 5px;
+            opacity: 0.8;
         }
 
         .qr-section {
-            background: var(--beige);
+            background: white;
             padding: 25px;
             border-radius: var(--border-radius);
-            text-align: center;
-            margin: 25px 0;
+            display: inline-block;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .qr-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3em;
-            color: var(--dark-brown);
+            color: var(--primary-black);
+            font-weight: bold;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         #qrCodeContainer {
             display: inline-block;
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .qr-instructions {
-            margin: 20px 0;
-            color: var(--medium-brown);
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
             font-size: 0.9em;
             line-height: 1.6;
         }
 
-        /* Промокоды */
-        .promo-section {
+        /* Промокоды в профиле */
+        .promo-codes-section {
             margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
         }
 
-        .promo-list {
-            list-style: none;
+        .promo-title {
+            color: var(--primary-black);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
         }
 
-        .promo-item {
-            background: var(--beige);
+        .promo-code-item {
+            background: linear-gradient(135deg, var(--primary-green), #27ae60);
+            color: white;
             padding: 20px;
             border-radius: var(--border-radius);
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid var(--gold);
+            animation: slideIn 0.3s ease;
         }
 
-        .promo-code {
-            font-family: 'Playfair Display', serif;
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .promo-code-text {
             font-size: 1.3em;
-            font-weight: 600;
-            color: var(--dark-brown);
-            letter-spacing: 1px;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 2px;
             cursor: pointer;
             transition: var(--transition);
         }
 
-        .promo-code:hover {
-            color: var(--gold);
-            transform: scale(1.03);
+        .promo-code-text:hover {
+            transform: scale(1.05);
         }
 
         .promo-expiry {
-            background: var(--taupe);
-           :;
-            padding: 5px 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
             border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .promo-expired {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+            opacity: 0.7;
+        }
+
+        .promo-expired .promo-expiry {
+            background: rgba(0,0,0,0.2) !important;
         }
 
         /* Админ панель */
-        .admin-header {
-            background: var(--beige);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin-bottom: 25px;
+        .admin-section {
+            display: none;
         }
 
-        .admin-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            color: var(--dark-brown);
-            margin-bottom: 10px;
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-purple), #8e44ad);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .scan-container {
-            background: var(--beige);
-            padding: 25px;
+            background: var(--primary-gray);
+            padding: 30px;
             border-radius: var(--border-radius);
             margin-bottom: 25px;
+            text-align: center;
         }
 
         .scan-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4em;
-            color: var(--dark-brown);
+            font-size: 1.5em;
             margin-bottom: 20px;
-            text-align: center;
+            color: var(--primary-black);
         }
 
         .camera-container {
             position: relative;
             max-width: 400px;
-            margin: 0 auto;
-            border: 2px solid var(--taupe);
-            border-radius: var(--border-radius);
+            margin: 0 auto 20px;
+            border: 3px solid var(--primary-blue);
+            border-radius: 12px;
             overflow: hidden;
             background: #000;
         }
@@ -517,9 +425,8 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-family: 'Playfair Display', serif;
             font-size: 1.2em;
-            font-weight: 600;
+            font-weight: bold;
         }
 
         .scan-indicator {
@@ -527,30 +434,29 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 180px;
-            height: 180px;
-            border: 2px solid var(--gold);
+            width: 200px;
+            height: 200px;
+            border: 3px solid var(--primary-yellow);
             border-radius: 10px;
-            box-shadow: 0 0 20px var(--gold);
+            box-shadow: 0 0 20px var(--primary-yellow);
             animation: pulseScan 2s infinite;
         }
 
         @keyframes pulseScan {
-            0%, 100% { box-shadow: 0 0 20px var(--gold); }
-            50% { box-shadow: 0 0 35px var(--gold); }
+            0%, 100% { box-shadow: 0 0 20px var(--primary-yellow); }
+            50% { box-shadow: 0 0 40px var(--primary-yellow); }
         }
 
         .manual-input {
-            margin: 25px 0;
+            margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--taupe);
+            border-top: 1px solid #ddd;
         }
 
         .manual-input-title {
-            font-family: 'Playfair Display', serif;
-            color: var(--dark-brown);
+            color: var(--primary-black);
             margin-bottom: 15px;
-            font-size: 1.1em;
+            font-weight: bold;
         }
 
         .scan-input-group {
@@ -563,172 +469,194 @@
         .scan-input {
             flex: 1;
             padding: 12px 15px;
-            border: 1px solid var(--taupe);
+            border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1em;
-            color: var(--dark-brown);
-            font-family: 'Open Sans', sans-serif;
+            color: var(--primary-black);
         }
 
         .scan-input:focus {
             outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+            border-color: var(--primary-blue);
         }
 
         .scan-btn {
             padding: 12px 20px;
-            background: var(--gold);
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
             border: none;
             border-radius: 8px;
-            color: var(--dark-brown);
-            font-weight: 600;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
             transition: var(--transition);
-            font-family: 'Playfair Display', serif;
         }
 
         .scan-btn:hover {
-            background: #e6c27a;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .scan-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .scan-result {
             margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             display: none;
-            font-family: 'Open Sans', sans-serif;
         }
 
         .scan-success {
-            background: rgba(74, 138, 90, 0.1);
-            border: 1px solid var(--green-leaf);
-            color: var(--green-leaf);
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
         }
 
         .scan-error {
-            background: rgba(193, 39, 45, 0.1);
-            border: 1px solid var(--red-berry);
-            color: var(--red-berry);
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
         }
 
         .user-info-display {
-            background: var(--beige);
+            background: white;
             padding: 25px;
             border-radius: var(--border-radius);
-            margin: 25px 0;
+            margin-top: 25px;
+            box-shadow: var(--shadow);
+            display: none;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid var(--taupe);
+            border-bottom: 1px solid #eee;
         }
 
+        .info-row:last-child td,
         .info-row:last-child {
             border-bottom: none;
         }
 
         .info-label {
-            font-weight: 600;
-            color: var(--dark-brown);
-            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            color: var(--primary-black);
         }
 
         .info-value {
-            color: var(--medium-brown);
-            font-weight: 500;
+            color: var(--primary-gray);
+            font-weight: bold;
         }
 
         .redeem-section {
-            background: var(--beige);
+            background: linear-gradient(135deg, var(--primary-green), #27ae60);
             padding: 25px;
             border-radius: var(--border-radius);
             margin-top: 25px;
+            color: white;
             text-align: center;
+            display: none;
         }
 
         .redeem-title {
-            font-family: 'Playfair Display', serif;
             font-size: 1.5em;
-            color: var(--dark-brown);
             margin-bottom: 15px;
         }
 
         .redeem-code {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6em;
-            font-weight: 600;
-            color: var(--dark-brown);
-            letter-spacing: 2px;
-            margin: 15px 0;
-            background: var(--white);
+            background: rgba(255,255,255,0.2);
             padding: 15px 30px;
             border-radius: 30px;
-            display: inline-block;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            font-family: monospace;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .redeem-code:hover {
-            background: var(--taupe);
-            transform: scale(1.02);
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
 
         .redeem-btn {
             padding: 12px 30px;
-            background: var(--gold);
+            background: white;
             border: none;
             border-radius: 30px;
-            font-weight: 600;
-            color: var(--dark-brown);
+            font-weight: bold;
+            color: var(--primary-green);
             cursor: pointer;
             transition: var(--transition);
-            font-family: 'Playfair Display', serif;
             margin-top: 10px;
         }
 
         .redeem-btn:hover {
-            background: #e6c27a;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
         }
 
-        /* Таблица пользователей */
+        .users-list {
+            margin-top: 30px;
+        }
+
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
         .users-table th {
-            background: var(--taupe);
-            color: var(--dark-brown);
-            padding: 12px 15px;
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            color: var(--primary-black);
+            padding: 15px;
             text-align: left;
-            font-weight: 600;
-            font-family: 'Playfair Display', serif;
+            font-weight: bold;
         }
 
         .users-table td {
             padding: 12px 15px;
-            border-bottom: 1px solid var(--taupe);
-            color: var(--dark-brown);
+            border-bottom: 1px solid #eee;
+            color: var(--primary-black);
         }
 
-        .users-table tr:hover td {
-            background: var(--beige);
+        .users-table tr:hover {
+            background: var(--primary-gray);
         }
 
         .points-badge {
-            background: var(--gold);
-            color: var(--white);
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            color: var(--primary-black);
             padding: 5px 15px;
             border-radius: 20px;
-            font-weight: 600;
-            font-family: 'Playfair Display', serif;
-            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .status-inactive {
+            background: #95a5a6;
+            color: white;
         }
 
         /* Уведомления */
@@ -738,14 +666,16 @@
             right: 20px;
             padding: 15px 25px;
             border-radius: var(--border-radius);
-           : var(--shadow);
+            box-shadow: var(--shadow);
             transform: translateX(400px);
             transition: transform 0.3s ease;
             z-index: 1000;
-            font-weight: 600;
-            font-family: 'Playfair Display', serif;
-            background: var(--white);
-            border: 1px solid var(--taupe);
+            font-weight: bold;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateX(0); }
         }
 
         .notification.show {
@@ -753,268 +683,238 @@
         }
 
         .notification.success {
-            border-left: 4px solid var(--green-leaf);
+            background: var(--primary-green);
+            color: white;
         }
 
         .notification.error {
-            border-left: 4px solid var(--red-berry);
+            background: var(--primary-red);
+            color: white;
         }
 
         .notification.info {
-            border-left: 4px solid var(--gold);
+            background: var(--primary-blue);
+            color: white;
         }
 
-        /* Подвал */
+        /* Dark theme */
+        body.dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+
+        body.dark-theme .main-content,
+        body.dark-theme .registration-form,
+        body.dark-theme .qr-section,
+        body.dark-theme .scan-container,
+        body.dark-theme .user-info-display,
+        body.dark-theme .users-table,
+        body.dark-theme .promo-codes-section {
+            background: #2c3e50;
+            color: white;
+        }
+
+        body.dark-theme .form-group label,
+        body.dark-theme .form-group input,
+        body.dark-theme .scan-input,
+        body.dark-theme .info-label,
+        body.dark-theme .info-value,
+        body.dark-theme .users-table th,
+        body.dark-theme .users-table td {
+            color: white;
+        }
+
+        body.dark-theme .points-badge {
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            color: var(--primary-black);
+        }
+
         footer {
             text-align: center;
-            margin: 60px 0 20px;
-            color: var(--medium-brown);
+            margin-top: 30px;
+            color: white;
             font-size: 0.9em;
-            padding-top: 20px;
-            border-top: 1px solid var(--taupe);
+            opacity: 0.8;
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
-            .header-container {
+            .scan-input-group {
                 flex-direction: column;
-                text-align: center;
-                gap: 15px;
             }
-
-            .logo-section {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .category-nav {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .category-link {
-                font-size: 0.95em;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
-            }
-
+            
             .tab-btn {
                 padding: 8px 15px;
-                font-size: 0.95em;
+                font-size: 0.85em;
             }
-
-            .section-title {
-                font-size: 1.8em;
+            
+            .points-display {
+                font-size: 1.5em;
+                padding: 10px 20px;
             }
-
-            .user-avatar {
-                width: 80px;
-                height: 80px;
-                font-size: 2.5em;
+            
+            .camera-container {
+                max-width: 100%;
             }
-        }
-
-        /* Декоративные изображения (можно заменить на реальные SVG/IMG) */
-        .deco-img {
-            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- Декоративные элементы -->
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M10 30 Q25 10 40 30 T70 30 Q85 10 100 30 L100 100 L0 100 Z' fill='%234a8a5a'/%3E%3C/svg%3E" alt="Листья" class="deco-left-top deco-img">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Ccircle cx='20' cy='20' r='15' fill='%23c1272d'/%3E%3Ccircle cx='40' cy='25' r='12' fill='%23c1272d'/%3E%3Ccircle cx='60' cy='18' r='14' fill='%23c1272d'/%3E%3Ccircle cx='80' cy='22' r='10' fill='%23c1272d'/%3E%3Ccircle cx='100' cy='20' r='13' fill='%23c1272d'/%3E%3Cpath d='M10 40 Q25 30 40 40 T70 40 Q85 30 100 40 L100 80 L10 80 Z' fill='%234a8a5a'/%3E%3C/svg%3E" alt="Ягоды" class="deco-right-top deco-img">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Ccircle cx='20' cy='20' r='10' fill='%23ffffff' stroke='%234a3a2e' stroke-width='1'/%3E%3Ccircle cx='20' cy='20' r='5' fill='%23ffcc00'/%3E%3Cpath d='M10 40 Q20 35 30 40 T50 40 Q60 35 70 40 L70 80 L10 80 Z' fill='%234a8a5a'/%3E%3C/svg%3E" alt="Ромашка" class="deco-right-bottom deco-img">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Cpath d='M10 30 Q25 10 40 30 T70 30 Q85 10 100 30 L100 100 L0 100 Z' fill='%234a8a5a'/%3E%3Ccircle cx='30' cy='50' r='15' fill='%23c1272d'/%3E%3Ccircle cx='60' cy='50' r='15' fill='%23c1272d'/%3E%3C/svg%3E" alt="Ягоды" class="deco-left-bottom deco-img">
-
-    <!-- Шапка -->
-    <header>
-        <div class="header-container">
-            <div class="logo-section">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cpath d='M20 20 Q40 10 60 20 T100 20 Q120 10 100 20 L100 60 L20 60 Z' fill='%234a3a2e'/%3E%3Ctext x='60' y='45' text-anchor='middle' font-family='Playfair Display' font-size='24' fill='%23d4af37'%3EАРОМА%3C/text%3E%3Ctext x='60' y='65' text-anchor='middle' font-family='Playfair Display' font-size='24' fill='%234a3a2e'%3EВЯТКА%3C/text%3E%3C/svg%3E" alt="Логотип Арома Вятка" class="logo-img">
-                <div>
-                    <div class="logo-text">АРОМА ВЯТКА</div>
-                    <div class="logo-subtext">НАТУРАЛЬНАЯ КОСМЕТИКА, СОТВОРЕННАЯ ПРИРОДОЙ</div>
-                </div>
-            </div>
-
-            <div class="contact-info">
-                <div class="phone">+7 922 9 777 561</div>
-                <div class="email">aromavyatka@mail.ru</div>
-                <div class="social-icons">
-                    <div class="social-icon">📱</div>
-                    <div class="social-icon">📷</div>
-                    <div class="social-icon">VK</div>
-                </div>
-                <button class="cta-button">Заказать звонок</button>
-            </div>
-
-            <div class="cart-badge">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 18c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm10-2c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM9 20v-6h6v6H9z' fill='%234a3a2e'/%3E%3C/svg%3E" alt="Корзина" style="width:28px;height:28px;">
-            </div>
-        </div>
-
-        <!-- Категории -->
-        <div class="category-nav">
-            <a href="#" class="category-link">Гидролаты</a>
-            <a href="#" class="category-link">Эфирные масла</a>
-            <a href="#" class="category-link">Гидролаты с ионами серебра</a>
-            <a href="#" class="category-link">Уходовые средства</a>
-        </div>
-    </header>
-
-    <!-- Основной контент -->
     <div class="container">
-        <h2 class="section-title">Программа лояльности «Арома-Бонус»</h2>
+        <header>
+            <div class="logo">✨ Арома-Бонус ✨</div>
+            <div class="subtitle">Собирайте баллы и получайте скидки на косметику и эфирные масла!</div>
+            <button class="admin-access" id="adminAccessBtn">🔑 Админ вход</button>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="register">📝 Регистрация</button>
+                <button class="tab-btn" data-tab="profile">👤 Мой профиль</button>
+                <button class="tab-btn admin-tab" data-tab="admin">⚙️ Админ панель</button>
+            </div>
+        </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="register">📝 Регистрация</button>
-            <button class="tab-btn" data-tab="profile">👤 Мой профиль</button>
-            <button class="tab-btn admin-tab" data-tab="admin">⚙️ Админ панель</button>
-        </div>
-
-        <!-- Страница регистрации -->
-        <div id="registerSection" class="tab-content active">
-            <div class="profile-section">
-                <div class="profile-header">
-                    <div class="user-avatar">👤</div>
-                    <div class="user-name">Регистрация в программе лояльности</div>
-                    <div class="user-points">0 баллов</div>
-                    <div class="points-desc">Начните собирать баллы уже сегодня!</div>
-                </div>
-
-                <form id="registrationForm">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <label for="name" style="display: block; margin-bottom: 8px; font-weight: 600; font-family: 'Playfair Display', serif;">Имя *</label>
-                            <input type="text" id="name" placeholder="Введите ваше имя" required style="width: 100%; padding: 10px; border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Open Sans', sans-serif;">
-                        </div>
-                        <div>
-                            <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; font-family: 'Playfair Display', serif;">Email *</label>
-                            <input type="email" id="email" placeholder="Введите ваш email" required style="width: 100%; padding: 10px; border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Open Sans', sans-serif;">
-                        </div>
+        <div class="main-content">
+            <!-- Страница регистрации -->
+            <div id="registerSection" class="tab-content active">
+                <h2 class="section-title">Регистрация в программе лояльности</h2>
+                <form class="registration-form" id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Ваше имя *</label>
+                        <input type="text" id="name" placeholder="Введите ваше имя" required>
                     </div>
-                    <div>
-                        <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; font-family: 'Playfair Display', serif;">Телефон *</label>
-                        <input type="tel" id="phone" placeholder="+7 (XXX) XXX-XX-XX" required style="width: 100%; padding: 10px; border: 1px solid var(--taupe); border-radius: 8px; font-family: 'Open Sans', sans-serif;">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" placeholder="Введите ваш email" required>
                     </div>
-                    <button type="submit" class="cta-button" style="width: 100%; margin-top: 15px;">Зарегистрироваться и получить карту</button>
+                    <div class="form-group">
+                        <label for="phone">Телефон *</label>
+                        <input type="tel" id="phone" placeholder="+7 (XXX) XXX-XX-XX" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Зарегистрироваться и получить карту</button>
                 </form>
             </div>
-        </div>
 
-        <!-- Личный кабинет -->
-        <div id="profileSection" class="tab-content" style="display: none;">
-            <div class="profile-section">
-                <div class="profile-header">
-                    <div class="user-avatar">👤</div>
-                    <div class="user-name" id="profileName">Имя пользователя</div>
-                    <div class="user-points" id="profilePoints">0 баллов</div>
-                    <div class="points-desc">За каждую покупку — +10 баллов. При 100 баллах — промокод на 10% скидку!</div>
+            <!-- Личный кабинет -->
+            <div id="profileSection" class="tab-content" style="display: none;">
+                <h2 class="section-title">Мой профиль</h2>
+                <div class="profile-card">
+                    <div class="user-info">
+                        <div class="user-name" id="profileName">Имя пользователя</div>
+                        <div class="user-email" id="profileEmail">user@example.com</div>
+                    </div>
+                    <div class="points-display">
+                        <span id="profilePoints">0</span>
+                        <div class="points-label">баллов</div>
+                    </div>
+                    <div class="progress-info">
+                        <p style="opacity: 0.9; font-size: 0.95em;">
+                            За каждую покупку начисляется 10 баллов.<br>
+                            При накоплении 100 баллов вы получите промокод на скидку 10%!
+                        </p>
+                    </div>
                 </div>
 
                 <div class="qr-section">
                     <div class="qr-title">Ваша карта лояльности</div>
                     <div id="qrCodeContainer"></div>
                     <div class="qr-instructions">
-                        <p><strong>Как использовать:</strong></p>
+                        <p><strong>💡 Как использовать:</strong></p>
                         <p>Покажите этот QR-код сотруднику магазина при каждой покупке для начисления баллов.</p>
                         <p>QR-код уникален и привязан только к вашему аккаунту.</p>
                     </div>
                 </div>
 
-                <div class="promo-section">
-                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4em; color: var(--dark-brown); margin-bottom: 20px;">Ваши промокоды</h3>
-                    <ul class="promo-list" id="promoCodesList">
-                        <li style="text-align: center; color: var(--medium-brown); padding: 20px;">У вас пока нет активных промокодов</li>
-                    </ul>
+                <div class="promo-codes-section">
+                    <h3 class="promo-title">Ваши промокоды</h3>
+                    <div id="promoCodesList">
+                        <p style="text-align: center; color: var(--primary-gray);">У вас пока нет активных промокодов</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Админ панель -->
-        <div id="adminSection" class="tab-content admin-section" style="display: none;">
-            <div class="admin-header">
-                <div class="admin-title">Админ панель программы лояльности</div>
-                <div style="color: var(--medium-brown); font-size: 0.95em;">Сканируйте QR-коды клиентов для начисления баллов</div>
-            </div>
-
-            <div class="scan-container">
-                <div class="scan-title">Сканирование через камеру</div>
-                <div class="camera-container">
-                    <video id="videoElement" autoplay playsinline></video>
-                    <div class="scan-overlay" id="scanOverlay">Наведите камеру на QR-код</div>
-                    <div class="scan-indicator"></div>
+            <!-- Админ панель -->
+            <div id="adminSection" class="tab-content admin-section">
+                <div class="admin-header">
+                    <h2 class="section-title" style="color: white; margin-bottom: 0;">Админ панель</h2>
+                    <p style="opacity: 0.9; margin-top: 10px;">Сканируйте QR-коды клиентов для начисления баллов</p>
                 </div>
 
-                <div class="manual-input">
-                    <div class="manual-input-title">Или введите код вручную:</div>
-                    <div class="scan-input-group">
-                        <input type="text" class="scan-input" id="qrInput" placeholder="Введите код из QR-кода...">
-                        <button class="scan-btn" id="manualScanBtn">Начислить 10 баллов</button>
+                <div class="scan-container">
+                    <div class="scan-title">Автоматическое сканирование через камеру</div>
+                    <div class="camera-container">
+                        <video id="videoElement" autoplay playsinline></video>
+                        <div class="scan-overlay" id="scanOverlay">Наведите камеру на QR-код</div>
+                        <div class="scan-indicator"></div>
+                    </div>
+                    
+                    <div class="manual-input">
+                        <div class="manual-input-title">Или введите код вручную:</div>
+                        <div class="scan-input-group">
+                            <input type="text" class="scan-input" id="qrInput" placeholder="Введите код из QR-кода..." autocomplete="off">
+                            <button class="scan-btn" id="manualScanBtn">Начислить</button>
+                        </div>
+                    </div>
+                    
+                    <div class="scan-result" id="scanResult"></div>
+                </div>
+
+                <div class="user-info-display" id="userInfoDisplay">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-black);">Информация о клиенте</h3>
+                    <div class="info-row">
+                        <span class="info-label">Имя:</span>
+                        <span class="info-value" id="userInfoName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value" id="userInfoEmail">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Телефон:</span>
+                        <span class="info-value" id="userInfoPhone">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Баллы:</span>
+                        <span class="info-value"><span class="points-badge" id="userInfoPoints">0</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Статус:</span>
+                        <span class="info-value">
+                            <span class="status-badge status-active" id="userInfoStatus">Активен</span>
+                        </span>
                     </div>
                 </div>
 
-                <div class="scan-result" id="scanResult"></div>
-            </div>
+                <div class="redeem-section" id="redeemSection">
+                    <div class="redeem-title">🎉 Доступна скидка 10%!</div>
+                    <p>Клиент накопил 100 баллов. Вы можете списать баллы и выдать промокод.</p>
+                    <div class="redeem-code" id="promoCode">AROMA10</div>
+                    <p style="opacity: 0.9; margin-bottom: 15px;">Промокод действует 2 дня</p>
+                    <button class="redeem-btn" id="redeemBtn">Выдать промокод и списать 100 баллов</button>
+                </div>
 
-            <div class="user-info-display" id="userInfoDisplay" style="display: none;">
-                <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 20px; color: var(--dark-brown);">Информация о клиенте</h3>
-                <div class="info-row">
-                    <span class="info-label">Имя:</span>
-                    <span class="info-value" id="userInfoName">-</span>
+                <div class="users-list">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-black);">Список всех клиентов</h3>
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Email</th>
+                                <th>Телефон</th>
+                                <th>Баллы</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Заполняется динамически -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Email:</span>
-                    <span class="info-value" id="userInfoEmail">-</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Телефон:</span>
-                    <span class="info-value" id="userInfoPhone">-</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Баллы:</span>
-span class="info-value"><span class="points-badge" id="userInfoPoints">0</span></span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Статус:</span>
-                    <span class="info-value"><span style="background: var(--green-leaf); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85em;">Активен</span></span>
-                </div>
-            </div>
-
-            <div class="redeem-section" id="redeemSection" style="display: none;">
-                <div class="redeem-title">🎉 Доступна скидка 10%!</div>
-                <p>Клиент накопил 100 баллов. Вы можете списать баллы и выдать промокод.</p>
-                <div class="redeem-code" id="promoCode">AROMA10</div>
-                <p style="color: var(--medium-brown); margin-bottom: 15px;">Промокод действует 2 дня</p>
-                <button class="redeem-btn" id="redeemBtn">Выдать промокод и списать 100 баллов</button>
-            </div>
-
-            <div class="users-list">
-                <h3 style="font-family: 'Playfair Display', serif; margin-bottom: 20px; color: var(--dark-brown);">Список клиентов</h3>
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>Имя</th>
-                            <th>Email</th>
-                            <th>Телефон</th>
-                            <th>Баллы</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Заполняется динамически -->
-                    </tbody>
-                </table>
             </div>
         </div>
-    </div>
 
-    <footer>
-        <p>© 2026 Арома Вятка — Натуральная косметика, сотворенная природой</p>
-        <p style="margin-top: 8px; font-size: 0.85em;">Программа лояльности «Арома-Бонус» — ваш путь к выгодным покупкам</p>
-    </footer>
+        <footer>
+            <p>Арома-Бонус © 2026 | Программа лояльности для любителей натуральной косметики</p>
+            <p style="margin-top: 5px; font-size: 0.8em;">Покажите ваш QR-код при покупке для начисления баллов</p>
+        </footer>
+    </div>
 
     <div class="notification" id="notification"></div>
 
@@ -1024,6 +924,7 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
         let isAdminMode = false;
         let adminPassword = 'admin123';
         let videoElement = null;
+        let canvasElement = null;
         let scanning = false;
         let currentScannedUser = null;
 
@@ -1034,14 +935,16 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
             updateUsersTable();
             updatePromoCodesDisplay();
             
+            // Проверяем, есть ли сохраненный пользователь
             if (currentUser) {
                 showProfile();
             }
             
+            // Инициализируем камеру для админки
             initCamera();
         });
 
-        // Загрузка данных
+        // Загрузка данных пользователя
         function loadUserData() {
             const savedUser = localStorage.getItem('loyaltyUser');
             const savedUsers = localStorage.getItem('loyaltyUsers');
@@ -1065,8 +968,9 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
             localStorage.setItem('loyaltyUsers', JSON.stringify(window.loyaltyUsers));
         }
 
-        // Настройка событий
+        // Настройка обработчиков событий
         function setupEventListeners() {
+            // Переключение табов
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1075,18 +979,21 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
                     this.classList.add('active');
                     document.getElementById(this.dataset.tab + 'Section').style.display = 'block';
                     
+                    // Обновляем промокоды при переключении на профиль
                     if (this.dataset.tab === 'profile') {
                         updatePromoCodesDisplay();
                     }
                 });
             });
 
+            // Форма регистрации
             document.getElementById('registrationForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 registerUser();
             });
 
-            document.getElementById('adminAccessBtn')?.addEventListener('click', function() {
+            // Админ доступ
+            document.getElementById('adminAccessBtn').addEventListener('click', function() {
                 const password = prompt('Введите пароль администратора:');
                 if (password === adminPassword) {
                     isAdminMode = true;
@@ -1097,146 +1004,197 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
                 }
             });
 
+            // Ручное сканирование
             document.getElementById('manualScanBtn').addEventListener('click', manualScan);
             document.getElementById('qrInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') manualScan();
+                if (e.key === 'Enter') {
+                    manualScan();
+                }
             });
 
-            document.getElementById('redeemBtn').addEventListener('click', redeemPromCode);
+            // Выдача промокода
+            document.getElementById('redeemBtn').addEventListener('click', redeemPromoCode);
+
+            // Копирование промокода
             document.getElementById('promoCode').addEventListener('click', function() {
                 navigator.clipboard.writeText(this.textContent);
-                showNotification('Промокод скопирован!', 'info');
+                showNotification('Промокод скопирован в буфер обмена!', 'info');
             });
         }
 
         // Инициализация камеры
         function initCamera() {
             videoElement = document.getElementById('videoElement');
+            canvasElement = document.createElement('canvas');
             
+            // Проверяем поддержку getUserMedia
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 document.getElementById('scanOverlay').textContent = 'Камера не поддерживается';
                 return;
             }
             
+            // Запрашиваем доступ к камере
             navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                .then(stream => {
+                .then(function(stream) {
                     videoElement.srcObject = stream;
                     startScanning();
                 })
-                .catch(err => {
-                    console.error('Ошибка камеры:', err);
-                    document.getElementById('scanOverlay').textContent = 'Ошибка: ' + err.message;
+                .catch(function(err) {
+                    console.error('Ошибка доступа к камере:', err);
+                    document.getElementById('scanOverlay').textContent = 'Ошибка камеры: ' + err.message;
                 });
         }
 
-        // Сканирование
+        // Начало сканирования
         function startScanning() {
             if (scanning) return;
+            
             scanning = true;
             scanFrame();
         }
 
+        // Сканирование одного кадра
         function scanFrame() {
             if (!scanning) return;
             
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
+            const context = canvasElement.getContext('2d');
+            canvasElement.width = videoElement.videoWidth;
+            canvasElement.height = videoElement.videoHeight;
             
-            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
             
+            const imageData = context.getImageData(0, 0, canvasElement.width, canvasElement.height);
+            
+            // Используем jsQR для распознавания QR кода
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             
             if (code) {
+                // Найден QR код
                 stopScanning();
                 handleScannedCode(code.data);
                 return;
             }
             
+            // Продолжаем сканирование
             requestAnimationFrame(scanFrame);
         }
 
+        // Остановка сканирования
         function stopScanning() {
             scanning = false;
         }
 
+        // Обработка отсканированного кода
         function handleScannedCode(qrData) {
             document.getElementById('scanOverlay').textContent = '✅ Код найден!';
+            
             setTimeout(() => {
                 document.getElementById('scanOverlay').textContent = 'Наведите камеру на QR-код';
                 processScannedCode(qrData);
             }, 2000);
+            
+            // Возобновляем сканирование
             setTimeout(startScanning, 3000);
         }
 
+        // Ручное сканирование
         function manualScan() {
             const qrInput = document.getElementById('qrInput').value.trim();
+            
             if (!qrInput) {
-                showNotification('Введите код', 'error');
+                showNotification('Введите код из QR-кода', 'error');
                 return;
             }
+            
             processScannedCode(qrInput);
             document.getElementById('qrInput').value = '';
         }
 
+        // Обработка кода (общая функция)
         function processScannedCode(qrData) {
+            // Ищем пользователя по QR коду
             const user = window.loyaltyUsers.find(u => u.qrCode === qrData);
+            
             const scanResult = document.getElementById('scanResult');
             scanResult.style.display = 'block';
             
             if (!user) {
                 scanResult.className = 'scan-result scan-error';
-                scanResult.textContent = '❌ Пользователь не найден';
+                scanResult.textContent = '❌ Пользователь не найден. Проверьте правильность кода.';
                 document.getElementById('userInfoDisplay').style.display = 'none';
                 document.getElementById('redeemSection').style.display = 'none';
                 return;
             }
 
+            // Начисляем 10 баллов
             user.points += 10;
             user.lastScan = new Date().toISOString();
             
+            // Сохраняем данные
             if (currentUser && currentUser.id === user.id) {
                 currentUser.points = user.points;
             }
             saveUserData();
             
+            // Обновляем информацию о пользователе
             currentScannedUser = user;
             updateUserInfoDisplay(user);
             
+            // Проверяем, можно ли выдать промокод
             if (user.points >= 100) {
                 document.getElementById('redeemSection').style.display = 'block';
-                generateDynamicPromoCode();
+                generateDynamicPromoCode(); // Генерируем новый промокод
                 scanResult.className = 'scan-result scan-success';
-                scanResult.innerHTML = `✅ +10 баллов<br>🎉 ${user.points} баллов — доступна скидка 10%!`;
+                scanResult.innerHTML = `✅ Успешно! +10 баллов начислено.<br>🎉 Клиент накопил ${user.points} баллов! Доступна скидка 10%.`;
             } else {
                 document.getElementById('redeemSection').style.display = 'none';
                 scanResult.className = 'scan-result scan-success';
-                scanResult.innerHTML = `✅ +10 баллов<br>Баланс: ${user.points}/100`;
+                scanResult.innerHTML = `✅ Успешно! +10 баллов начислено.<br>Текущий баланс: ${user.points} баллов<br>До скидки 10%: ${100 - user.points} баллов`;
             }
             
+            // Обновляем таблицу пользователей
             updateUsersTable();
+            
+            // Обновляем профиль если это текущий пользователь
             if (currentUser && currentUser.id === user.id) {
                 document.getElementById('profilePoints').textContent = user.points;
                 updatePromoCodesDisplay();
             }
         }
 
+        // Обновление информации о пользователе в админке
         function updateUserInfoDisplay(user) {
             document.getElementById('userInfoName').textContent = user.name;
             document.getElementById('userInfoEmail').textContent = user.email;
             document.getElementById('userInfoPhone').textContent = user.phone;
             document.getElementById('userInfoPoints').textContent = user.points;
+            document.getElementById('userInfoStatus').textContent = 'Активен';
             document.getElementById('userInfoDisplay').style.display = 'block';
         }
 
+        // Генерация динамического промокода
+        function generateDynamicPromoCode() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'AROMA10_';
+            
+            for (let i = 0; i < 8; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            
+            document.getElementById('promoCode').textContent = result;
+            return result;
+        }
+
+        // Регистрация пользователя
         function registerUser() {
-            name = document.getElementById('name').value.trim();
+            const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
 
-            const userId = 'USER_' + Date.now().toString(36).toUpperCase();
+            // Генерация уникального ID
+            const userId = 'USER_' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 5).toUpperCase();
+            
+            // Генерация уникального QR кода
             const qrCode = 'AROMA_' + userId;
 
             currentUser = {
@@ -1247,156 +1205,217 @@ span class="info-value"><span class="points-badge" id="userInfoPoints">0</span><
                 qrCode: qrCode,
                 points: 0,
                 registeredAt: new Date().toISOString(),
+                lastScan: null,
                 promoCodes: []
             };
 
+            // Добавляем в список всех пользователей
             window.loyaltyUsers.push(currentUser);
+            
+            // Сохраняем данные
             saveUserData();
+            
+            // Генерируем и показываем QR код
             generateQRCode(qrCode);
+            
+            // Показываем профиль
             showProfile();
-            showNotification('Регистрация успешна!', 'success');
+            
+            showNotification('Регистрация успешна! Ваша карта лояльности готова.', 'success');
         }
 
+        // Показать профиль
         function showProfile() {
             if (!currentUser) return;
             
             document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profilePoints').textContent = currentUser.points + ' баллов';
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profilePoints').textContent = currentUser.points;
+            
+            // Генерируем QR код
             generateQRCode(currentUser.qrCode);
             
+            // Переключаем на вкладку профиля
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
             
             document.querySelector('.tab-btn[data-tab="profile"]').classList.add('active');
             document.getElementById('profileSection').style.display = 'block';
+            
+            // Обновляем промокоды
             updatePromoCodesDisplay();
         }
 
+        // Генерация QR кода
         function generateQRCode(data) {
             try {
                 const qr = qrcode(0, 'M');
                 qr.addData(data);
                 qr.make();
-                const qrHtml = qr.createImgTag(4, 8);
+                
+                const qrHtml = qr.createImgTag(5, 10);
                 document.getElementById('qrCodeContainer').innerHTML = qrHtml;
                 
+                // Добавляем подпись под QR кодом
                 const caption = document.createElement('div');
-                caption.style.marginTop = 'px';
+                caption.style.marginTop = '10px';
                 caption.style.fontWeight = 'bold';
                 caption.style.color = '#333';
                 caption.style.fontSize = '0.9em';
                 caption.textContent = data;
                 document.getElementById('qrCodeContainer').appendChild(caption);
             } catch (e) {
-                document.getElementById('qrCodeContainer').innerHTML = '<p>Ошибка генерации QR</p>';
+                console.error('Error generating QR code:', e);
+                document.getElementById('qrCodeContainer').innerHTML = '<p>Ошибка генерации QR кода</p>';
             }
         }
 
-        function generateDynamicPromoCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = 'AROMA10_';
-            for (let i = 0; i < 6; i++) {
-                code += chars[Math.floor(Math.random() * chars.length)];
-            }
-            document.getElementById('promoCode').textContent = code;
-            return code;
-        }
-
+        // Выдача промокода
         function redeemPromoCode() {
             if (!currentScannedUser || currentScannedUser.points < 100) {
-                showNotification('Недостаточно баллов', 'error');
+                showNotification('Невозможно выдать промокод', 'error');
                 return;
             }
 
             const promoCode = document.getElementById('promoCode').textContent;
-            const now = new Date();
-            const expiry = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
-
+            
+            // Списываем 100 баллов
             currentScannedUser.points -= 100;
-            if (!currentScannedUser.promoCodes) currentScannedUser.promoCodes = [];
-            currentScannedUser.promoCodes.push({
+            
+            // Создаем промокод со сроком действия 2 дня
+            const now = new Date();
+            const expiryDate = new Date(now.getTime() + (2 * 24 * 60 * 60 * 1000)); // 2 дня
+            
+            const newPromoCode = {
                 code: promoCode,
                 issuedAt: now.toISOString(),
-                expiresAt: expiry.toISOString(),
+                expiresAt: expiryDate.toISOString(),
                 used: false
-            });
-
+            };
+            
+            // Добавляем промокод в историю пользователя
+            if (!currentScannedUser.promoCodes) currentScannedUser.promoCodes = [];
+            currentScannedUser.promoCodes.push(newPromoCode);
+            
+            // Обновляем текущего пользователя если это он
             if (currentUser && currentUser.id === currentScannedUser.id) {
                 currentUser.points = currentScannedUser.points;
                 currentUser.promoCodes = currentScannedUser.promoCodes;
             }
+            
+            // Сохраняем данные
             saveUserData();
-
+            
+            // Обновляем интерфейс
             document.getElementById('userInfoPoints').textContent = currentScannedUser.points;
             document.getElementById('redeemSection').style.display = 'none';
-            updatePromoCodesDisplay();
+            
+            if (currentUser && currentUser.id === currentScannedUser.id) {
+                document.getElementById('profilePoints').textContent = currentScannedUser.points;
+                updatePromoCodesDisplay();
+            }
+            
+            // Обновляем таблицу
             updateUsersTable();
-
-            showNotification(`Промокод ${promoCode} выдан!`, 'success');
-            navigator.clipboard.writeText(promoCode);
+            
+            // Показываем уведомление
+            showNotification(`Промокод ${promoCode} успешно выдан!`, 'success');
+            
+            // Копируем промокод в буфер обмена
+            navigator.clipboard.writeText(promoCode).then(() => {
+                showNotification('Промокод скопирован в буфер обмена!', 'info');
+            });
+            
+            // Генерируем новый промокод для следующего раза
             generateDynamicPromoCode();
         }
 
+        // Обновление отображения промокодов в профиле
         function updatePromoCodesDisplay() {
             if (!currentUser) {
-                document.getElementById('promoCodesList').innerHTML = '<li style="text-align: center; color: var(--medium-brown); padding: 20px;">У вас пока нет активных промокодов</li>';
- return;
-            }
-
-            const now = new Date();
-            const active = currentUser.promoCodes.filter(p => {
-                const expiry = new Date(p.expiresAt);
-                return expiry > now && !p.used;
-            });
-
-            if (active.length === 0) {
-                document.getElementById('promoCodesList').innerHTML = '<li style="text-align: center; color: var(--medium-brown); padding: 20px;">У вас пока нет активных промокодов</li>';
+                document.getElementById('promoCodesList').innerHTML = '<p style="text-align: center; color: var(--primary-gray);">У вас пока нет активных промокодов</p>';
                 return;
             }
-
-            let html = '';
-            active.forEach(p => {
-                const expiry = new Date(p.expiresAt);
-                const days = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-                const status = days <= 0 ? 'Истёк' : `Действует ${days} дн.`;
+            
+            const now = new Date();
+            let activePromoCodes = [];
+            
+            if (currentUser.promoCodes && currentUser.promoCodes.length > 0) {
+                // Фильтруем активные промокоды (не просроченные)
+                activePromoCodes = currentUser.promoCodes.filter(promo => {
+                    const expiryDate = new Date(promo.expiresAt);
+                    return expiryDate > now && !promo.used;
+                });
+            }
+            
+            if (activePromoCodes.length === 0) {
+                document.getElementById('promoCodesList').innerHTML = '<p style="text-align: center; color: var(--primary-gray);">У вас пока нет активных промокодов</p>';
+                return;
+            }
+            
+            let promoHtml = '';
+            activePromoCodes.forEach(promo => {
+                const expiryDate = new Date(promo.expiresAt);
+                const isExpired = expiryDate <= now;
+                const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
                 
-                html += `<li class="promo-item">
-                    <div class="promo-code" onclick="copyPromoCode('${p.code}')">${p.code}</div>
-                    <div class="promo-expiry">${status}</div>
-                </li>`;
+                promoHtml += `
+                    <div class="promo-code-item ${isExpired ? 'promo-expired' : ''}">
+                        <div class="promo-code-text" onclick="copyPromoCode('${promo.code}')">${promo.code}</div>
+                        <div class="promo-expiry">${isExpired ? 'Истёк' : `Действует ${daysLeft} дн.`}</div>
+                    </div>
+                `;
             });
-            document.getElementById('promoCodesList').innerHTML = html;
+            
+            document.getElementById('promoCodesList').innerHTML = promoHtml;
         }
 
+        // Копирование промокода из профиля
         window.copyPromoCode = function(code) {
-            navigator.clipboard.writeText(code);
-            showNotification('Промокод скопирован!', 'info');
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Промокод скопирован в буфер обмена!', 'info');
+            });
         };
 
+        // Обновление таблицы пользователей
         function updateUsersTable() {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
-            window.loyaltyUsers.forEach(u => {
+            
+            window.loyaltyUsers.forEach(user => {
                 const row = document.createElement('tr');
+                
                 row.innerHTML = `
-                    <td>${u.name}</td>
-                    <td>${u.email}</td>
-                    <td>${u.phone}</td>
-                    <td><span class="points-badge">${u.points}</span></td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td><span class="points-badge">${user.points}</span></td>
+                    <td><span class="status-badge status-${user.points > 0 ? 'active' : 'inactive'}">
+                        ${user.points > 0 ? 'Активен' : 'Новый'}
+                    </span></td>
                 `;
+                
                 tbody.appendChild(row);
             });
         }
 
-        function showNotification(msg, type = 'info') {
-            const n = document.getElementById('notification');
-            n.textContent = msg;
-            n.className = `notification ${type} show`;
-            setTimeout(() => n.classList.remove('show'), 3000);
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
 
-        // Периодическая проверка промокодов
-        setInterval(updatePromoCodesDisplay, 60000);
+        // Периодическая проверка истечения промокодов
+        setInterval(() => {
+            if (currentUser) {
+                updatePromoCodesDisplay();
+            }
+        }, 60000); // Проверяем каждую минуту
     </script>
 </body>
 </html>
