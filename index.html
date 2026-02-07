@@ -57,6 +57,10 @@
     th { color: #666; font-weight: 600; }
     tbody tr:hover { background: #f9f9f9; cursor: pointer; }
     .id-cell { font-weight: bold; color: #2196F3; }
+    .has-contact::after {
+      content: " 📩";
+      color: #4CAF50;
+    }
   </style>
 </head>
 <body>
@@ -68,6 +72,7 @@
       <h2>➕ Новый клиент</h2>
       <p>Оставьте пустым для автоматического PIN.<br>Или введите <strong>4 последние цифры телефона</strong> (например: 7890):</p>
       <input type="text" id="custom-id" placeholder="4 цифры или оставьте пустым" maxlength="4" />
+      <input type="text" id="contact-link" placeholder="Ссылка на Telegram/VK (необязательно)" />
       <button onclick="createClient()">Создать карту</button>
       <div id="new-id" class="pin-display hidden"></div>
     </div>
@@ -78,7 +83,7 @@
       <input type="text" id="id-input" placeholder="PIN или 4 цифры телефона" maxlength="5" />
       <button onclick="addPurchase()">Добавить покупку</button>
       
-      <div id="client-info" class="hidden" style="margin-top:15px; padding:15px; background:#f9f9f9; border-radius:8px;">
+      <div id="client-info" class="hidden" style="margin-top:15px; padding:15; background:#f9f9f9; border-radius:8px;">
         <strong>Текущие данные:</strong><br>
         Покупок: <span id="info-purchases">0</span><br>
         Скидка: <span id="info-discount">0%</span>
@@ -124,10 +129,8 @@
   </div>
 
   <script>
-    // === ЗАГРУЗКА ДАННЫХ ===
     let clients = JSON.parse(localStorage.getItem('loyalty_clients') || '{}');
 
-    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function generateUniquePin() {
       let pin;
       do {
@@ -155,9 +158,9 @@
       }
     }
 
-    // === СОЗДАНИЕ КЛИЕНТА ===
     function createClient() {
       const customInput = document.getElementById('custom-id').value.trim();
+      const contactLink = document.getElementById('contact-link').value.trim();
       let id;
 
       if (customInput && isPhoneId(customInput)) {
@@ -179,7 +182,8 @@
         discount: 0,
         createdAt: now,
         history: [],
-        isPhone: isPhoneId(id)
+        isPhone: isPhoneId(id),
+        contactLink: contactLink || null // сохраняем ссылку
       };
       addToHistory(clients[id], "Карта создана");
       localStorage.setItem('loyalty_clients', JSON.stringify(clients));
@@ -188,19 +192,16 @@
       document.getElementById('new-id').innerText = `ID: ${displayId}`;
       document.getElementById('new-id').classList.remove('hidden');
       document.getElementById('custom-id').value = '';
+      document.getElementById('contact-link').value = '';
       renderClientList();
     }
 
-    // === ПОИСК КЛИЕНТА ===
     function findClientById(input) {
       input = input.trim();
       if (clients[input]) return { id: input, data: clients[input] };
-      
-      // Дополнительная проверка не нужна — ключи уникальны
       return null;
     }
 
-    // === ДОБАВЛЕНИЕ ПОКУПКИ ===
     function addPurchase() {
       const input = document.getElementById('id-input').value.trim();
       if (!input) return alert("Введите ID");
@@ -240,7 +241,6 @@
       renderClientList();
     }
 
-    // === ПОДГОТОВКА СООБЩЕНИЯ ===
     function prepareMessage() {
       const input = document.getElementById('id-input').value.trim();
       const result = findClientById(input);
@@ -248,7 +248,7 @@
         return alert("Сначала добавьте покупку или укажите корректный ID");
       }
 
-      const { id, data: client } = result;
+      const { id,  client } = result;
       const displayId = client.isPhone ? `••••${id}` : `PIN: ${id}`;
 
       const historyLines = client.history
@@ -280,7 +280,6 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       alert("✅ Сообщение скопировано! Отправьте его клиенту.");
     }
 
-    // === РЕНДЕР СПИСКА ===
     function renderClientList() {
       const list = document.getElementById('client-list');
       list.innerHTML = '';
@@ -297,20 +296,25 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
         const displayId = data.isPhone ? `••••${id}` : `PIN: ${id}`;
         const createdAt = new Date(data.createdAt).toLocaleDateString();
         const row = document.createElement('tr');
+        // Добавляем класс, если есть контакт
+        const idCellClass = data.contactLink ? "id-cell has-contact" : "id-cell";
         row.innerHTML = `
-          <td class="id-cell">${displayId}</td>
+          <td class="${idCellClass}">${displayId}</td>
           <td>${data.purchases}</td>
           <td>${data.discount}%</td>
           <td>${createdAt}</td>
         `;
         row.onclick = () => {
           document.getElementById('id-input').value = id;
+          // Опционально: можно показать ссылку в консоли или всплывашке
+          if (data.contactLink) {
+            console.log("Ссылка клиента:", data.contactLink);
+          }
         };
         list.appendChild(row);
       });
     }
 
-    // === ЭКСПОРТ ===
     function exportClients() {
       const data = {
         clients: clients,
@@ -329,7 +333,6 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       URL.revokeObjectURL(url);
     }
 
-    // === ИМПОРТ ===
     document.getElementById('import-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -361,7 +364,6 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       e.target.value = '';
     });
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', () => {
       renderClientList();
     });
