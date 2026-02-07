@@ -96,8 +96,18 @@
     <!-- СПИСОК КАРТ -->
     <div class="section">
       <h2>📋 Созданные карты</h2>
-      <button onclick="renderClientList()" style="background:#607D8B; font-size:14px; padding:8px;">Обновить список</button>
-      <div style="overflow-x:auto; max-height:400px; overflow-y:auto;">
+      <button onclick="exportClients()" style="background:#4CAF50; font-size:14px; padding:8px; margin-right:8px;">
+        💾 Экспорт в JSON
+      </button>
+      <button onclick="document.getElementById('import-file').click()" style="background:#FF9800; font-size:14px; padding:8px;">
+        📂 Импорт из JSON
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none;" />
+      <button onclick="renderClientList()" style="background:#607D8B; font-size:14px; padding:8px; margin-left:8px;">
+        Обновить список
+      </button>
+      
+      <div style="overflow-x:auto; max-height:400px; overflow-y:auto; margin-top:15px;">
         <table id="client-table">
           <thead>
             <tr>
@@ -114,8 +124,10 @@
   </div>
 
   <script>
+    // === ЗАГРУЗКА ДАННЫХ ===
     let clients = JSON.parse(localStorage.getItem('loyalty_clients') || '{}');
 
+    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function generateUniquePin() {
       let pin;
       do {
@@ -143,6 +155,7 @@
       }
     }
 
+    // === СОЗДАНИЕ КЛИЕНТА ===
     function createClient() {
       const customInput = document.getElementById('custom-id').value.trim();
       let id;
@@ -178,32 +191,16 @@
       renderClientList();
     }
 
+    // === ПОИСК КЛИЕНТА ===
     function findClientById(input) {
       input = input.trim();
-      // Сначала ищем точное совпадение
       if (clients[input]) return { id: input, data: clients[input] };
       
-      // Если введено 4 цифры — ищем среди телефонов
-      if (/^\d{4}$/.test(input)) {
-        for (let id in clients) {
-          if (id === input && clients[id].isPhone) {
-            return { id, data: clients[id] };
-          }
-        }
-      }
-      
-      // Если введено 5 цифр — ищем PIN
-      if (/^\d{5}$/.test(input)) {
-        for (let id in clients) {
-          if (id === input && !clients[id].isPhone) {
-            return { id, data: clients[id] };
-          }
-        }
-      }
-      
+      // Дополнительная проверка не нужна — ключи уникальны
       return null;
     }
 
+    // === ДОБАВЛЕНИЕ ПОКУПКИ ===
     function addPurchase() {
       const input = document.getElementById('id-input').value.trim();
       if (!input) return alert("Введите ID");
@@ -243,6 +240,7 @@
       renderClientList();
     }
 
+    // === ПОДГОТОВКА СООБЩЕНИЯ ===
     function prepareMessage() {
       const input = document.getElementById('id-input').value.trim();
       const result = findClientById(input);
@@ -282,6 +280,7 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       alert("✅ Сообщение скопировано! Отправьте его клиенту.");
     }
 
+    // === РЕНДЕР СПИСКА ===
     function renderClientList() {
       const list = document.getElementById('client-list');
       list.innerHTML = '';
@@ -311,6 +310,58 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       });
     }
 
+    // === ЭКСПОРТ ===
+    function exportClients() {
+      const data = {
+        clients: clients,
+        exportedAt: new Date().toISOString(),
+        version: "1.0"
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `loyalty_clients_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // === ИМПОРТ ===
+    document.getElementById('import-file').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const result = JSON.parse(event.target.result);
+          
+          if (!result.clients || typeof result.clients !== 'object') {
+            throw new Error("Неверный формат файла");
+          }
+
+          if (!confirm(`Загрузить ${Object.keys(result.clients).length} клиентов? Текущие данные будут заменены!`)) {
+            return;
+          }
+
+          clients = result.clients;
+          localStorage.setItem('loyalty_clients', JSON.stringify(clients));
+          renderClientList();
+          alert("✅ Данные успешно загружены!");
+          
+        } catch (err) {
+          console.error(err);
+          alert("❌ Ошибка при загрузке файла:\n" + err.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', () => {
       renderClientList();
     });
