@@ -1,1793 +1,1027 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Кабинет оператора</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root {
-      --bg-dark: #1a1a1a;
-      --bg-card: #2d2d2d;
-      --text-light: #ffffff;
-      --text-muted: #bbbbbb;
-      --accent-yellow: #ffeb3b;
-      --accent-yellow-dark: #fbc02d;
-      --accent-red: #ff5252;
-      --accent-red-dark: #ff1744;
-      --accent-green: #69f0ae;
-      --accent-green-dark: #00e676;
-      --border: #444444;
-      --shadow: rgba(0,0,0,0.3);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Арома-Квест | Программа лояльности</title>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-black: #1a1a1a;
+            --primary-gray: #f5f5f5;
+            --primary-red: #e74c3c;
+            --primary-green: #2ecc71;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --glow: 0 0 15px rgba(255, 215, 0, 0.5);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      color: var(--text-light);
-      padding: 12px;
-      min-height: 100vh;
-      line-height: 1.4;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--primary-black);
+        }
 
-    .container {
-      max-width: 768px;
-      margin: 0 auto;
-      background: var(--bg-card);
-      border-radius: 14px;
-      box-shadow: 0 6px 20px var(--shadow);
-      overflow: hidden;
-      font-size: 15px;
-      position: relative;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    /* Tabs */
-    .tabs {
-      display: flex;
-      background: #333333;
-      border-bottom: 1px solid var(--border);
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 14px;
-      background: none;
-      border: none;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    .tab-btn.active {
-      color: var(--accent-yellow);
-      background: #252525;
-      border-bottom: 3px solid var(--accent-yellow);
-    }
-    .tab-btn:hover {
-      color: var(--accent-yellow);
-    }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
 
-    /* Header */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 16px 14px;
-      background: #252525;
-      border-bottom: 1px solid var(--border);
-    }
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-yellow);
+            text-shadow: var(--glow);
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
 
-    .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-yellow), var(--accent-yellow-dark));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #000;
-      font-size: 20px;
-      flex-shrink: 0;
-      box-shadow: 0 0 15px rgba(255, 235, 59, 0.4);
-    }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-    .info h2 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .info p {
-      font-size: 1rem;
-      color: var(--text-muted);
-    }
+        .subtitle {
+            font-size: 1.2em;
+            color: white;
+            margin-top: 10px;
+        }
 
-    /* Plan Box */
-    .plan-box {
-      padding: 18px 16px;
-      background: linear-gradient(135deg, #333333, #2d2d2d);
-      margin: 16px;
-      border-radius: 12px;
-      position: relative;
-      border: 1px solid var(--border);
-    }
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-yellow);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--glow);
+            font-size: 1.5em;
+            transition: var(--transition);
+        }
 
-    .plan-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--accent-yellow);
-    }
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
 
-    .progress-container {
-      height: 16px;
-      background: #444444;
-      border-radius: 8px;
-      overflow: hidden;
-      margin: 8px 0;
-      border: 1px solid #555555;
-    }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
 
-    .progress-fill {
-      height: 100%;
-      border-radius: 8px;
-      transition: width 0.4s ease, background 0.4s ease;
-    }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-      font-weight: 500;
-      margin-top: 6px;
-    }
+        .quests-section, .profile-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
 
-    .shift-status {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-      font-style: italic;
-    }
+        .quests-section:hover, .profile-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
 
-    /* Section title */
-    .section-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 20px 0 14px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--accent-yellow);
-    }
+        .section-title {
+            color: var(--primary-black);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
 
-    /* Form */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding: 0 16px 16px;
-    }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-yellow);
+            border-radius: 3px;
+        }
 
-    @media (min-width: 600px) {
-      .form-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
+        .quest-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
 
-    .form-group {
-      margin: 0;
-    }
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: var(--transition);
+        }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-light);
-    }
+        .quest-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
 
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      background: #333333;
-      color: var(--text-light);
-      transition: all 0.2s;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent-yellow);
-      box-shadow: 0 0 0 2px rgba(255, 235, 59, 0.3);
-    }
+        .quest-card:hover::before {
+            left: 100%;
+        }
 
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      padding: 0 16px 16px;
-      flex-wrap: wrap;
-    }
+        .quest-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
 
-    button {
-      flex: 1;
-      min-width: 120px;
-      border: none;
-      border-radius: 8px;
-      padding: 11px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      position: relative;
-      overflow: hidden;
-    }
+        .quest-desc {
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
 
-    /* Свечение для кнопок */
-    .btn-start {
-      background: linear-gradient(135deg, #00e676, #00c853);
-      color: #000;
-      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
-    }
-    .btn-start:hover {
-      box-shadow: 0 4px 20px rgba(0, 230, 118, 0.5), 0 0 20px rgba(0, 230, 118, 0.3);
-      transform: translateY(-2px);
-    }
+        .quest-reward {
+            display: inline-block;
+            background: var(--primary-yellow);
+            color: var(--primary-black);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
 
-    .btn-end {
-      background: linear-gradient(135deg, #ff5252, #ff1744);
-      color: white;
-      box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
-    }
-    .btn-end:hover {
-      box-shadow: 0 4px 20px rgba(255, 82, 82, 0.5), 0 0 20px rgba(255, 82, 82, 0.3);
-      transform: translateY(-2px);
-    }
+        .quest-status {
+            display: inline-block;
+            margin-left: 15px;
+            font-size: 0.85em;
+            padding: 3px 10px;
+            border-radius: 15px;
+        }
 
-    .btn-blue {
-      background: linear-gradient(135deg, #2979ff, #2962ff);
-      color: white;
-      box-shadow: 0 4px 15px rgba(41, 121, 255, 0.3);
-    }
-    .btn-blue:hover {
-      box-shadow: 0 4px 20px rgba(41, 121, 255, 0.5), 0 0 20px rgba(41, 121, 255, 0.3);
-      transform: translateY(-2px);
-    }
+        .status-available {
+            background: var(--primary-green);
+            color: white;
+        }
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-light);
-      box-shadow: 0 4px 15px rgba(100, 100, 100, 0.2);
-    }
-    .btn-outline:hover {
-      border-color: var(--accent-yellow);
-      color: var(--accent-yellow);
-      box-shadow: 0 4px 20px rgba(255, 235, 59, 0.3), 0 0 15px rgba(255, 235, 59, 0.2);
-      transform: translateY(-2px);
-    }
+        .status-completed {
+            background: #95a5a6;
+            color: white;
+        }
 
-    .btn-accept {
-      background: linear-gradient(135deg, #00e676, #00c853);
-      color: #000;
-      font-size: 13px;
-      padding: 8px 10px;
-      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
-    }
-    .btn-accept:hover {
-      box-shadow: 0 4px 20px rgba(0, 230, 118, 0.5), 0 0 20px rgba(0, 230, 118, 0.3);
-      transform: translateY(-2px);
-    }
+        .profile-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
 
-    .btn-delete {
-      background: linear-gradient(135deg, #ff5252, #ff1744);
-      color: white;
-      font-size: 13px;
-      padding: 8px 10px;
-      min-width: auto;
-      box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
-    }
-    .btn-delete:hover {
-      box-shadow: 0 4px 20px rgba(255, 82, 82, 0.5), 0 0 20px rgba(255, 82, 82, 0.3);
-      transform: translateY(-2px);
-    }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: var(--primary-black);
+            box-shadow: var(--glow);
+            animation: rotate 3s linear infinite;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-    .btn-view {
-      background: linear-gradient(135deg, #ffeb3b, #fbc02d);
-      color: #000;
-      font-size: 13px;
-      padding: 8px 10px;
-      min-width: auto;
-      box-shadow: 0 4px 15px rgba(255, 235, 59, 0.3);
-    }
-    .btn-view:hover {
-      box-shadow: 0 4px 20px rgba(255, 235, 59, 0.5), 0 0 20px rgba(255, 235, 59, 0.3);
-      transform: translateY(-2px);
-    }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-    /* Orders list */
-    .date-label, .preorders-label {
-      font-weight: 600;
-      color: var(--accent-yellow);
-      margin: 16px 0 12px;
-      padding: 0 16px;
-      display: block;
-    }
+        .avatar:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin: 0 16px 16px;
-    }
+        .user-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-black);
+        }
 
-    th {
-      background: #333333;
-      padding: 10px 8px;
-      text-align: left;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      color: var(--accent-yellow);
-    }
+        .user-level {
+            color: var(--primary-gray);
+            font-size: 0.9em;
+        }
 
-    td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #444444;
-      color: var(--text-light);
-    }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-    .amount {
-      font-weight: 600;
-      color: var(--accent-green);
-    }
+        .stat-card {
+            background: var(--primary-gray);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+        }
 
-    .empty-msg {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 20px 16px;
-      font-style: italic;
-    }
+        .stat-card:hover {
+            background: var(--primary-yellow);
+            transform: translateY(-3px);
+        }
 
-    .hint {
-      text-align: center;
-      margin: 20px 16px;
-      padding: 12px;
-      color: var(--text-muted);
-      font-size: 13px;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      background: #333333;
-    }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-black);
+            margin-bottom: 5px;
+        }
 
-    .fade-in {
-      animation: fadeIn 0.3s ease-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--primary-black);
+            opacity: 0.7;
+        }
 
-    .hidden { display: none; }
+        .progress-container {
+            margin-bottom: 25px;
+        }
 
-    /* Modal styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal.active {
-      display: flex;
-    }
-    .modal-content {
-      background: linear-gradient(135deg, #2d2d2d, #333333);
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      border: 1px solid var(--border);
-      position: relative;
-    }
-    .modal-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--accent-yellow);
-    }
-    .modal-row {
-      margin-bottom: 16px;
-    }
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-    
-    /* Details modal */
-    .details-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #444444;
-    }
-    .details-label {
-      font-weight: 600;
-      color: var(--text-light);
-    }
-    .details-value {
-      color: var(--accent-yellow);
-    }
-  </style>
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: var(--primary-black);
+        }
+
+        .progress-bar {
+            height: 25px;
+            background: var(--primary-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-yellow), #ffd700);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .rewards-section {
+            margin-top: 25px;
+        }
+
+        .reward-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 10px;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .reward-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .reward-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .reward-desc {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .reward-code {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--primary-red);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            animation: modalOpen 0.3s ease;
+        }
+
+        @keyframes modalOpen {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--primary-gray);
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--primary-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-black);
+            text-align: center;
+        }
+
+        .modal-desc {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-yellow), #ffd700);
+            color: var(--primary-black);
+        }
+
+        .btn-secondary {
+            background: var(--primary-gray);
+            color: var(--primary-black);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Dark theme */
+        body.dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+
+        body.dark-theme .quests-section,
+        body.dark-theme .profile-section {
+            background: #2c3e50;
+            color: white;
+        }
+
+        body.dark-theme .section-title {
+            color: white;
+        }
+
+        body.dark-theme .section-title::after {
+            background: var(--primary-yellow);
+        }
+
+        body.dark-theme .stat-card {
+            background: #34495e;
+            color: white;
+        }
+
+        body.dark-theme .user-name,
+        body.dark-theme .stat-value,
+        body.dark-theme .stat-label {
+            color: white;
+        }
+
+        body.dark-theme .progress-bar {
+            background: #34495e;
+        }
+
+        body.dark-theme .reward-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
 </head>
 <body>
-  <div class="container fade-in">
+    <div class="container">
+        <header>
+            <div class="logo">✨ Арома-Квест ✨</div>
+            <div class="subtitle">Откройте мир эфирных масел и получите уникальные бонусы!</div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </header>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('main')">Основное</button>
-      <button class="tab-btn" onclick="switchTab('preorders')">Предзаказы</button>
+        <div class="main-content">
+            <div class="quests-section">
+                <h2 class="section-title">Доступные квесты</h2>
+                <div id="questsContainer"></div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">Ваш профиль</h2>
+                <div class="profile-info">
+                    <div class="avatar" id="avatar">👤</div>
+                    <div class="user-name" id="userName">Путешественник</div>
+                    <div class="user-level">Уровень: <span id="userLevel">1</span></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="points">0</div>
+                        <div class="stat-label">Баллов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completed">0</div>
+                        <div class="stat-label">Квестов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="streak">0</div>
+                        <div class="stat-label">Дней подряд</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="discount">0%</div>
+                        <div class="stat-label">Скидка</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>До следующего уровня</span>
+                        <span id="progressText">0/1000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="rewards-section">
+                    <h3 style="margin-bottom: 15px; color: var(--primary-black);">Ваши промокоды:</h3>
+                    <div id="rewardsContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Арома-Квест © 2026 | Программа лояльности для любителей натуральной косметики</p>
+            <p style="margin-top: 5px; font-size: 0.8em;">Ваши бонусы действуют в нашем онлайн-магазине ароматов и косметики</p>
+        </footer>
     </div>
 
-    <!-- Main Tab -->
-    <div id="main-tab">
-      <!-- Header -->
-      <div class="header">
-        <div class="avatar"><i class="fas fa-user"></i></div>
-        <div class="info">
-          <h2>Оператор №<span id="opId">1</span></h2>
-          <p>Всего: <b><span id="totalAll">0.00</span> ₽</b></p>
-        </div>
-      </div>
+    <div class="notification" id="notification"></div>
 
-      <!-- Plan Box -->
-      <div class="plan-box">
-        <div class="plan-title">
-          <i class="fas fa-bullseye"></i> План: <b>3000 ₽</b>
+    <div class="modal" id="questModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h3 class="modal-title" id="modalTitle">Название квеста</h3>
+            <p class="modal-desc" id="modalDesc">Описание квеста...</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="declineBtn">Отклонить</button>
+                <button class="btn btn-primary" id="acceptBtn">Принять квест</button>
+            </div>
         </div>
-        <div class="progress-container">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-text">
-          <span>Текущая смена:</span>
-          <span><b><span id="todayEarned">0.00</span> ₽</b></span>
-        </div>
-        <div class="shift-status" id="shiftStatus">Смена не начата</div>
-      </div>
-
-      <!-- Shift Controls -->
-      <div class="btn-row">
-        <button class="btn-start" onclick="startShift()">
-          <i class="fas fa-play"></i> Начать смену
-        </button>
-        <button class="btn-end" onclick="endShift()">
-          <i class="fas fa-stop"></i> Завершить смену
-        </button>
-      </div>
-
-      <!-- Create Order -->
-      <div class="section-title">
-        <i class="fas fa-plus"></i> Новый заказ
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>№ заказа</label>
-          <input type="text" id="orderNum" placeholder="Напр.: ORD-001" required>
-        </div>
-        <div class="form-group">
-          <label>Тариф</label>
-          <select id="tariff">
-            <option value="RASPIL_M2">Распил — 65 ₽/м²</option>
-            <option value="LINEAR_RASPIL">Лин. распил — 26 ₽/м</option>
-            <option value="SKLEIKA_OB">Склейка + — 210 ₽/м²</option>
-            <option value="SKLEIKA_NO_OB">Склейка – — 165 ₽/м²</option>
-            <option value="PAZY">Пазы — 30 ₽/м</option>
-            <option value="FREZER_FASKA">Фаска — 16 ₽/м</option>
-            <option value="TIME">Время — 330 ₽/ч</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Деталь</label>
-          <input type="text" id="detail" placeholder="Название">
-        </div>
-        <div class="form-group">
-          <label>Кол-во</label>
-          <input type="number" id="qty" value="1" min="1">
-        </div>
-
-        <div class="form-group" id="lengthGroup">
-          <label>Длина (м)</label>
-          <input type="number" step="0.01" id="length" placeholder="0.00">
-        </div>
-        <div class="form-group hidden" id="widthGroup">
-          <label>Ширина (м)</label>
-          <input type="number" step="0.01" id="width" placeholder="0.00">
-        </div>
-        <div class="form-group hidden" id="hoursGroup">
-          <label>Часы</label>
-          <input type="number" step="0.1" id="hours" placeholder="0.0">
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button style="background:linear-gradient(135deg,#ffeb3b,#fbc02d);color:#000;box-shadow:0 4px 15px rgba(255, 235, 59, 0.3);" onmouseover="this.style.boxShadow='0 4px 20px rgba(255, 235, 59, 0.5), 0 0 20px rgba(255, 235, 59, 0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(255, 235, 59, 0.3)'; this.style.transform='translateY(0)'">
-          <i class="fas fa-check"></i> Создать заказ
-        </button>
-      </div>
-
-      <!-- View Orders by Date -->
-      <div class="section-title">
-        <i class="fas fa-history"></i> Заказы по дате
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Дата</label>
-          <input type="date" id="viewDate" value="">
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button onclick="showOrdersByDate()">
-          <i class="fas fa-eye"></i> Показать
-        </button>
-        <button class="btn-outline" onclick="saveOrdersToFile()">
-          <i class="fas fa-download"></i> В TXT
-        </button>
-        <button class="btn-outline" onclick="saveOrdersToJSON()">
-          <i class="fas fa-file-code"></i> В JSON
-        </button>
-      </div>
-
-      <div id="ordersList"></div>
     </div>
 
-    <!-- Preorders Tab -->
-    <div id="preorders-tab" class="hidden">
-      <div class="section-title">
-        <i class="fas fa-clock"></i> Предзаказы
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>№ заказа</label>
-          <input type="text" id="preOrderNum" placeholder="Напр.: PRE-001" required>
-        </div>
-        <div class="form-group">
-          <label>Тариф</label>
-          <select id="preTariff">
-            <option value="RASPIL_M2">Распил — 65 ₽/м²</option>
-            <option value="LINEAR_RASPIL">Лин. распил — 26 ₽/м</option>
-            <option value="SKLEIKA_OB">Склейка + — 210 ₽/м²</option>
-            <option value="SKLEIKA_NO_OB">Склейка – — 165 ₽/м²</option>
-            <option value="PAZY">Пазы — 30 ₽/м</option>
-            <option value="FREZER_FASKA">Фаска — 16 ₽/м</option>
-            <option value="TIME">Время — 330 ₽/ч</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Деталь</label>
-          <input type="text" id="preDetail" placeholder="Название">
-        </div>
-        <div class="form-group">
-          <label>Кол-во</label>
-          <input type="number" id="preQty" value="1" min="1">
-        </div>
-
-        <div class="form-group" id="preLengthGroup">
-          <label>Длина (м)</label>
-          <input type="number" step="0.01" id="preLength" placeholder="0.00">
-        </div>
-        <div class="form-group hidden" id="preWidthGroup">
-          <label>Ширина (м)</label>
-          <input type="number" step="0.01" id="preWidth" placeholder="0.00">
-        </div>
-        <div class="form-group hidden" id="preHoursGroup">
-          <label>Часы</label>
-          <input type="number" step="0.1" id="preHours" placeholder="0.0">
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn-blue" onclick="createPreorder()">
-          <i class="fas fa-save"></i> Сохранить предзаказ
-        </button>
-        <button class="btn-outline" onclick="document.getElementById('jsonImportInput').click()">
-          <i class="fas fa-upload"></i> Загрузить TXT/JSON
-        </button>
-      </div>
-
-      <input type="file" id="jsonImportInput" accept=".txt,.json" style="display: none;" />
-
-      <div class="preorders-label">Список предзаказов</div>
-      <div id="preordersList"></div>
-    </div>
-
-    <div class="hint">
-      💡 Предзаказы не влияют на план. Нажмите «Принять», чтобы добавить в основные.
-    </div>
-  </div>
-
-  <!-- Modal for editing orders -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">Редактировать заказ</div>
-      <input type="hidden" id="editOrderId">
-      <div class="modal-row">
-        <label>№ заказа</label>
-        <input type="text" id="editOrderNum" class="form-control" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-row">
-        <label>Деталь</label>
-        <input type="text" id="editDetail" class="form-control" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-row">
-        <label>Тариф</label>
-        <select id="editTariff" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-          <option value="RASPIL_M2">Распил — 65 ₽/м²</option>
-          <option value="LINEAR_RASPIL">Лин. распил — 26 ₽/м</option>
-          <option value="SKLEIKA_OB">Склейка + — 210 ₽/м²</option>
-          <option value="SKLEIKA_NO_OB">Склейка – — 165 ₽/м²</option>
-          <option value="PAZY">Пазы — 30 ₽/м</option>
-          <option value="FREZER_FASKA">Фаска — 16 ₽/м</option>
-          <option value="TIME">Время — 330 ₽/ч</option>
-        </select>
-      </div>
-      <div class="modal-row">
-        <label>Кол-во</label>
-        <input type="number" id="editQty" min="1" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-row" id="editLengthGroup">
-        <label>Длина (м)</label>
-        <input type="number" step="0.01" id="editLength" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-row hidden" id="editWidthGroup">
-        <label>Ширина (м)</label>
-        <input type="number" step="0.01" id="editWidth" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-row hidden" id="editHoursGroup">
-        <label>Часы</label>
-        <input type="number" step="0.1" id="editHours" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-buttons">
-        <button class="btn-outline" onclick="closeEditModal()">Отмена</button>
-        <button class="btn-blue" onclick="saveEditedOrder()">Сохранить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal for date selection -->
-  <div id="dateModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">Выберите дату для заказа</div>
-      <div class="modal-row">
-        <label>Дата</label>
-        <input type="date" id="modalDate" class="form-control" style="width:100%;padding:10px;border:1px solid #444444;border-radius:8px;background:#333333;color:white;">
-      </div>
-      <div class="modal-buttons">
-        <button class="btn-outline" onclick="closeDateModal()">Отмена</button>
-        <button class="btn-blue" onclick="confirmDateSelection()">Подтвердить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal for viewing order details -->
-  <div id="detailsModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">Детали заказа</div>
-      <div id="detailsContent"></div>
-      <div class="modal-buttons">
-        <button class="btn-outline" onclick="closeDetailsModal()">Закрыть</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-  // === Константы ===
-  const TARIFFS = {
-    RASPIL_M2: { price: 65, unit: 'm2' },
-    LINEAR_RASPIL: { price: 26, unit: 'linear' },
-    SKLEIKA_OB: { price: 210, unit: 'm2' },
-    SKLEIKA_NO_OB: { price: 165, unit: 'm2' },
-    PAZY: { price: 30, unit: 'linear' },
-    FREZER_FASKA: { price: 16, unit: 'linear' },
-    TIME: { price: 330, unit: 'time' }
-  };
-
-  const TARIFF_NAMES = {
-    RASPIL_M2: 'Распил',
-    LINEAR_RASPIL: 'Лин. распил',
-    SKLEIKA_OB: 'Склейка +',
-    SKLEIKA_NO_OB: 'Склейка –',
-    PAZY: 'Пазы',
-    FREZER_FASKA: 'Фаска',
-    TIME: 'Время'
-  };
-
-  const UNIT_LABELS = {
-    m2: 'м²',
-    linear: 'пог. м',
-    time: 'часы'
-  };
-
-  // === Глобальные переменные ===
-  let hasNotified1000 = false;
-  let editingOrder = null;
-  let pendingPreorderId = null;
-
-  // === Анимации для уведомления ===
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // === Звуковой сигнал: чёткий двойной звонок ===
-  function playBellSound() {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-
-      const audioContext = new AudioContext();
-      const frequencies = [600, 800]; // два тона
-      let time = audioContext.currentTime;
-
-      frequencies.forEach((freq, i) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        oscillator.type = 'sine';
-        oscillator.frequency.value = freq;
-        gainNode.gain.setValueAtTime(0.2, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
-
-        oscillator.start(time);
-        oscillator.stop(time + 0.3);
-        time += 0.25;
-      });
-    } catch (e) {
-      console.warn('Звук не поддерживается:', e);
-    }
-  }
-
-  // === Уведомление на 1000₽ ===
-  function checkAndNotify1000(currentAmount) {
-    const shift = getCurrentShift();
-    
-    // Сброс флага при новой смене
-    if (!shift || !shift.active) {
-      hasNotified1000 = false;
-      return;
-    }
-    
-    // Уведомление только один раз за смену
-    if (currentAmount >= 1000 && !hasNotified1000) {
-      hasNotified1000 = true;
-      
-      // Звуковое уведомление
-      playBellSound();
-      
-      // Визуальное уведомление
-      const notification = document.createElement('div');
-      notification.innerHTML = `
-        <div style="
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: linear-gradient(135deg, #ffeb3b, #fbc02d);
-          color: #000;
-          padding: 16px 24px;
-          border-radius: 12px;
-          box-shadow: 0 8px 24px rgba(255, 235, 59, 0.4);
-          z-index: 2000;
-          font-weight: bold;
-          animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 3s forwards;
-        ">
-          🎯 Достигнуто 1000₽!
-        </div>
-      `;
-      document.body.appendChild(notification);
-      
-      // Удалить через 4 секунды
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 4000);
-    }
-  }
-
-  // === Утилиты ===
-  function formatDateYMD(dateStr) {
-    const [y, m, d] = dateStr.split('-');
-    return `${d}.${m}.${y}`;
-  }
-
-  function todayYMD() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  function loadOrders() {
-    try {
-      return JSON.parse(localStorage.getItem('operator_orders') || '[]');
-    } catch (e) { return []; }
-  }
-
-  function saveOrders(orders) {
-    localStorage.setItem('operator_orders', JSON.stringify(orders));
-  }
-
-  function loadPreorders() {
-    try {
-      return JSON.parse(localStorage.getItem('operator_preorders') || '[]');
-    } catch (e) { return []; }
-  }
-
-  function savePreorders(preorders) {
-    localStorage.setItem('operator_preorders', JSON.stringify(preorders));
-  }
-
-  function getCurrentShift() {
-    try {
-      return JSON.parse(localStorage.getItem('current_shift') || 'null');
-    } catch (e) { return null; }
-  }
-
-  function setCurrentShift(shift) {
-    if (shift === null) {
-      localStorage.removeItem('current_shift');
-    } else {
-      localStorage.setItem('current_shift', JSON.stringify(shift));
-    }
-  }
-
-  // === Расчёт суммы ===
-  function calculateAmount(tariffKey, length, width, hours, qty) {
-    const tariff = TARIFFS[tariffKey];
-    if (!tariff) return 0;
-    let amount = 0;
-    if (tariff.unit === 'time') {
-      amount = tariff.price * hours * qty;
-    } else if (tariff.unit === 'm2') {
-      amount = tariff.price * length * width * qty;
-    } else {
-      amount = tariff.price * length * qty;
-    }
-    return Math.round(amount * 100) / 100;
-  }
-
-  // === Расчёт количества единиц ===
-  function calculateUnits(tariffKey, length, width, hours, qty) {
-    const tariff = TARIFFS[tariffKey];
-    if (!tariff) return { value: 0, unit: '' };
-    
-    let value = 0;
-    let unit = tariff.unit;
-    
-    if (tariff.unit === 'time') {
-      value = hours * qty;
-    } else if (tariff.unit === 'm2') {
-      value = length * width * qty;
-    } else {
-      value = length * qty;
-    }
-    
-    return { value: Math.round(value * 100) / 100, unit: UNIT_LABELS[unit] || unit };
-  }
-
-  // === Обновление UI плана ===
-  function updateUI() {
-    const orders = loadOrders();
-    const totalAll = orders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
-
-    const shift = getCurrentShift();
-    let currentShiftAmount = 0;
-    let progressWidth = 0;
-    let fillColor = '#444444';
-    let statusText = 'Смена не начата';
-
-    if (shift && shift.active) {
-      currentShiftAmount = orders
-        .filter(o => o.shiftId === shift.id)
-        .reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
-      progressWidth = Math.min(100, (currentShiftAmount / 3000) * 100);
-      fillColor = `linear-gradient(90deg, #ffeb3b 0%, #fbc02d 50%, #00e676 100%)`;
-      statusText = 'Смена активна';
-      
-      // Проверить уведомление на 1000₽
-      checkAndNotify1000(currentShiftAmount);
-    } else if (shift && !shift.active) {
-      currentShiftAmount = shift.finalAmount || 0;
-      progressWidth = Math.min(100, (currentShiftAmount / 3000) * 100);
-      fillColor = shift.finalAmount >= 3000 ? '#00e676' : '#ff5252';
-      statusText = 'Смена завершена';
-    }
-
-    document.getElementById('totalAll').textContent = totalAll.toFixed(2);
-    document.getElementById('todayEarned').textContent = currentShiftAmount.toFixed(2);
-    const fillEl = document.getElementById('progressFill');
-    fillEl.style.width = `${progressWidth}%`;
-    fillEl.style.background = fillColor;
-    document.getElementById('shiftStatus').textContent = statusText;
-  }
-
-  // === Переключение полей ===
-  function updateMainFormFields() {
-    const tariffSelect = document.getElementById('tariff');
-    if (!tariffSelect) return;
-
-    const tariff = tariffSelect.value;
-    const w = document.getElementById('widthGroup');
-    const h = document.getElementById('hoursGroup');
-    const l = document.getElementById('lengthGroup');
-
-    if (w) w.classList.add('hidden');
-    if (h) h.classList.add('hidden');
-    if (l) l.classList.remove('hidden');
-
-    if (['RASPIL_M2', 'SKLEIKA_OB', 'SKLEIKA_NO_OB'].includes(tariff)) {
-      if (w) w.classList.remove('hidden');
-    } else if (tariff === 'TIME') {
-      if (l) l.classList.add('hidden');
-      if (h) h.classList.remove('hidden');
-    }
-  }
-
-  function updatePreorderFormFields() {
-    const tariffSelect = document.getElementById('preTariff');
-    if (!tariffSelect) return;
-
-    const tariff = tariffSelect.value;
-    const w = document.getElementById('preWidthGroup');
-    const h = document.getElementById('preHoursGroup');
-    const l = document.getElementById('preLengthGroup');
-
-    if (w) w.classList.add('hidden');
-    if (h) h.classList.add('hidden');
-    if (l) l.classList.remove('hidden');
-
-    if (['RASPIL_M2', 'SKLEIKA_OB', 'SKLEIKA_NO_OB'].includes(tariff)) {
-      if (w) w.classList.remove('hidden');
-    } else if (tariff === 'TIME') {
-      if (l) l.classList.add('hidden');
-      if (h) h.classList.remove('hidden');
-    }
-  }
-
-  // === Tabs ===
-  function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (tabName === 'main') {
-      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
-      document.getElementById('main-tab').classList.remove('hidden');
-      document.getElementById('preorders-tab').classList.add('hidden');
-      updateUI();
-      setTimeout(updateMainFormFields, 50);
-    } else {
-      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-      document.getElementById('main-tab').classList.add('hidden');
-      document.getElementById('preorders-tab').classList.remove('hidden');
-      renderPreorders();
-      setTimeout(updatePreorderFormFields, 50);
-    }
-  }
-
-  // === Смена с ОДИНАКОВЫМ звуком ===
-  function startShift() {
-    const shift = getCurrentShift();
-    if (shift && shift.active) {
-      alert('Смена уже активна!');
-      return;
-    }
-    const newShift = { id: Date.now(), startedAt: new Date().toISOString(), active: true };
-    setCurrentShift(newShift);
-    
-    playBellSound(); // 🔔 Чёткий звонок при НАЧАЛЕ
-    alert('✅ Смена начата!');
-    updateUI();
-  }
-
-  function endShift() {
-    const shift = getCurrentShift();
-    if (!shift || !shift.active) {
-      alert('Нет активной смены для завершения!');
-      return;
-    }
-    const orders = loadOrders();
-    const finalAmount = orders
-      .filter(o => o.shiftId === shift.id)
-      .reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
-    shift.active = false;
-    shift.finishedAt = new Date().toISOString();
-    shift.finalAmount = finalAmount;
-    setCurrentShift(shift);
-    
-    playBellSound(); // 🔔 Тот же звонок при ЗАВЕРШЕНИИ
-    alert(`✅ Смена завершена!\nЗаработано: ${finalAmount.toFixed(2)} ₽`);
-    updateUI();
-  }
-
-  // === Удаление заказов ===
-  function deleteOrder(orderId) {
-    if (!confirm('Вы уверены, что хотите удалить этот заказ?')) {
-      return;
-    }
-
-    const orders = loadOrders();
-    const orderIndex = orders.findIndex(o => o.id === orderId);
-    
-    if (orderIndex === -1) return;
-
-    const deletedOrder = orders[orderIndex];
-    orders.splice(orderIndex, 1);
-    saveOrders(orders);
-    
-    // Если удаленный заказ был в активной смене, обновить прогресс
-    const shift = getCurrentShift();
-    if (shift && shift.active && deletedOrder.shiftId === shift.id) {
-      updateUI();
-    }
-    
-    // Перезагрузить список заказов для текущей даты
-    showOrdersByDate();
-    
-    alert('✅ Заказ удален!');
-  }
-
-  // === Удаление предзаказов ===
-  function deletePreorder(preorderId) {
-    if (!confirm('Вы уверены, что хотите удалить этот предзаказ?')) {
-      return;
-    }
-
-    const preorders = loadPreorders();
-    const preorderIndex = preorders.findIndex(p => p.id === preorderId);
-    
-    if (preorderIndex === -1) return;
-
-    preorders.splice(preorderIndex, 1);
-    savePreorders(preorders);
-    
-    renderPreorders();
-    
-    alert('✅ Предзаказ удален!');
-  }
-
-  // === Модальное окно для выбора даты ===
-  function openDateModal(preorderId) {
-    pendingPreorderId = preorderId;
-    const modalDateInput = document.getElementById('modalDate');
-    if (modalDateInput) {
-      modalDateInput.value = todayYMD();
-    }
-    document.getElementById('dateModal').classList.add('active');
-  }
-
-  function closeDateModal() {
-    document.getElementById('dateModal').classList.remove('active');
-    pendingPreorderId = null;
-  }
-
-  function confirmDateSelection() {
-    const modalDateInput = document.getElementById('modalDate');
-    const selectedDate = modalDateInput ? modalDateInput.value : null;
-    
-    if (!selectedDate) {
-      alert('Выберите дату');
-      return;
-    }
-
-    if (pendingPreorderId !== null) {
-      acceptPreorder(pendingPreorderId, selectedDate);
-    }
-    
-    closeDateModal();
-  }
-
-  // === Просмотр деталей заказа ===
-  function viewOrderDetails(orderId) {
-    const orders = loadOrders();
-    const order = orders.find(o => o.id === orderId);
-    
-    if (!order) return;
-    
-    const units = calculateUnits(order.tariff, order.length, order.width, order.hours, order.qty);
-    const tariffName = TARIFF_NAMES[order.tariff] || order.tariff;
-    
-    let html = '';
-    
-    html += `<div class="details-item">
-      <span class="details-label">№ заказа:</span>
-      <span class="details-value">${order.orderNumber}</span>
-    </div>`;
-    
-    html += `<div class="details-item">
-      <span class="details-label">Деталь:</span>
-      <span class="details-value">${order.detail}</span>
-    </div>`;
-    
-    html += `<div class="details-item">
-      <span class="details-label">Тариф:</span>
-      <span class="details-value">${tariffName}</span>
-    </div>`;
-    
-    html += `<div class="details-item">
-      <span class="details-label">Количество:</span>
-      <span class="details-value">${order.qty}</span>
-    </div>`;
-    
-    if (order.length !== null) {
-      html += `<div class="details-item">
-        <span class="details-label">Длина:</span>
-        <span class="details-value">${order.length} м</span>
-      </div>`;
-    }
-    
-    if (order.width !== null) {
-      html += `<div class="details-item">
-        <span class="details-label">Ширина:</span>
-        <span class="details-value">${order.width} м</span>
-      </div>`;
-    }
-    
-    if (order.hours !== null) {
-      html += `<div class="details-item">
-        <span class="details-label">Часы:</span>
-        <span class="details-value">${order.hours} ч</span>
-      </div>`;
-    }
-    
-    html += `<div class="details-item">
-      <span class="details-label">Объем работ:</span>
-      <span class="details-value">${units.value} ${units.unit}</span>
-    </div>`;
-    
-    html += `<div class="details-item">
-      <span class="details-label">Сумма:</span>
-      <span class="details-value">${order.amount.toFixed(2)} ₽</span>
-    </div>`;
-    
-    document.getElementById('detailsContent').innerHTML = html;
-    document.getElementById('detailsModal').classList.add('active');
-  }
-
-  function closeDetailsModal() {
-    document.getElementById('detailsModal').classList.remove('active');
-  }
-
-  // === Редактирование заказов ===
-  function openEditModal(orderId) {
-    const orders = loadOrders();
-    const order = orders.find(o => o.id === orderId);
-    
-    if (!order) return;
-    
-    editingOrder = order;
-    
-    // Заполнить форму
-    document.getElementById('editOrderId').value = order.id;
-    document.getElementById('editOrderNum').value = order.orderNumber;
-    document.getElementById('editDetail').value = order.detail;
-    document.getElementById('editTariff').value = order.tariff;
-    document.getElementById('editQty').value = order.qty;
-    document.getElementById('editLength').value = order.length || '';
-    document.getElementById('editWidth').value = order.width || '';
-    document.getElementById('editHours').value = order.hours || '';
-    
-    // Обновить видимость полей
-    updateEditFormFields();
-    
-    // Показать модальное окно
-    document.getElementById('editModal').classList.add('active');
-  }
-
-  function closeEditModal() {
-    document.getElementById('editModal').classList.remove('active');
-    editingOrder = null;
-  }
-
-  function updateEditFormFields() {
-    const tariff = document.getElementById('editTariff').value;
-    const w = document.getElementById('editWidthGroup');
-    const h = document.getElementById('editHoursGroup');
-    const l = document.getElementById('editLengthGroup');
-
-    w.classList.add('hidden');
-    h.classList.add('hidden');
-    l.classList.remove('hidden');
-
-    if (['RASPIL_M2', 'SKLEIKA_OB', 'SKLEIKA_NO_OB'].includes(tariff)) {
-      w.classList.remove('hidden');
-    } else if (tariff === 'TIME') {
-      l.classList.add('hidden');
-      h.classList.remove('hidden');
-    }
-  }
-
-  function saveEditedOrder() {
-    if (!editingOrder) return;
-    
-    const orderId = parseInt(document.getElementById('editOrderId').value);
-    const num = document.getElementById('editOrderNum').value.trim();
-    if (!num) {
-      alert('Укажите № заказа');
-      return;
-    }
-
-    const tariffKey = document.getElementById('editTariff').value;
-    const detail = document.getElementById('editDetail').value.trim() || '—';
-    const qty = parseInt(document.getElementById('editQty').value) || 1;
-    const length = parseFloat(document.getElementById('editLength').value) || 0;
-    const width = parseFloat(document.getElementById('editWidth').value) || 0;
-    const hours = parseFloat(document.getElementById('editHours').value) || 0;
-
-    const amount = calculateAmount(tariffKey, length, width, hours, qty);
-
-    // Найти и обновить заказ
-    const orders = loadOrders();
-    const orderIndex = orders.findIndex(o => o.id === orderId);
-    
-    if (orderIndex !== -1) {
-      orders[orderIndex] = {
-        ...orders[orderIndex],
-        orderNumber: num,
-        tariff: tariffKey,
-        detail: detail,
-        qty: qty,
-        length: length || null,
-        width: width || null,
-        hours: hours || null,
-        amount: amount
-      };
-      
-      saveOrders(orders);
-      updateUI();
-      showOrdersByDate(); // Обновить текущий список
-      closeEditModal();
-      alert('✅ Заказ обновлен!');
-    }
-  }
-
-  // === Остальной код без изменений ===
-  function createMainOrder() {
-    const num = document.getElementById('orderNum').value.trim();
-    if (!num) { alert('Укажите № заказа'); return; }
-
-    const tariffKey = document.getElementById('tariff').value;
-    const detail = document.getElementById('detail').value.trim() || '—';
-    const qty = parseInt(document.getElementById('qty').value) || 1;
-    const length = parseFloat(document.getElementById('length').value) || 0;
-    const width = parseFloat(document.getElementById('width').value) || 0;
-    const hours = parseFloat(document.getElementById('hours').value) || 0;
-
-    const amount = calculateAmount(tariffKey, length, width, hours, qty);
-
-    const shift = getCurrentShift();
-    if (!shift || !shift.active) {
-      alert('⚠️ Начните смену, чтобы создавать заказы!');
-      return;
-    }
-
-    const order = {
-      id: Date.now(),
-      orderNumber: num,
-      tariff: tariffKey,
-      detail: detail,
-      qty: qty,
-      length: length || null,
-      width: width || null,
-      hours: hours || null,
-      amount: amount,
-      date: todayYMD(),
-      shiftId: shift.id,
-      timestamp: new Date().toISOString()
-    };
-
-    const orders = loadOrders();
-    orders.push(order);
-    saveOrders(orders);
-    updateUI();
-
-    document.getElementById('orderNum').value = '';
-    document.getElementById('detail').value = '';
-    document.getElementById('qty').value = '1';
-    document.getElementById('length').value = '';
-    document.getElementById('width').value = '';
-    document.getElementById('hours').value = '';
-
-    updateMainFormFields();
-  }
-
-  function createPreorder() {
-    const num = document.getElementById('preOrderNum').value.trim();
-    if (!num) { alert('Укажите № предзаказа'); return; }
-
-    const tariffKey = document.getElementById('preTariff').value;
-    const detail = document.getElementById('preDetail').value.trim() || '—';
-    const qty = parseInt(document.getElementById('preQty').value) || 1;
-    const length = parseFloat(document.getElementById('preLength').value) || 0;
-    const width = parseFloat(document.getElementById('preWidth').value) || 0;
-    const hours = parseFloat(document.getElementById('preHours').value) || 0;
-
-    const amount = calculateAmount(tariffKey, length, width, hours, qty);
-
-    const preorder = {
-      id: Date.now(),
-      orderNumber: num,
-      tariff: tariffKey,
-      detail: detail,
-      qty: qty,
-      length: length || null,
-      width: width || null,
-      hours: hours || null,
-      amount: amount,
-      date: todayYMD(),
-      timestamp: new Date().toISOString()
-    };
-
-    const preorders = loadPreorders();
-    preorders.push(preorder);
-    savePreorders(preorders);
-    alert('✅ Предзаказ сохранён!');
-    renderPreorders();
-
-    document.getElementById('preOrderNum').value = '';
-    document.getElementById('preDetail').value = '';
-    document.getElementById('preQty').value = '1';
-    document.getElementById('preLength').value = '';
-    document.getElementById('preWidth').value = '';
-    document.getElementById('preHours').value = '';
-
-    updatePreorderFormFields();
-  }
-
-  function acceptPreorder(preorderId, selectedDate = null) {
-    const preorders = loadPreorders();
-    const preorderIndex = preorders.findIndex(p => p.id === preorderId);
-    if (preorderIndex === -1) return;
-
-    const preorder = preorders[preorderIndex];
-    const shift = getCurrentShift();
-
-    if (!shift || !shift.active) {
-      alert('Начните смену, чтобы принять предзаказ!');
-      return;
-    }
-
-    // Если дата не выбрана, показать модальное окно
-    if (!selectedDate) {
-      openDateModal(preorderId);
-      return;
-    }
-
-    const order = {
-      ...preorder,
-      shiftId: shift.id,
-      date: selectedDate // Используем выбранную дату
-    };
-
-    const orders = loadOrders();
-    orders.push(order);
-    saveOrders(orders);
-
-    preorders.splice(preorderIndex, 1);
-    savePreorders(preorders);
-
-    alert(`✅ Предзаказ "${preorder.orderNumber}" принят на дату ${formatDateYMD(selectedDate)}!`);
-    updateUI();
-    renderPreorders();
-  }
-
-  function renderPreorders() {
-    const preorders = loadPreorders();
-    const container = document.getElementById('preordersList');
-
-    if (preorders.length === 0) {
-      container.innerHTML = '<div class="empty-msg">Нет предзаказов</div>';
-      return;
-    }
-
-    let html = `
-      <table>
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>Деталь</th>
-            <th>Сумма</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-    preorders.forEach(p => {
-      html += `
-        <tr>
-          <td>${p.orderNumber}</td>
-          <td>${p.detail}</td>
-          <td class="amount">${p.amount.toFixed(2)} ₽</td>
-          <td>
-            <button class="btn-accept" onclick="acceptPreorder(${p.id})">
-              <i class="fas fa-check"></i> Принять
-            </button>
-            <button class="btn-delete" onclick="deletePreorder(${p.id})">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
-  }
-
-  function showOrdersByDate() {
-    const dateInput = document.getElementById('viewDate').value;
-    if (!dateInput) {
-      alert('Выберите дату');
-      return;
-    }
-
-    const orders = loadOrders();
-    const filtered = orders.filter(o => o.date === dateInput);
-    const formattedDate = formatDateYMD(dateInput);
-
-    let html = `<div class="date-label">Заказы за ${formattedDate}</div>`;
-
-    if (filtered.length === 0) {
-      html += '<div class="empty-msg">Нет заказов за эту дату</div>';
-    } else {
-      html += `
-        <table>
-          <thead>
-            <tr>
-              <th>№</th>
-              <th>Деталь</th>
-              <th>Сумма</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      filtered.forEach(o => {
-        html += `
-          <tr>
-            <td>${o.orderNumber}</td>
-            <td>${o.detail}</td>
-            <td class="amount">${o.amount.toFixed(2)} ₽</td>
-            <td>
-              <button class="btn-view" onclick="viewOrderDetails(${o.id})" style="margin-right:4px;">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn-accept" onclick="openEditModal(${o.id})" style="background:linear-gradient(135deg,#2979ff,#2962ff);min-width:auto;padding:8px 10px;margin-right:4px;box-shadow:0 4px 15px rgba(41, 121, 255, 0.3);">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-delete" onclick="deleteOrder(${o.id})">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-      html += '</tbody></table>';
-    }
-
-    document.getElementById('ordersList').innerHTML = html;
-  }
-
-  function saveOrdersToFile() {
-    const dateInput = document.getElementById('viewDate').value;
-    if (!dateInput) {
-      alert('Сначала выберите дату');
-      return;
-    }
-
-    const orders = loadOrders();
-    const filtered = orders.filter(o => o.date === dateInput);
-
-    if (filtered.length === 0) {
-      alert('Нет заказов за эту дату');
-      return;
-    }
-
-    const formattedDate = formatDateYMD(dateInput);
-    let content = `ЗАКАЗЫ ЗА ${formattedDate}\n`;
-    content += `========================\n\n`;
-
-    let totalSum = 0;
-    let totalM2 = 0;
-    let totalLinear = 0;
-    let totalTime = 0;
-    
-    filtered.forEach((o, idx) => {
-      const tariffName = TARIFF_NAMES[o.tariff] || o.tariff;
-      const units = calculateUnits(o.tariff, o.length, o.width, o.hours, o.qty);
-      
-      content += `№${idx + 1}. ${o.orderNumber}\n`;
-      content += `   ${o.detail} (${tariffName})\n`;
-      if (o.length) content += `   Длина: ${o.length} м\n`;
-      if (o.width) content += `   Ширина: ${o.width} м\n`;
-      if (o.hours) content += `   Часы: ${o.hours} ч\n`;
-      content += `   Кол-во: ${o.qty}\n`;
-      
-      // Добавляем строку с объемом работ
-      content += `   Объем: ${units.value} ${units.unit}\n`;
-      
-      content += `   Сумма: ${o.amount.toFixed(2)} ₽\n---\n`;
-      totalSum += o.amount;
-      
-      // Собираем статистику
-      if (units.unit === 'м²') {
-        totalM2 += units.value;
-      } else if (units.unit === 'пог. м') {
-        totalLinear += units.value;
-      } else if (units.unit === 'часы') {
-        totalTime += units.value;
-      }
-    });
-
-    content += `\nИТОГО: ${totalSum.toFixed(2)} ₽\n`;
-    
-    // Добавляем сводку по объемам
-    if (totalM2 > 0) content += `Общая площадь: ${totalM2.toFixed(2)} м²\n`;
-    if (totalLinear > 0) content += `Общая длина: ${totalLinear.toFixed(2)} пог. м\n`;
-    if (totalTime > 0) content += `Общее время: ${totalTime.toFixed(1)} ч\n`;
-    
-    content += `\nЭкспорт: ${new Date().toLocaleString('ru-RU')}`;
-
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `заказы_${formattedDate}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function saveOrdersToJSON() {
-    const dateInput = document.getElementById('viewDate').value;
-    if (!dateInput) {
-      alert('Сначала выберите дату');
-      return;
-    }
-
-    const orders = loadOrders();
-    const filtered = orders.filter(o => o.date === dateInput);
-
-    if (filtered.length === 0) {
-      alert('Нет заказов за эту дату');
-      return;
-    }
-
-    const jsonContent = JSON.stringify(filtered, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `заказы_${formatDateYMD(dateInput)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // === УНИВЕРСАЛЬНЫЙ ИМПОРТ TXT/JSON ===
-  document.getElementById('jsonImportInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      try {
-        const content = event.target.result;
-        let importedOrders = [];
-
-        // Определяем формат файла по содержимому
-        if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
-          // Это JSON
-          importedOrders = JSON.parse(content);
-          if (!Array.isArray(importedOrders)) {
-            importedOrders = [importedOrders]; // Оборачиваем в массив если один объект
-          }
-        } else {
-          // Это TXT - парсим вручную
-          importedOrders = parseTxtOrders(content);
-        }
-
-        if (importedOrders.length === 0) {
-          alert('Не удалось найти заказы в файле!');
-          return;
-        }
-
-        const preorders = loadPreorders();
-        const newPreorders = importedOrders.map(item => ({
-          id: Date.now() + Math.random(),
-          orderNumber: item.orderNumber || 'ИМП-' + (preorders.length + 1),
-          tariff: item.tariff || 'RASPIL_M2',
-          detail: item.detail || '—',
-          qty: item.qty || 1,
-          length: item.length || null,
-          width: item.width || null,
-          hours: item.hours || null,
-          amount: typeof item.amount === 'number' ? item.amount : calculateAmount(
-            item.tariff || 'RASPIL_M2',
-            item.length || 0,
-            item.width || 0,
-            item.hours || 0,
-            item.qty || 1
-          ),
-          date: todayYMD(),
-          timestamp: new Date().toISOString()
-        }));
-
-        const updated = [...preorders, ...newPreorders];
-        savePreorders(updated);
-        renderPreorders();
-        alert(`✅ Загружено ${newPreorders.length} предзаказов!`);
-
-      } catch (err) {
-        console.error(err);
-        alert('Ошибка при чтении файла:\n' + err.message);
-      }
-    };
-    
-    // Читаем как текст (не как JSON!)
-    reader.readAsText(file, 'utf-8');
-  });
-
-  // НОВАЯ ФУНКЦИЯ: Парсинг TXT-файла с заказами
-  function parseTxtOrders(txtContent) {
-    const orders = [];
-    const blocks = txtContent.split('---\n');
-    
-    for (const block of blocks) {
-      const lines = block.trim().split('\n').filter(line => line.trim() !== '');
-      if (lines.length < 3) continue; // Слишком короткий блок
-      
-      const order = {
-        orderNumber: '',
-        detail: '',
-        tariff: '',
-        qty: 1,
-        length: null,
-        width: null,
-        hours: null,
-        amount: 0
-      };
-      
-      let currentDetail = '';
-      let currentTariff = '';
-      
-      for (const line of lines) {
-        const cleanLine = line.trim();
-        
-        // № заказа (например: "№1. ORD-123" или просто "ORD-123")
-        if (cleanLine.startsWith('№') && cleanLine.includes('.')) {
-          const match = cleanLine.match(/№\d+\.\s*(.+)/);
-          if (match) order.orderNumber = match[1].trim();
-        } else if (/^[A-Z0-9]/.test(cleanLine) && !cleanLine.includes(':') && !cleanLine.includes('Сумма') && !cleanLine.includes('ИТОГО')) {
-          // Предполагаем, что это номер заказа (если нет префикса №)
-          if (!order.orderNumber && cleanLine.length > 2) {
-            order.orderNumber = cleanLine;
-          }
-        }
-        
-        // Деталь и тариф (строка типа: "   Деталь (Тариф)")
-        if (cleanLine.includes('(') && cleanLine.includes(')') && !cleanLine.includes('Сумма')) {
-          const match = cleanLine.match(/(.+)\s*\((.+)\)/);
-          if (match) {
-            currentDetail = match[1].trim();
-            currentTariff = match[2].trim();
-          }
-        }
-        
-        // Параметры
-        if (cleanLine.startsWith('Длина:')) {
-          const match = cleanLine.match(/Длина:\s*([\d.]+)\s*м/);
-          if (match) order.length = parseFloat(match[1]);
-        }
-        if (cleanLine.startsWith('Ширина:')) {
-          const match = cleanLine.match(/Ширина:\s*([\d.]+)\s*м/);
-          if (match) order.width = parseFloat(match[1]);
-        }
-        if (cleanLine.startsWith('Часы:')) {
-          const match = cleanLine.match(/Часы:\s*([\d.]+)\s*ч/);
-          if (match) order.hours = parseFloat(match[1]);
-        }
-        if (cleanLine.startsWith('Кол-во:')) {
-          const match = cleanLine.match(/Кол-во:\s*(\d+)/);
-          if (match) order.qty = parseInt(match[1]);
-        }
-        if (cleanLine.startsWith('Сумма:')) {
-          const match = cleanLine.match(/Сумма:\s*([\d.]+)\s*₽/);
-          if (match) order.amount = parseFloat(match[1]);
-        }
-      }
-      
-      // Определяем тариф по названию
-      if (currentTariff) {
-        const tariffMap = {
-          'Распил': 'RASPIL_M2',
-          'Лин. распил': 'LINEAR_RASPIL',
-          'Склейка +': 'SKLEIKA_OB',
-          'Склейка –': 'SKLEIKA_NO_OB',
-          'Пазы': 'PAZY',
-          'Фаска': 'FREZER_FASKA',
-          'Время': 'TIME'
+    <script>
+        // Данные приложения
+        const appData = {
+            user: {
+                name: 'Путешественник',
+                level: 1,
+                points: 0,
+                completedQuests: 0,
+                streakDays: 0,
+                lastLogin: null,
+                avatar: '👤'
+            },
+            quests: [
+                {
+                    id: 1,
+                    title: 'Первый шаг в мир ароматов',
+                    description: 'Зарегистрируйтесь в программе лояльности и получите приветственный бонус',
+                    reward: 100,
+                    status: 'available',
+                    type: 'registration'
+                },
+                {
+                    id: 2,
+                    title: 'Изучение базовых масел',
+                    description: 'Узнайте о 5 самых популярных эфирных маслах и их свойствах',
+                    reward: 150,
+                    status: 'available',
+                    type: 'education'
+                },
+                {
+                    id: 3,
+                    title: 'Создание первого букета',
+                    description: 'Скомбинируйте 3 разных эфирных масла для создания уникального аромата',
+                    reward: 200,
+                    status: 'locked',
+                    type: 'creation'
+                },
+                {
+                    id: 4,
+                    title: 'Ежедневный ароматерапевт',
+                    description: 'Посетите приложение 7 дней подряд для получения бонуса за лояльность',
+                    reward: 300,
+                    status: 'available',
+                    type: 'streak'
+                },
+                {
+                    id: 5,
+                    title: 'Мастер смешивания',
+                    description: 'Создайте 10 уникальных комбинаций эфирных масел',
+                    reward: 500,
+                    status: 'locked',
+                    type: 'advanced'
+                },
+                {
+                    id: 6,
+                    title: 'Рецепт красоты',
+                    description: 'Изучите и сохраните 3 рецепта домашней косметики с эфирными маслами',
+                    reward: 250,
+                    status: 'available',
+                    type: 'beauty'
+                },
+                {
+                    id: 7,
+                    title: 'Ароматическое путешествие',
+                    description: 'Откройте для себя эфирные масла из 5 разных стран мира',
+                    reward: 350,
+                    status: 'locked',
+                    type: 'exploration'
+                },
+                {
+                    id: 8,
+                    title: 'Здоровый образ жизни',
+                    description: 'Изучите 5 способов использования эфирных масел для улучшения сна',
+                    reward: 200,
+                    status: 'available',
+                    type: 'wellness'
+                }
+            ],
+            rewards: [
+                {
+                    id: 1,
+                    title: 'Приветственный бонус',
+                    description: 'Скидка 5% на первую покупку',
+                    code: 'WELCOME5',
+                    pointsRequired: 100,
+                    claimed: false
+                },
+                {
+                    id: 2,
+                    title: 'Бонус за регистрацию',
+                    description: 'Скидка 10% на любую покупку',
+                    code: 'AROMA10',
+                    pointsRequired: 250,
+                    claimed: false
+                },
+                {
+                    id: 3,
+                    title: 'Премиум скидка',
+                    description: 'Скидка 15% на заказ от 3000₽',
+                    code: 'PREMIUM15',
+                    pointsRequired: 500,
+                    claimed: false
+                },
+                {
+                    id: 4,
+                    title: 'Эксклюзивное предложение',
+                    description: 'Бесплатная доставка + скидка 20%',
+                    code: 'VIP20',
+                    pointsRequired: 1000,
+                    claimed: false
+                }
+            ]
         };
-        order.tariff = tariffMap[currentTariff] || 'RASPIL_M2';
-      }
-      
-      order.detail = currentDetail || '—';
-      
-      // Добавляем заказ только если есть номер
-      if (order.orderNumber) {
-        orders.push(order);
-      }
-    }
-    
-    return orders;
-  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('viewDate').value = todayYMD();
+        // DOM элементы
+        const elements = {
+            questsContainer: document.getElementById('questsContainer'),
+            points: document.getElementById('points'),
+            completed: document.getElementById('completed'),
+            streak: document.getElementById('streak'),
+            discount: document.getElementById('discount'),
+            userLevel: document.getElementById('userLevel'),
+            userName: document.getElementById('userName'),
+            progressFill: document.getElementById('progressFill'),
+            progressText: document.getElementById('progressText'),
+            rewardsContainer: document.getElementById('rewardsContainer'),
+            notification: document.getElementById('notification'),
+            questModal: document.getElementById('questModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalDesc: document.getElementById('modalDesc'),
+            acceptBtn: document.getElementById('acceptBtn'),
+            declineBtn: document.getElementById('declineBtn'),
+            closeModal: document.getElementById('closeModal'),
+            themeToggle: document.getElementById('themeToggle'),
+            avatar: document.getElementById('avatar')
+        };
 
-    const mainSelect = document.getElementById('tariff');
-    const preSelect = document.getElementById('preTariff');
-    const editTariffSelect = document.getElementById('editTariff');
+        let currentQuest = null;
 
-    if (mainSelect) {
-      mainSelect.addEventListener('change', updateMainFormFields);
-      updateMainFormFields();
-    }
+        // Инициализация приложения
+        function init() {
+            loadUserData();
+            checkDailyStreak();
+            renderQuests();
+            renderRewards();
+            updateUI();
+            setupEventListeners();
+        }
 
-    if (preSelect) {
-      preSelect.addEventListener('change', updatePreorderFormFields);
-      updatePreorderFormFields();
-    }
+        // Загрузка данных пользователя
+        function loadUserData() {
+            const savedData = localStorage.getItem('aromaQuestData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                appData.user = {...appData.user, ...parsedData.user};
+            } else {
+                // Первый вход - даем приветственный бонус
+                completeQuest(1);
+            }
+        }
 
-    if (editTariffSelect) {
-      editTariffSelect.addEventListener('change', updateEditFormFields);
-    }
+        // Проверка ежедневного входа
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastLogin = appData.user.lastLogin;
+            
+            if (!lastLogin) {
+                appData.user.streakDays = 1;
+            } else {
+                const lastDate = new Date(lastLogin).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastDate === yesterday.toDateString()) {
+                    appData.user.streakDays++;
+                } else if (lastDate !== today) {
+                    appData.user.streakDays = 1;
+                }
+            }
+            
+            appData.user.lastLogin = today;
+            saveUserData();
+        }
 
-    updateUI();
-    renderPreorders();
-  });
-</script>
+        // Сохранение данных пользователя
+        function saveUserData() {
+            localStorage.setItem('aromaQuestData', JSON.stringify({
+                user: appData.user,
+                quests: appData.quests,
+                rewards: appData.rewards
+            }));
+        }
+
+        // Рендер квестов
+        function renderQuests() {
+            elements.questsContainer.innerHTML = '';
+            
+            appData.quests.forEach(quest => {
+                if (quest.status === 'locked' && !canUnlockQuest(quest)) return;
+                
+                const questCard = document.createElement('div');
+                questCard.className = 'quest-card';
+                questCard.innerHTML = `
+                    <div class="quest-title">${quest.title}</div>
+                    <div class="quest-desc">${quest.description}</div>
+                    <div>
+                        <span class="quest-reward">+${quest.reward} баллов</span>
+                        <span class="quest-status ${quest.status === 'available' ? 'status-available' : 'status-completed'}">
+                            ${quest.status === 'available' ? 'Доступен' : 'Завершен'}
+                        </span>
+                    </div>
+                `;
+                
+                if (quest.status === 'available') {
+                    questCard.addEventListener('click', () => showQuestModal(quest));
+                }
+                
+                elements.questsContainer.appendChild(questCard);
+            });
+        }
+
+        // Проверка возможности разблокировать квест
+        function canUnlockQuest(quest) {
+            switch(quest.type) {
+                case 'creation':
+                    return appData.user.points >= 200;
+                case 'advanced':
+                    return appData.user.completedQuests >= 3;
+                case 'exploration':
+                    return appData.user.level >= 2;
+                default:
+                    return false;
+            }
+        }
+
+        // Показать модальное окно квеста
+        function showQuestModal(quest) {
+            currentQuest = quest;
+            elements.modalTitle.textContent = quest.title;
+            elements.modalDesc.textContent = quest.description;
+            elements.questModal.style.display = 'flex';
+        }
+
+        // Завершить квест
+        function completeQuest(questId) {
+            const quest = appData.quests.find(q => q.id === questId);
+            if (!quest || quest.status !== 'available') return;
+            
+            // Начисляем баллы
+            appData.user.points += quest.reward;
+            appData.user.completedQuests++;
+            
+            // Обновляем статус квеста
+            quest.status = 'completed';
+            
+            // Разблокируем следующие квесты
+            unlockNextQuests();
+            
+            // Проверяем уровень
+            checkLevelUp();
+            
+            // Сохраняем данные
+            saveUserData();
+            
+            // Обновляем интерфейс
+            updateUI();
+            renderQuests();
+            
+            // Показываем уведомление
+            showNotification(`Квест "${quest.title}" завершен! +${quest.reward} баллов`);
+        }
+
+        // Разблокировать следующие квесты
+        function unlockNextQuests() {
+            appData.quests.forEach(quest => {
+                if (quest.status === 'locked' && canUnlockQuest(quest)) {
+                    quest.status = 'available';
+                }
+            });
+        }
+
+        // Проверка повышения уровня
+        function checkLevelUp() {
+            const pointsForNextLevel = appData.user.level * 1000;
+            if (appData.user.points >= pointsForNextLevel) {
+                appData.user.level++;
+                showNotification(`🎉 Поздравляем! Вы достигли ${appData.user.level} уровня!`);
+            }
+        }
+
+        // Рендер наград
+        function renderRewards() {
+            elements.rewardsContainer.innerHTML = '';
+            
+            appData.rewards.forEach(reward => {
+                if (reward.claimed) return;
+                
+                const canClaim = appData.user.points >= reward.pointsRequired;
+                const rewardCard = document.createElement('div');
+                rewardCard.className = 'reward-card';
+                rewardCard.style.opacity = canClaim ? '1' : '0.6';
+                rewardCard.style.cursor = canClaim ? 'pointer' : 'not-allowed';
+                
+                rewardCard.innerHTML = `
+                    <div class="reward-title">${reward.title}</div>
+                    <div class="reward-desc">${reward.description}</div>
+                    <div class="reward-code">${reward.code}</div>
+                    <div style="margin-top: 8px; font-size: 0.8em;">
+                        Требуется: ${reward.pointsRequired} баллов | 
+                        ${canClaim ? '✅ Доступен' : '🔒 Недоступен'}
+                    </div>
+                `;
+                
+                if (canClaim) {
+                    rewardCard.addEventListener('click', () => claimReward(reward));
+                }
+                
+                elements.rewardsContainer.appendChild(rewardCard);
+            });
+        }
+
+        // Получить награду
+        function claimReward(reward) {
+            if (appData.user.points < reward.pointsRequired) return;
+            
+            reward.claimed = true;
+            appData.user.points -= reward.pointsRequired;
+            
+            saveUserData();
+            renderRewards();
+            updateUI();
+            
+            showNotification(`🎁 Вы получили промокод: ${reward.code}`);
+            showNotification('Промокод скопирован в буфер обмена!', 'success');
+            
+            // Копируем промокод в буфер обмена
+            navigator.clipboard.writeText(reward.code);
+        }
+
+        // Обновить интерфейс
+        function updateUI() {
+            elements.points.textContent = appData.user.points;
+            elements.completed.textContent = appData.user.completedQuests;
+            elements.streak.textContent = appData.user.streakDays;
+            elements.userLevel.textContent = appData.user.level;
+            elements.userName.textContent = appData.user.name;
+            
+            // Расчет скидки
+            const discount = Math.min(Math.floor(appData.user.points / 100), 25);
+            elements.discount.textContent = `${discount}%`;
+            
+            // Прогресс до следующего уровня
+            const pointsForNextLevel = appData.user.level * 1000;
+            const progress = (appData.user.points / pointsForNextLevel) * 100;
+            elements.progressFill.style.width = `${Math.min(progress, 100)}%`;
+            elements.progressText.textContent = `${appData.user.points}/${pointsForNextLevel}`;
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'success') {
+            elements.notification.textContent = message;
+            elements.notification.className = `notification ${type === 'success' ? '' : 'error'} show`;
+            
+            setTimeout(() => {
+                elements.notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Кнопки модального окна
+            elements.acceptBtn.addEventListener('click', () => {
+                if (currentQuest) {
+                    completeQuest(currentQuest.id);
+                    elements.questModal.style.display = 'none';
+                }
+            });
+            
+            elements.declineBtn.addEventListener('click', () => {
+                elements.questModal.style.display = 'none';
+            });
+            
+            elements.closeModal.addEventListener('click', () => {
+                elements.questModal.style.display = 'none';
+            });
+            
+            // Закрытие модального окна при клике вне его
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.questModal) {
+                    elements.questModal.style.display = 'none';
+                }
+            });
+            
+            // Переключение темы
+            elements.themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                elements.themeToggle.textContent = isDark ? '☀️' : '🌙';
+                localStorage.setItem('darkTheme', isDark);
+            });
+            
+            // Загрузка сохраненной темы
+            const savedTheme = localStorage.getItem('darkTheme');
+            if (savedTheme === 'true') {
+                document.body.classList.add('dark-theme');
+                elements.themeToggle.textContent = '☀️';
+            }
+            
+            // Смена аватара
+            elements.avatar.addEventListener('click', () => {
+                const emojis = ['👤', '🌿', '🌸', '🌺', '🌼', '🍀', '🍁', '🌹'];
+                const currentIndex = emojis.indexOf(appData.user.avatar);
+                const nextIndex = (currentIndex + 1) % emojis.length;
+                appData.user.avatar = emojis[nextIndex];
+                elements.avatar.textContent = appData.user.avatar;
+                saveUserData();
+            });
+            
+            // Имитация выполнения квестов для демо
+            setTimeout(() => {
+                if (appData.user.completedQuests === 0) {
+                    showNotification('💡 Совет: Нажмите на доступный квест, чтобы начать!');
+                }
+            }, 2000);
+        }
+
+        // Инициализация приложения
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
