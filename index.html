@@ -51,11 +51,13 @@
       font-family: monospace;
       display: none;
     }
-    .history-item {
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-    }
+
+    /* Стили для списка карт */
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 14px; }
+    th { color: #666; font-weight: 600; }
+    tbody tr:hover { background: #f9f9f9; cursor: pointer; }
+    .pin-cell { font-weight: bold; color: #2196F3; }
   </style>
 </head>
 <body>
@@ -89,13 +91,30 @@
       <button onclick="prepareMessage()" style="margin-top:15px;">📤 Подготовить сообщение для клиента</button>
       <div id="client-message"></div>
     </div>
+
+    <!-- СПИСОК КАРТ -->
+    <div class="section">
+      <h2>📋 Созданные карты</h2>
+      <button onclick="renderClientList()" style="background:#607D8B; font-size:14px; padding:8px;">Обновить список</button>
+      <div style="overflow-x:auto; max-height:400px; overflow-y:auto;">
+        <table id="client-table">
+          <thead>
+            <tr>
+              <th>PIN</th>
+              <th>Покупок</th>
+              <th>Скидка</th>
+              <th>Создана</th>
+            </tr>
+          </thead>
+          <tbody id="client-list"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
-    // === ХРАНЕНИЕ ДАННЫХ ===
     let clients = JSON.parse(localStorage.getItem('loyalty_clients') || '{}');
 
-    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function generateUniquePin() {
       let pin;
       do {
@@ -113,22 +132,19 @@
 
     function addToHistory(client, action) {
       client.history = client.history || [];
-      client.history.push({
-        time: new Date().toISOString(),
-        action: action
-      });
-      // Оставляем только последние 10
+      client.history.push({ time: new Date().toISOString(), action });
       if (client.history.length > 10) {
         client.history = client.history.slice(-10);
       }
     }
 
-    // === СОЗДАНИЕ КЛИЕНТА ===
     function createClient() {
       const pin = generateUniquePin();
+      const now = new Date().toISOString();
       clients[pin] = {
         purchases: 0,
         discount: 0,
+        createdAt: now,
         history: []
       };
       addToHistory(clients[pin], "Карта создана");
@@ -136,9 +152,9 @@
       
       document.getElementById('new-pin').innerText = `PIN: ${pin}`;
       document.getElementById('new-pin').classList.remove('hidden');
+      renderClientList(); // обновляем список
     }
 
-    // === ДОБАВЛЕНИЕ ПОКУПКИ ===
     function addPurchase() {
       const pin = document.getElementById('pin-input').value.trim();
       if (!/^\d{5}$/.test(pin)) return alert("Введите 5-значный PIN");
@@ -164,7 +180,6 @@
 
       localStorage.setItem('loyalty_clients', JSON.stringify(clients));
 
-      // Обновляем отображение
       document.getElementById('info-purchases').innerText = newPurchases;
       document.getElementById('info-discount').innerText = `${newDiscount}%`;
 
@@ -174,9 +189,9 @@
       ).join('');
 
       document.getElementById('client-info').classList.remove('hidden');
+      renderClientList(); // обновляем список
     }
 
-    // === ПОДГОТОВКА СООБЩЕНИЯ ===
     function prepareMessage() {
       const pin = document.getElementById('pin-input').value.trim();
       if (!/^\d{5}$/.test(pin) || !clients[pin]) {
@@ -203,7 +218,6 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       msgDiv.innerText = message;
       msgDiv.style.display = 'block';
 
-      // Копирование
       const range = document.createRange();
       range.selectNode(msgDiv);
       window.getSelection().removeAllRanges();
@@ -211,8 +225,43 @@ ${historyLines.length ? historyLines.join('\n') : '—'}`;
       document.execCommand('copy');
       window.getSelection().removeAllRanges();
 
-      alert("✅ Сообщение скопировано! Отправьте его клиенту в Telegram или VK.");
+      alert("✅ Сообщение скопировано! Отправьте его клиенту.");
     }
+
+    // === РЕНДЕР СПИСКА КАРТ ===
+    function renderClientList() {
+      const list = document.getElementById('client-list');
+      list.innerHTML = '';
+
+      // Сортируем по дате создания (новые сверху)
+      const sorted = Object.entries(clients)
+        .sort((a, b) => new Date(b[1].createdAt) - new Date(a[1].createdAt));
+
+      if (sorted.length === 0) {
+        list.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#999;">Нет созданных карт</td></tr>`;
+        return;
+      }
+
+      sorted.forEach(([pin, data]) => {
+        const row = document.createElement('tr');
+        const createdAt = new Date(data.createdAt).toLocaleDateString();
+        row.innerHTML = `
+          <td class="pin-cell">${pin}</td>
+          <td>${data.purchases}</td>
+          <td>${data.discount}%</td>
+          <td>${createdAt}</td>
+        `;
+        row.onclick = () => {
+          document.getElementById('pin-input').value = pin;
+        };
+        list.appendChild(row);
+      });
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      renderClientList();
+    });
   </script>
 </body>
 </html>
